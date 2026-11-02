@@ -195,6 +195,59 @@ footer{margin-top:50px;border-top:1px solid var(--line)}
 @keyframes toastIn{from{opacity:0;transform:translateY(8px)}}
 @keyframes toastOut{to{opacity:0}}
 
+/* --- аккаунт и редактор --- */
+.authbar{display:flex;align-items:center;gap:8px}
+.userchip{display:inline-flex;align-items:center;gap:8px;height:36px;padding:0 12px 0 4px;border-radius:999px;background:var(--panel);border:1px solid var(--line);cursor:pointer;font-size:13px;transition:background .2s,border-color .2s}
+.userchip:hover{background:var(--panel2);border-color:#34373d}
+.avatar{width:28px;height:28px;border-radius:50%;object-fit:cover;display:grid;place-items:center;background:var(--accent);color:#fff;font-size:12px;font-weight:600}
+.avatar-empty{background:var(--accent)}
+.avatar-lg{width:56px;height:56px;font-size:20px}
+.authbox{border:1px solid var(--line);background:var(--panel);border-radius:12px;padding:20px;margin-top:16px}
+.flabel{display:block;font-size:12px;color:var(--dim);margin-bottom:6px}
+.finput{width:100%;height:40px;padding:0 13px;border-radius:10px;border:1px solid var(--line);background:var(--bg);color:var(--ink);font-size:14px}
+.finput:focus{outline:none;border-color:var(--accent)}
+.fnote{font-size:12px;color:var(--dim);line-height:1.5}
+.orline{display:flex;align-items:center;gap:10px;margin:14px 0;color:var(--dim);font-size:12px}
+.orline::before,.orline::after{content:'';height:1px;background:var(--line);flex:1}
+.btn-primary,.btn-ghost,.btn-danger{display:inline-flex;align-items:center;justify-content:center;gap:6px;height:40px;padding:0 18px;border-radius:10px;font-size:14px;font-weight:600;border:1px solid transparent;cursor:pointer;transition:.2s}
+.btn-primary{background:var(--accent);color:#fff}
+.btn-primary:hover{background:var(--accent-hover)}
+.btn-ghost{background:var(--panel);border-color:var(--line);color:var(--ink)}
+.btn-ghost:hover{background:var(--panel2)}
+.btn-danger{background:rgba(207,58,47,.14);border-color:rgba(207,58,47,.35);color:#ff9c92}
+.btn-danger:hover{background:rgba(207,58,47,.24)}
+.btn-sm{height:32px;padding:0 12px;font-size:12.5px;border-radius:8px}
+.admin{max-width:860px;margin:0 auto}
+.admin-head{display:flex;justify-content:space-between;align-items:flex-start;gap:14px;margin-bottom:18px;flex-wrap:wrap}
+.tabs{display:flex;gap:6px;margin-bottom:18px}
+.tab{height:36px;padding:0 16px;border-radius:999px;background:var(--panel);border:1px solid var(--line);color:var(--muted);font-size:13.5px;cursor:pointer}
+.tab.active{background:var(--accent);border-color:var(--accent);color:#fff}
+.form-card{border:1px solid var(--line);background:var(--panel);border-radius:12px;padding:18px;margin-bottom:18px}
+.form-card h3{margin:0 0 14px;font-size:16px}
+.field{margin-bottom:12px}
+.field label{display:block;font-size:12px;color:var(--dim);margin-bottom:5px}
+.field input,.field textarea,.field select{width:100%;padding:10px 13px;border-radius:10px;border:1px solid var(--line);background:var(--bg);color:var(--ink);font-size:14px}
+.field textarea{min-height:110px;resize:vertical;font-family:var(--f-read);line-height:1.7}
+.field input:focus,.field textarea:focus,.field select:focus{outline:none;border-color:var(--accent)}
+.row2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.list{display:flex;flex-direction:column;gap:8px}
+.item{display:flex;align-items:center;gap:12px;padding:12px 14px;border-radius:10px;background:var(--panel);border:1px solid var(--line)}
+.item .t{font-size:14px;font-weight:600}
+.item .s{font-size:12px;color:var(--dim);margin-top:2px}
+.item .acts{margin-left:auto;display:flex;gap:6px;flex-wrap:wrap}
+.media-list{display:flex;flex-direction:column;gap:6px;margin-bottom:10px}
+.mrow{display:flex;align-items:center;gap:8px;padding:8px 10px;border-radius:8px;background:var(--bg);border:1px solid var(--line);font-size:12px}
+.mtype{flex-shrink:0;padding:2px 7px;border-radius:5px;background:var(--panel2);color:var(--muted);text-transform:uppercase;font-size:10.5px;letter-spacing:.04em}
+.murl{flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:var(--muted)}
+.mdel{width:24px;height:24px;border-radius:6px;display:grid;place-items:center;background:rgba(207,58,47,.14);color:#ff9c92;cursor:pointer;flex-shrink:0}
+.madd{display:grid;grid-template-columns:90px 1.4fr 1fr 92px 86px auto auto;gap:8px;align-items:end;padding:10px;border-radius:10px;background:var(--bg);border:1px dashed var(--line)}
+.mini label{display:block;font-size:11px;color:var(--dim);margin-bottom:4px}
+.mini input,.mini select{width:100%;height:34px;padding:0 9px;border-radius:8px;border:1px solid var(--line);background:var(--panel);color:var(--ink);font-size:12.5px}
+.profile-card{display:flex;align-items:center;gap:14px;border:1px solid var(--line);background:var(--panel);border-radius:12px;padding:18px;margin-top:16px}
+.pname{font-size:17px;font-weight:600}
+.pemail{font-size:13px;color:var(--muted);margin-top:2px}
+.pmeta{font-size:12px;color:var(--dim);margin-top:4px}
+@media(max-width:760px){.madd{grid-template-columns:1fr 1fr}.item{flex-wrap:wrap}.item .acts{margin-left:0;width:100%}}
 /* оживление */
 .hdr{transition:box-shadow .25s ease}
 .hdr.scrolled{box-shadow:0 8px 26px -14px rgba(0,0,0,.95)}
@@ -248,7 +301,7 @@ footer{margin-top:50px;border-top:1px solid var(--line)}
       <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
       <input id="search" type="search" placeholder="Поиск книг" autocomplete="off" oninput="filterBooks()">
     </div>
-    <nav class="hnav"><span class="pill on" onclick="navigate('home')">Библиотека</span></nav>
+    <nav class="hnav"><span class="pill on" onclick="navigate('home')">Библиотека</span><span id="authbar" class="authbar"></span></nav>
   </div>
 </header>
 
@@ -262,73 +315,102 @@ footer{margin-top:50px;border-top:1px solid var(--line)}
 
 <div class="toast-box" id="toasts"></div>
 
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
 <script>
 // ============================================================
-// OkhBooks. Наполняй через «Управление», затем «Экспорт JSON»
-// и вставь результат в SEED ниже — чтобы книги были видны всем.
+// OkhBooks — приложение на Supabase
 // ============================================================
+const SUPA_URL = 'https://qaxtkvqtskxpwmhfodah.supabase.co';
+const SUPA_KEY = 'sb_publishable_4Y8C8jX7cjXs7ejlAwNdIQ_s1CWPf-H';
 const SITE = 'OkhBooks';
-const KEY = 'okhbooks_v1';
 
-const COVERS = ['#a8322a','#1d1d1b','#7d2a20','#2b2b28','#5a1f18','#141412'];
+const sb = window.supabase.createClient(SUPA_URL, SUPA_KEY);
 
-// Сюда вставляй результат «Экспорт JSON» (структура: { books:[{...}], chapters:[{...}] }).
-const SEED = { books: [], chapters: [] };
-
-// ============ данные ============
 const $ = (s, r = document) => r.querySelector(s);
 const $$ = (s, r = document) => Array.from(r.querySelectorAll(s));
 const reduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
 
+let session = null;
+let profile = null;
+let data = { books: [], chapters: [] };
+let loading = true;
+
+// ---------- утилиты ----------
 function esc(v) {
   if (v === null || v === undefined) return '';
   return String(v).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
     .replace(/"/g, '&quot;').replace(/'/g, '&#39;');
 }
 function toast(msg, kind) {
+  const box = $('#toasts');
+  if (!box) return;
   const t = document.createElement('div');
   t.className = 'toast ' + (kind || 'ok');
   t.textContent = msg;
-  $('#toasts').appendChild(t);
+  box.appendChild(t);
   setTimeout(() => t.remove(), 3000);
 }
 function fmtDate(d) {
   if (!d) return '';
   const dt = new Date(d);
-  if (isNaN(dt.getTime())) return esc(String(d));
+  if (isNaN(dt.getTime())) return '';
   return dt.toLocaleDateString('ru-RU', { day: 'numeric', month: 'long', year: 'numeric' });
 }
-function genId(p) { return p + '_' + Date.now().toString(36) + Math.random().toString(36).slice(2, 6); }
+function fmtTime(s) { if (!s || isNaN(s)) return '0:00'; const m = Math.floor(s / 60), x = Math.floor(s % 60); return m + ':' + (x < 10 ? '0' : '') + x; }
+const wc = t => { const s = (t || '').trim(); return s ? s.split(/\s+/).length : 0; };
+const authed = () => !!(session && session.user);
+const myId = () => (session && session.user ? session.user.id : null);
 
-function loadData() {
-  return normalize(JSON.parse(JSON.stringify(SEED)));
-}
-function normalize(d) {
-  const o = { books: [], chapters: [] };
-  o.books = Array.isArray(d && d.books) ? d.books.filter(b => b && b.id) : [];
-  o.chapters = Array.isArray(d && d.chapters) ? d.chapters.filter(c => c && c.id) : [];
-  o.chapters.forEach(c => {
-    if (!Array.isArray(c.media)) c.media = [];
-    c.media = c.media.filter(m => m && m.type);
-    if (typeof c.content !== 'string') c.content = '';
-    if (!c.num) c.num = 1;
-  });
-  return o;
-}
-function saveData() {
-  try { localStorage.setItem(KEY, JSON.stringify(data)); return true; }
-  catch (e) { toast('Хранилище переполнено', 'err'); return false; }
-}
-let data = loadData();
+const COVERS = ['#a8322a', '#1d1d1b', '#7d2a20', '#2b2b28', '#5a1f18', '#141412'];
+const coverOf = b => b.cover_url || COVERS[(b.cover || 0) % COVERS.length];
 
 const getBook = id => data.books.find(b => b.id === id);
 const getChapter = id => data.chapters.find(c => c.id === id);
 const chaptersOf = bookId => data.chapters.filter(c => c.bookId === bookId).sort((a, b) => a.num - b.num);
 const mediaOf = c => Array.isArray(c && c.media) ? c.media : [];
-const wc = t => { const s = (t || '').trim(); return s ? s.split(/\s+/).length : 0; };
-const coverOf = b => COVERS[b.cover] || COVERS[0];
 
-// ============ роутер ============
+// ---------- загрузка данных ----------
+async function loadData() {
+  loading = true;
+  const [b, c, m] = await Promise.all([
+    sb.from('books').select('*').order('created_at', { ascending: false }),
+    sb.from('chapters').select('*').order('num', { ascending: true }),
+    sb.from('media').select('*').order('created_at', { ascending: true })
+  ]);
+  if (b.error) toast('Не удалось загрузить книги: ' + b.error.message, 'err');
+  const books = (b.data || []).map(x => ({
+    id: x.id, ownerId: x.owner_id, title: x.title, author: x.author, genre: x.genre,
+    desc: x.description, cover_url: x.cover_url, status: x.status, createdAt: x.created_at
+  }));
+  const chapters = (c.data || []).map(x => ({
+    id: x.id, bookId: x.book_id, num: x.num, title: x.title, content: x.content,
+    createdAt: x.created_at, media: []
+  }));
+  const byChapter = {};
+  (chapters || []).forEach(ch => { byChapter[ch.id] = ch.media; });
+  (m.data || []).forEach(row => {
+    const arr = byChapter[row.chapter_id];
+    if (arr) arr.push({ id: row.id, type: row.kind, url: row.url, title: row.title, caption: row.caption, pos: row.pos || 0, dur: row.dur || 0 });
+  });
+  data = { books, chapters };
+  loading = false;
+}
+
+async function loadProfile() {
+  if (!authed()) { profile = null; return; }
+  const { data: p } = await sb.from('profiles').select('*').eq('id', myId()).maybeSingle();
+  profile = p || null;
+  if (!profile) {
+    const u = session.user;
+    profile = {
+      id: u.id,
+      display_name: (u.user_metadata && (u.user_metadata.full_name || u.user_metadata.name)) || (u.email || '').split('@')[0],
+      avatar_url: (u.user_metadata && u.user_metadata.avatar_url) || null
+    };
+  }
+}
+
+// ---------- роутер ----------
 let route = { page: 'home' };
 function navigate(page, params = {}) {
   route = { page, ...params };
@@ -337,119 +419,126 @@ function navigate(page, params = {}) {
   updateNav();
 }
 function updateNav() {
-  const map = { home: 'nav-home', book: 'nav-home', chapter: 'nav-home', admin: 'nav-admin' };
-  ['nav-home', 'nav-admin'].forEach(id => {
-    const el = document.getElementById(id);
-    if (el) el.classList.toggle('active', map[route.page] === id);
-  });
+  const map = { home: 'nav-home', book: 'nav-home', chapter: 'nav-home', admin: 'nav-admin', profile: 'nav-admin' };
+  $$('.hnav .pill').forEach(p => p.classList.remove('on'));
+  const id = map[route.page];
+  const el = id ? document.getElementById(id) : null;
+  if (el) el.classList.add('on');
 }
 
-// ============ рендер ============
+// ---------- рендер ----------
 function render() {
   const app = $('#app');
+  if (loading) {
+    app.innerHTML = '<div class="wrap"><div class="empty"><h3>Загружаю…</h3></div></div>';
+    renderAuthBar();
+    return;
+  }
   switch (route.page) {
     case 'home': app.innerHTML = renderHome(); break;
     case 'book': app.innerHTML = renderBook(); break;
     case 'chapter': app.innerHTML = renderChapter(); break;
+    case 'login': app.innerHTML = renderLogin(); break;
+    case 'profile': app.innerHTML = renderProfile(); break;
+    case 'admin': app.innerHTML = renderAdmin(); break;
     default: app.innerHTML = renderHome();
   }
   if (route.page === 'chapter') initAudio();
-  observeReveals();
+  renderAuthBar();
 }
 
-function reveal(html) { return '<div class="reveal in">' + html + '</div>'; }
+function renderAuthBar() {
+  const box = $('#authbar');
+  if (!box) return;
+  if (!authed()) {
+    box.innerHTML = '<span class="pill" onclick="navigate(\'login\')">Войти</span>';
+    return;
+  }
+  const name = (profile && profile.display_name) || (session.user.email || '').split('@')[0];
+  const av = profile && profile.avatar_url
+    ? '<img class="avatar" src="' + esc(profile.avatar_url) + '" alt="">'
+    : '<span class="avatar avatar-empty">' + esc(name.slice(0, 1).toUpperCase()) + '</span>';
+  box.innerHTML = '<span class="pill" onclick="navigate(\'admin\')" id="nav-admin">Мои книги</span>'
+    + '<span class="userchip" onclick="navigate(\'profile\')">' + av + '<span>' + esc(name) + '</span></span>';
+}
 
 function renderHome() {
-  return reveal(`
-    <div class="wrap">
-      <section class="hero"><div class="hero-art"></div>
-        <div class="hero-inner">
-          <div class="hero-tag">Библиотека</div>
-          <h1>Книги, в которых есть музыка</h1>
-          <p>Текст, музыка, снимки и видео внутри глав. Читай, слушай и смотри.</p>
-        </div>
-      </section>
-      <section>
-        <div class="section-head"><h2>Новые книги</h2><span class="count">${data.books.length} книг</span></div>
-        <div id="booksGrid">${renderBooks(data.books)}</div>
-      </section>
-    </div>
-  `);
+  const books = data.books.filter(b => b.status === 'published');
+  const mine = data.books.filter(b => b.ownerId === myId());
+  return '<div class="wrap">'
+    + '<section class="hero"><div class="hero-art"></div>'
+    + '<div class="hero-inner">'
+    + '<div class="hero-tag">Библиотека</div>'
+    + '<h1>Книги, в которых есть музыка</h1>'
+    + '<p>Текст, музыка, снимки и видео внутри глав. Читай, слушай и смотри.</p>'
+    + '</div></section>'
+    + '<div class="section-head"><h2>Новые книги</h2><span class="count">' + books.length + ' книг</span></div>'
+    + '<div id="booksGrid">' + renderBooks(books) + '</div>'
+    + (mine.length && authed() ? '' : '')
+    + '</div>';
 }
 
 function renderBooks(books) {
-  if (!books.length) return `<div class="empty">
-    <h3>Скоро здесь появятся книги</h3>
-    <p>Автор наполняет библиотеку — заходи чуть позже.</p>
-  </div>`;
-  return `<div class="grid">${books.map((b, i) => {
+  if (!books.length) {
+    return '<div class="empty"><h3>Пока пусто</h3><p>'
+      + (authed() ? 'Добавь первую книгу в «Мои книги».' : 'Автор ещё наполняет библиотеку.')
+      + '</p></div>';
+  }
+  return '<div class="grid">' + books.map(b => {
     const ch = chaptersOf(b.id);
-    const na = ch.reduce((s, c) => s + mediaOf(c).filter(m => m.type === 'audio').length, 0);
-    const np = ch.reduce((s, c) => s + mediaOf(c).filter(m => m.type === 'photo').length, 0);
-    return `<article class="card" onclick="navigate('book',{bookId:'${b.id}'})">
-      <div class="cover" style="--cover:${coverOf(b)}">${b.cover_url ? `<img class="covimg" src="${esc(b.cover_url)}" alt="" loading="lazy">` : ''}<h3>${esc(b.title)}</h3></div>
-      <div class="ctitle">${esc(b.title)}</div>
-      <div class="cmeta"><span>${esc(b.genre || 'Без жанра')}</span><span>${ch.length} гл.</span></div>
-    </article>`;
-  }).join('')}</div>`;
-}
-
-function filterBooks() {
-  const grid = $('#booksGrid');
-  if (!grid) return;
-  const q = ($('#search').value || '').toLowerCase().trim();
-  const list = data.books.filter(b =>
-    (b.title || '').toLowerCase().includes(q) || (b.genre || '').toLowerCase().includes(q) ||
-    (b.author || '').toLowerCase().includes(q) || (b.desc || '').toLowerCase().includes(q));
-  $('#booksGrid').innerHTML = renderBooks(list);
+    return '<article class="card" onclick="navigate(\'book\',{bookId:\'' + b.id + '\'})">'
+      + '<div class="cover" style="--cover:' + esc(coverOf(b)) + '">'
+      + (b.cover_url ? '<img class="covimg" src="' + esc(b.cover_url) + '" alt="" loading="lazy">' : '')
+      + '<h3>' + esc(b.title) + '</h3></div>'
+      + '<div class="ctitle">' + esc(b.title) + '</div>'
+      + '<div class="cmeta"><span>' + esc(b.genre || 'Без жанра') + '</span><span>' + ch.length + ' гл.</span></div>'
+      + '</article>';
+  }).join('') + '</div>';
 }
 
 function renderBook() {
   const book = getBook(route.bookId);
-  if (!book) return `<div class="wrap"><div class="empty"><h3>Книга не найдена</h3></div></div>`;
+  if (!book) return '<div class="wrap"><div class="empty"><h3>Книга не найдена</h3></div></div>';
   const ch = chaptersOf(book.id);
   const words = ch.reduce((s, c) => s + wc(c.content), 0);
   const na = ch.reduce((s, c) => s + mediaOf(c).filter(m => m.type === 'audio').length, 0);
   const np = ch.reduce((s, c) => s + mediaOf(c).filter(m => m.type === 'photo').length, 0);
-  return `<div class="wrap">
-    <div class="breadcrumbs"><a onclick="navigate('home')">Библиотека</a><span>›</span><span>${esc(book.title)}</span></div>
-    <div class="book-head">
-      <div class="book-cover" style="--cover:${coverOf(book)}">${book.cover_url ? `<img src="${esc(book.cover_url)}" alt="">` : ''}</div>
-      <div class="book-info">
-        <h1>${esc(book.title)}</h1>
-        <span class="genre">${esc(book.genre || 'Без жанра')}</span>
-        ${book.author ? `<div class="author">Автор: <b>${esc(book.author)}</b></div>` : ''}
-        <p class="desc">${esc(book.desc || 'Описание не добавлено.')}</p>
-        <div class="stats">
-          <div class="stat"><b>${ch.length}</b><span>глав</span></div>
-          <div class="stat"><b>${words}</b><span>слов</span></div>
-          <div class="stat"><b>${na}</b><span>аудио</span></div>
-          <div class="stat"><b>${np}</b><span>фото</span></div>
-        </div>
-      </div>
-    </div>
-    <h2 class="title">Главы</h2>
-    <div class="chapters">
-      ${ch.length ? ch.map(c => {
-        const m = mediaOf(c);
-        const has = t => m.some(x => x.type === t);
-        return `<div class="chapter" onclick="navigate('chapter',{chapterId:'${c.id}'})">
-          <div class="num">${c.num}</div>
-          <div><div class="ch-title">${esc(c.title)}</div><div class="ch-sub">${fmtDate(c.createdAt)}</div></div>
-          <div class="badges">
-            ${has('audio') ? '<span class="badge b-audio">аудио</span>' : ''}
-            ${has('video') ? '<span class="badge b-video">видео</span>' : ''}
-            ${has('photo') ? '<span class="badge b-photo">фото</span>' : ''}
-          </div>
-        </div>`;
-      }).join('') : `<div class="empty"><p>Глав пока нет</p></div>`}
-    </div>
-  </div>`;
+  return '<div class="wrap">'
+    + '<div class="breadcrumbs"><a onclick="navigate(\'home\')">Библиотека</a><span>/</span><span>' + esc(book.title) + '</span></div>'
+    + '<div class="book-head">'
+    + '<div class="book-cover" style="--cover:' + esc(coverOf(book)) + '">'
+    + (book.cover_url ? '<img src="' + esc(book.cover_url) + '" alt="">' : '')
+    + '</div>'
+    + '<div class="book-info">'
+    + '<h1>' + esc(book.title) + '</h1>'
+    + '<span class="genre">' + esc(book.genre || 'Без жанра') + '</span>'
+    + (book.author ? '<div class="author">Автор: <b>' + esc(book.author) + '</b></div>' : '')
+    + '<p class="desc">' + esc(book.desc || 'Описание не добавлено.') + '</p>'
+    + '<div class="stats">'
+    + '<div class="stat"><b>' + ch.length + '</b><span>глав</span></div>'
+    + '<div class="stat"><b>' + words + '</b><span>слов</span></div>'
+    + '<div class="stat"><b>' + na + '</b><span>аудио</span></div>'
+    + '<div class="stat"><b>' + np + '</b><span>фото</span></div>'
+    + '</div></div></div>'
+    + '<div class="chapters">'
+    + (ch.length ? ch.map((c, i) => {
+      const m = mediaOf(c);
+      const has = t => m.some(x => x.type === t);
+      return '<div class="chapter" onclick="navigate(\'chapter\',{chapterId:\'' + c.id + '\'})">'
+        + '<div class="num">' + (c.num || i + 1) + '</div>'
+        + '<div><div class="ch-title">' + esc(c.title) + '</div><div class="ch-sub">' + fmtDate(c.createdAt) + '</div></div>'
+        + '<div class="badges">'
+        + (has('audio') ? '<span class="badge b-audio">аудио</span>' : '')
+        + (has('video') ? '<span class="badge b-video">видео</span>' : '')
+        + (has('photo') ? '<span class="badge b-photo">фото</span>' : '')
+        + '</div></div>';
+    }).join('') : '<div class="empty"><p>Глав пока нет</p></div>')
+    + '</div></div>';
 }
 
 function renderChapter() {
   const chapter = getChapter(route.chapterId);
-  if (!chapter) return `<div class="wrap"><div class="empty"><h3>Глава не найдена</h3></div></div>`;
+  if (!chapter) return '<div class="wrap"><div class="empty"><h3>Глава не найдена</h3></div></div>';
   const book = getBook(chapter.bookId);
   const all = chaptersOf(chapter.bookId);
   const idx = all.findIndex(c => c.id === chapter.id);
@@ -466,62 +555,327 @@ function renderChapter() {
   cueAudios.forEach((a, k) => { const p = a.pos; (cuesByPos[p] = cuesByPos[p] || []).push(k); });
   const contentHtml = paras.map((p, i) => {
     const num = i + 1;
-    let h = `<p>${esc(p)}</p>`;
+    let h = '<p>' + esc(p) + '</p>';
     if (cuesByPos[num]) {
       h += cuesByPos[num].map(k => {
         const a = cueAudios[k];
-        return `<div class="cue">
-          <div class="cue-play ${a.url ? '' : 'disabled'}" id="cuePlay${k}" onclick="toggleCue(${k})">▶</div>
-          <div class="cue-info">
-            <div class="cue-title">${esc(a.title || 'Музыка')}</div>
-            <div class="cue-bar" onclick="seekCue(event,${k})"><div class="cue-fill" id="cueFill${k}"></div></div>
-            <div class="cue-time"><span id="cueCur${k}">0:00</span> / <span id="cueDur${k}">${a.dur > 0 ? a.dur + ' с' : 'весь трек'}</span></div>
-          </div>
-        </div>`;
+        return '<div class="cue">'
+          + '<div class="cue-play ' + (a.url ? '' : 'disabled') + '" id="cuePlay' + k + '" onclick="toggleCue(' + k + ')">▶</div>'
+          + '<div class="cue-info">'
+          + '<div class="cue-title">' + esc(a.title || 'Музыка') + '</div>'
+          + '<div class="cue-bar" onclick="seekCue(event,' + k + ')"><div class="cue-fill" id="cueFill' + k + '"></div></div>'
+          + '<div class="cue-time"><span id="cueCur' + k + '">0:00</span> / <span>' + (a.dur > 0 ? a.dur + ' с' : 'весь трек') + '</span></div>'
+          + '</div></div>';
       }).join('');
     }
     return h;
   }).join('');
 
-  return `<div class="wrap"><div class="reader">
-    <a class="back" onclick="navigate('book',{bookId:'${chapter.bookId}'})">← К книге</a>
-    <h1>${esc(chapter.title)}</h1>
-    <div class="sub">${book ? esc(book.title) : ''} · Глава ${chapter.num}</div>
-
-    ${topAudios.length ? `<div class="media-block"><div class="media-label">музыка</div>
-      ${topAudios.map((a, i) => `
-        <div class="audio">
-          <div class="play ${a.url ? '' : 'disabled'}" id="play${i}" onclick="toggleAudio(${i})">▶</div>
-          <div class="a-info">
-            <div class="a-title">${esc(a.title || 'Музыка')}</div>
-            <div class="a-bar" id="bar${i}" onclick="seekAudio(event, ${i})"><div class="a-fill" id="fill${i}"></div></div>
-            <div class="a-time"><span id="cur${i}">0:00</span><span id="dur${i}">—</span></div>
-            ${a.url ? '' : '<div class="a-hint">Ссылку на трек добавь в «Управлении» — там поле URL</div>'}
-          </div>
-        </div>`).join('')}
-    </div>` : ''}
-
-    ${contentHtml ? `<div class="reader-content">${contentHtml}</div>` : `<div class="empty" style="padding:30px"><p>Текст главы пока пуст</p></div>`}
-
-    ${videos.length ? `<div class="media-block"><div class="media-label">видео</div>
-      ${videos.map(v => `<div class="video">${v.url ? `<video controls preload="metadata"><source src="${esc(v.url)}"></video>` : `<div style="padding:36px;text-align:center;color:var(--dim)">Видео-ссылка не указана</div>`}${v.caption ? `<div class="cap">${esc(v.caption)}</div>` : ''}</div>`).join('')}
-    </div>` : ''}
-
-    ${photos.length ? `<div class="media-block"><div class="media-label">иллюстрации</div><div class="photos">
-      ${photos.map(p => `<div class="photo" data-url="${esc(p.url || '')}" onclick="openPhoto(this)">${p.url ? `<img src="${esc(p.url)}" alt="${esc(p.caption || '')}" loading="lazy">` : ''}${p.caption ? `<div class="cap">${esc(p.caption)}</div>` : ''}</div>`).join('')}
-    </div></div>` : ''}
-
-    <div class="nav2">
-      <button ${prev ? `onclick="navigate('chapter',{chapterId:'${prev.id}'})"` : 'disabled'}>← Предыдущая</button>
-      <button ${next ? `onclick="navigate('chapter',{chapterId:'${next.id}'})"` : 'disabled'}>Следующая →</button>
-    </div>
-  </div></div>`;
+  return '<div class="wrap"><div class="reader">'
+    + '<a class="back" onclick="navigate(\'book\',{bookId:\'' + chapter.bookId + '\'})">← К книге</a>'
+    + '<h1>' + esc(chapter.title) + '</h1>'
+    + '<div class="sub">' + (book ? esc(book.title) : '') + ' · глава ' + chapter.num + '</div>'
+    + (topAudios.length ? '<div class="media-block"><div class="media-label">музыка</div>'
+      + topAudios.map((a, i) => '<div class="audio">'
+        + '<div class="play ' + (a.url ? '' : 'disabled') + '" id="play' + i + '" onclick="toggleAudio(' + i + ')">▶</div>'
+        + '<div class="a-info"><div class="a-title">' + esc(a.title || 'Музыка') + '</div>'
+        + '<div class="a-bar" id="bar' + i + '" onclick="seekAudio(event,' + i + ')"><div class="a-fill" id="fill' + i + '"></div></div>'
+        + '<div class="a-time"><span id="cur' + i + '">0:00</span><span id="dur' + i + '">—</span></div>'
+        + (a.url ? '' : '<div class="a-hint">Ссылка не указана</div>')
+        + '</div></div>').join('')
+      + '</div>' : '')
+    + (contentHtml ? '<div class="reader-content">' + contentHtml + '</div>' : '<div class="empty" style="padding:26px"><p>Текст главы пока пуст</p></div>')
+    + (videos.length ? '<div class="media-block"><div class="media-label">видео</div>'
+      + videos.map(v => '<div class="video">'
+        + (v.url ? '<video controls preload="metadata"><source src="' + esc(v.url) + '"></video>' : '<div style="padding:30px;text-align:center;color:var(--dim)">Ссылка не указана</div>')
+        + (v.caption ? '<div class="cap">' + esc(v.caption) + '</div>' : '')
+        + '</div>').join('')
+      + '</div>' : '')
+    + (photos.length ? '<div class="media-block"><div class="media-label">иллюстрации</div><div class="photos">'
+      + photos.map(p => '<div class="photo" data-url="' + esc(p.url || '') + '" onclick="openPhoto(this)">'
+        + (p.url ? '<img src="' + esc(p.url) + '" alt="" loading="lazy">' : '')
+        + (p.caption ? '<div class="cap">' + esc(p.caption) + '</div>' : '')
+        + '</div>').join('')
+      + '</div></div>' : '')
+    + '<div class="nav2">'
+    + '<button ' + (prev ? 'onclick="navigate(\'chapter\',{chapterId:\'' + prev.id + '\'})"' : 'disabled') + '>← Предыдущая</button>'
+    + '<button ' + (next ? 'onclick="navigate(\'chapter\',{chapterId:\'' + next.id + '\'})"' : 'disabled') + '>Следующая →</button>'
+    + '</div></div></div>';
 }
 
-// ============ аудио ============
-let players = [];
-let cuePlayers = [];
-let cueTimers = [];
+// ---------- вход ----------
+function renderLogin() {
+  return '<div class="wrap"><div class="reader" style="max-width:420px">'
+    + '<h1 style="margin-top:40px">Вход</h1>'
+    + '<div class="sub">Регистрация по приглашению — аккаунт создаёт автор.</div>'
+    + '<div class="authbox">'
+    + '<label class="flabel">E-mail</label>'
+    + '<input id="auth-email" type="email" class="finput" placeholder="you@example.com" autocomplete="email">'
+    + '<label class="flabel" style="margin-top:12px">Пароль</label>'
+    + '<input id="auth-pass" type="password" class="finput" placeholder="••••••••" autocomplete="current-password">'
+    + '<button class="btn-primary" style="width:100%;margin-top:16px" onclick="signInEmail()">Войти</button>'
+    + '<div class="orline"><span>или</span></div>'
+    + '<button class="btn-ghost" style="width:100%" onclick="signInGoogle()">Продолжить с Google</button>'
+    + '<p class="fnote">Google-вход включится, как только автор добавит OAuth-ключи в Supabase.</p>'
+    + '</div></div></div>';
+}
+
+function renderProfile() {
+  if (!authed()) return renderLogin();
+  const name = (profile && profile.display_name) || (session.user.email || '').split('@')[0];
+  const av = profile && profile.avatar_url ? '<img class="avatar avatar-lg" src="' + esc(profile.avatar_url) + '" alt="">' : '<span class="avatar avatar-lg avatar-empty">' + esc(name.slice(0, 1).toUpperCase()) + '</span>';
+  const mine = data.books.filter(b => b.ownerId === myId());
+  return '<div class="wrap"><div class="reader" style="max-width:520px">'
+    + '<h1 style="margin-top:34px">Профиль</h1>'
+    + '<div class="profile-card">' + av
+    + '<div><div class="pname">' + esc(name) + '</div>'
+    + '<div class="pemail">' + esc(session.user.email || '') + '</div>'
+    + '<div class="pmeta">книг: ' + mine.length + '</div></div>'
+    + '</div>'
+    + '<div style="display:flex;gap:10px;margin-top:18px;flex-wrap:wrap">'
+    + '<button class="btn-primary" onclick="navigate(\'admin\')">Мои книги</button>'
+    + '<button class="btn-ghost" onclick="signOut()">Выйти</button>'
+    + '</div></div></div>';
+}
+
+async function signInEmail() {
+  const email = ($('#auth-email').value || '').trim();
+  const pass = $('#auth-pass').value || '';
+  if (!email || !pass) { toast('Заполни почту и пароль', 'err'); return; }
+  const { error } = await sb.auth.signInWithPassword({ email, password: pass });
+  if (error) { toast(error.message, 'err'); return; }
+  await boot(true);
+  toast('Вы вошли');
+}
+async function signInGoogle() {
+  const { error } = await sb.auth.signInWithOAuth({ provider: 'google', options: { redirectTo: location.origin + location.pathname } });
+  if (error) toast('Google-вход ещё не настроен', 'err');
+}
+async function signOut() {
+  await sb.auth.signOut();
+  session = null; profile = null;
+  await loadData();
+  navigate('home');
+  toast('Вы вышли');
+}
+
+// ---------- редактор ----------
+let editBookId = null, editChapterId = null, tempMedia = [], tab = 'books';
+
+function renderAdmin() {
+  if (!authed()) return renderLogin();
+  const mine = data.books.filter(b => b.ownerId === myId());
+  return '<div class="wrap"><section style="padding-top:30px"><div class="admin">'
+    + '<div class="admin-head">'
+    + '<div><h2 style="margin:0;font-size:22px">Мои книги</h2><p class="fnote" style="margin-top:4px">Видно только тебе. Опубликуешь — появится в каталоге.</p></div>'
+    + '<button class="btn-ghost" onclick="signOut()">Выйти</button>'
+    + '</div>'
+    + '<div class="tabs">'
+    + '<button class="tab ' + (tab === 'books' ? 'active' : '') + '" onclick="setTab(\'books\')">Книги</button>'
+    + '<button class="tab ' + (tab === 'chapters' ? 'active' : '') + '" onclick="setTab(\'chapters\')">Главы</button>'
+    + '</div>'
+    + (tab === 'books' ? renderAdminBooks(mine) : renderAdminChapters(mine))
+    + '</div></section></div>';
+}
+
+function setTab(t) { tab = t; editBookId = null; editChapterId = null; tempMedia = []; render(); }
+
+function renderAdminBooks(mine) {
+  const b = editBookId ? getBook(editBookId) : null;
+  const cur = b || { title: '', author: '', genre: '', desc: '', cover_url: '', status: 'draft' };
+  return '<div class="form-card">'
+    + '<h3>' + (b ? 'Редактировать книгу' : 'Новая книга') + '</h3>'
+    + '<div class="row2">'
+    + '<div class="field"><label>Название</label><input id="b-title" value="' + esc(cur.title) + '" placeholder="Название книги"></div>'
+    + '<div class="field"><label>Автор</label><input id="b-author" value="' + esc(cur.author || '') + '" placeholder="Имя автора"></div>'
+    + '</div>'
+    + '<div class="row2">'
+    + '<div class="field"><label>Жанр</label><input id="b-genre" value="' + esc(cur.genre || '') + '" placeholder="Фэнтези, Романтика…"></div>'
+    + '<div class="field"><label>Статус</label><select id="b-status">'
+    + '<option value="draft" ' + (cur.status === 'draft' ? 'selected' : '') + '>черновик</option>'
+    + '<option value="published" ' + (cur.status === 'published' ? 'selected' : '') + '>опубликована</option>'
+    + '</select></div>'
+    + '</div>'
+    + '<div class="field"><label>Описание</label><textarea id="b-desc" placeholder="О чём книга">' + esc(cur.desc || '') + '</textarea></div>'
+    + '<div class="field"><label>Обложка</label>'
+    + '<div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap">'
+    + '<input id="b-cover-url" value="' + esc(cur.cover_url || '') + '" placeholder="https://…/cover.jpg" style="flex:1;min-width:200px">'
+    + '<label class="btn-ghost" style="cursor:pointer">Загрузить<input type="file" id="b-cover-file" accept="image/*" style="display:none" onchange="uploadCover(this)"></label>'
+    + '</div>'
+    + '<div class="fnote" style="margin-top:6px">Ссылка или файл — файл зальётся в хранилище и подставится сам.</div>'
+    + '</div>'
+    + '<div style="display:flex;gap:8px">'
+    + '<button class="btn-primary" onclick="saveBook()">' + (b ? 'Сохранить' : 'Добавить книгу') + '</button>'
+    + (b ? '<button class="btn-ghost" onclick="editBookId=null;render()">Отмена</button>' : '')
+    + '</div></div>'
+    + '<div class="list">' + (mine.length ? mine.map(x =>
+      '<div class="item"><div><div class="t">' + esc(x.title) + '</div>'
+      + '<div class="s">' + esc(x.genre || 'без жанра') + ' · ' + chaptersOf(x.id).length + ' гл. · ' + (x.status === 'published' ? 'опубликована' : 'черновик') + '</div></div>'
+      + '<div class="acts">'
+      + '<button class="btn-ghost btn-sm" onclick="navigate(\'book\',{bookId:\'' + x.id + '\'})">Открыть</button>'
+      + '<button class="btn-ghost btn-sm" onclick="editBookId=\'' + x.id + '\';render()">Правка</button>'
+      + '<button class="btn-danger btn-sm" onclick="deleteBook(\'' + x.id + '\')">Удалить</button>'
+      + '</div></div>').join('') : '<div class="empty"><p>Книг пока нет</p></div>')
+    + '</div>';
+}
+
+async function uploadCover(input) {
+  const f = input.files && input.files[0];
+  if (!f) return;
+  const url = await uploadFile(f);
+  if (url) { $('#b-cover-url').value = url; toast('Обложка загружена'); }
+}
+
+async function uploadFile(file) {
+  if (!authed()) { toast('Нужно войти', 'err'); return null; }
+  const safe = file.name.replace(/[^\w.\-]+/g, '_');
+  const path = myId() + '/' + Date.now() + '-' + safe;
+  const up = await sb.storage.from('media').upload(path, file, { upsert: false, cacheControl: '3600' });
+  if (up.error) { toast('Загрузка не удалась: ' + up.error.message, 'err'); return null; }
+  const pub = sb.storage.from('media').getPublicUrl(path);
+  return pub.data.publicUrl;
+}
+
+async function saveBook() {
+  const title = ($('#b-title').value || '').trim();
+  if (!title) { toast('Введите название', 'err'); return; }
+  const payload = {
+    title,
+    author: ($('#b-author').value || '').trim() || null,
+    genre: ($('#b-genre').value || '').trim() || null,
+    description: ($('#b-desc').value || '').trim() || null,
+    cover_url: ($('#b-cover-url').value || '').trim() || null,
+    status: $('#b-status').value
+  };
+  let res;
+  if (editBookId) res = await sb.from('books').update(payload).eq('id', editBookId).select();
+  else res = await sb.from('books').insert(Object.assign({ owner_id: myId() }, payload)).select();
+  if (res.error) { toast(res.error.message, 'err'); return; }
+  editBookId = null;
+  await loadData();
+  render();
+  toast('Сохранено');
+}
+
+async function deleteBook(id) {
+  if (!confirm('Удалить книгу и все её главы?')) return;
+  const res = await sb.from('books').delete().eq('id', id);
+  if (res.error) { toast(res.error.message, 'err'); return; }
+  await loadData(); render(); toast('Книга удалена');
+}
+
+function renderAdminChapters(mine) {
+  const myBooks = mine;
+  const ch = editChapterId ? getChapter(editChapterId) : null;
+  const cur = ch || { bookId: myBooks[0] ? myBooks[0].id : '', num: 1, title: '', content: '', media: [] };
+  tempMedia = mediaOf(cur).map(m => Object.assign({}, m));
+  return '<div class="form-card">'
+    + '<h3>' + (ch ? 'Редактировать главу' : 'Новая глава') + '</h3>'
+    + '<div class="row2">'
+    + '<div class="field"><label>Книга</label><select id="c-book">' + myBooks.map(b =>
+      '<option value="' + b.id + '" ' + (cur.bookId === b.id ? 'selected' : '') + '>' + esc(b.title) + '</option>').join('') + '</select></div>'
+    + '<div class="field"><label>Номер главы</label><input id="c-num" type="number" min="1" value="' + (cur.num || 1) + '"></div>'
+    + '</div>'
+    + '<div class="field"><label>Название главы</label><input id="c-title" value="' + esc(cur.title || '') + '" placeholder="Название главы"></div>'
+    + '<div class="field"><label>Текст (абзац = новая строка)</label><textarea id="c-content" style="min-height:170px">' + esc(cur.content || '') + '</textarea></div>'
+    + '<div class="field"><label>Медиа</label>'
+    + '<div class="media-list" id="mediaList">' + renderMedia() + '</div>'
+    + '<div class="madd">'
+    + '<div class="mini"><label>Тип</label><select id="m-type"><option value="audio">музыка</option><option value="video">видео</option><option value="photo">фото</option></select></div>'
+    + '<div class="mini" style="flex:1.4"><label>URL</label><input id="m-url" placeholder="https://…/файл.mp3"></div>'
+    + '<div class="mini"><label>Название</label><input id="m-title" placeholder="подпись"></div>'
+    + '<div class="mini" style="max-width:92px"><label>После абз.</label><input id="m-pos" type="number" min="0" placeholder="0"></div>'
+    + '<div class="mini" style="max-width:86px"><label>Сек</label><input id="m-dur" type="number" min="0" placeholder="0"></div>'
+    + '<label class="btn-ghost btn-sm" style="cursor:pointer;align-self:end">Файл<input type="file" id="m-file" style="display:none" onchange="uploadMediaFile(this)"></label>'
+    + '<button class="btn-primary btn-sm" style="align-self:end" onclick="addMedia()">+</button>'
+    + '</div></div>'
+    + '<div style="display:flex;gap:8px">'
+    + '<button class="btn-primary" onclick="saveChapter()">' + (ch ? 'Сохранить' : 'Добавить главу') + '</button>'
+    + (ch ? '<button class="btn-ghost" onclick="editChapterId=null;render()">Отмена</button>' : '')
+    + '</div></div>'
+    + '<div class="list">' + (data.chapters.filter(c => mine.some(b => b.id === c.bookId)).length
+      ? data.chapters.filter(c => mine.some(b => b.id === c.bookId)).sort((a, b) => a.num - b.num).map(x =>
+        '<div class="item"><div><div class="t">Гл. ' + x.num + ' · ' + esc(x.title) + '</div>'
+        + '<div class="s">' + esc((getBook(x.bookId) || {}).title || '') + ' · ' + mediaOf(x).length + ' медиа</div></div>'
+        + '<div class="acts">'
+        + '<button class="btn-ghost btn-sm" onclick="navigate(\'chapter\',{chapterId:\'' + x.id + '\'})">Открыть</button>'
+        + '<button class="btn-ghost btn-sm" onclick="editChapterId=\'' + x.id + '\';render()">Правка</button>'
+        + '<button class="btn-danger btn-sm" onclick="deleteChapter(\'' + x.id + '\')">Удалить</button>'
+        + '</div></div>').join('')
+      : '<div class="empty"><p>Глав пока нет</p></div>')
+    + '</div>';
+}
+
+async function uploadMediaFile(input) {
+  const f = input.files && input.files[0];
+  if (!f) return;
+  const url = await uploadFile(f);
+  if (url) { $('#m-url').value = url; toast('Файл загружен'); }
+}
+
+function renderMedia() {
+  if (!tempMedia.length) return '<div class="fnote" style="padding:6px">Медиа не добавлено</div>';
+  return tempMedia.map((m, i) =>
+    '<div class="mrow">'
+    + '<span class="mtype ' + m.type + '">' + m.type + '</span>'
+    + '<span class="murl" title="' + esc(m.url || '') + '">' + esc(m.url || '(без ссылки)') + '</span>'
+    + '<span class="murl" style="max-width:110px">' + esc(m.title || '') + '</span>'
+    + (m.pos || m.dur ? '<span class="murl" style="max-width:90px">' + (m.pos ? 'абз.' + m.pos : '') + (m.dur ? ' ' + m.dur + 'с' : '') + '</span>' : '')
+    + '<div class="mdel" onclick="tempMedia.splice(' + i + ',1);renderMediaInto()">×</div>'
+    + '</div>').join('');
+}
+function renderMediaInto() { const el = $('#mediaList'); if (el) el.innerHTML = renderMedia(); }
+
+function addMedia() {
+  const type = $('#m-type').value;
+  const url = ($('#m-url').value || '').trim();
+  const title = ($('#m-title').value || '').trim();
+  const pos = parseInt($('#m-pos').value) || 0;
+  const dur = parseInt($('#m-dur').value) || 0;
+  if (!url && type !== 'photo') { toast('Укажи ссылку или загрузи файл', 'err'); return; }
+  tempMedia.push({ type, url, title, caption: title, pos, dur });
+  $('#m-url').value = ''; $('#m-title').value = ''; $('#m-pos').value = ''; $('#m-dur').value = '';
+  renderMediaInto();
+}
+
+async function saveChapter() {
+  const bookId = $('#c-book') ? $('#c-book').value : '';
+  const title = ($('#c-title').value || '').trim();
+  if (!bookId) { toast('Выбери книгу', 'err'); return; }
+  if (!title) { toast('Введите название', 'err'); return; }
+  const payload = { book_id: bookId, num: parseInt($('#c-num').value) || 1, title, content: $('#c-content').value };
+  let chapterId = editChapterId;
+  if (chapterId) {
+    const r = await sb.from('chapters').update(payload).eq('id', chapterId);
+    if (r.error) { toast(r.error.message, 'err'); return; }
+    await sb.from('media').delete().eq('chapter_id', chapterId);
+  } else {
+    const r = await sb.from('chapters').insert(payload).select().single();
+    if (r.error) { toast(r.error.message, 'err'); return; }
+    chapterId = r.data.id;
+  }
+  if (tempMedia.length) {
+    const rows = tempMedia.map(m => ({
+      chapter_id: chapterId, kind: m.type, url: m.url || null, title: m.title || null,
+      caption: m.caption || null, pos: m.pos || 0, dur: m.dur || 0
+    }));
+    const r2 = await sb.from('media').insert(rows);
+    if (r2.error) { toast(r2.error.message, 'err'); return; }
+  }
+  editChapterId = null; tempMedia = [];
+  await loadData(); render();
+  toast('Глава сохранена');
+}
+
+async function deleteChapter(id) {
+  if (!confirm('Удалить главу?')) return;
+  const r = await sb.from('chapters').delete().eq('id', id);
+  if (r.error) { toast(r.error.message, 'err'); return; }
+  await loadData(); render(); toast('Удалена');
+}
+
+// ---------- аудио ----------
+let players = [], cuePlayers = [], cueTimers = [];
 function initAudio() {
   players = []; cuePlayers = []; cueTimers = [];
   const chapter = getChapter(route.chapterId); if (!chapter) return;
@@ -549,12 +903,12 @@ function initAudio() {
 function toggleAudio(i) {
   const el = players[i]; if (!el) return;
   const btn = document.getElementById('play' + i);
-  if (!el.getAttribute('src')) { toast('Ссылка на трек не указана', 'err'); return; }
+  if (!el.getAttribute('src')) { toast('Ссылка не указана', 'err'); return; }
   if (el.paused) {
     players.forEach((p, j) => { if (j !== i && p && !p.paused) { p.pause(); const b = document.getElementById('play' + j); if (b) b.textContent = '▶'; } });
     cuePlayers.forEach((p, j) => { if (p && !p.paused) stopCue(j); });
     el.play().catch(() => toast('Не удалось воспроизвести', 'err'));
-    if (btn) btn.textContent = '⏸';
+    if (btn) btn.textContent = '❚❚';
   } else { el.pause(); if (btn) btn.textContent = '▶'; }
 }
 function seekAudio(e, i) {
@@ -574,7 +928,7 @@ function stopCue(k) {
 function toggleCue(k) {
   const el = cuePlayers[k]; if (!el) return;
   const btn = document.getElementById('cuePlay' + k);
-  if (!el.getAttribute('src')) { toast('Ссылка на трек не указана', 'err'); return; }
+  if (!el.getAttribute('src')) { toast('Ссылка не указана', 'err'); return; }
   if (!el.paused) { stopCue(k); return; }
   players.forEach((p, j) => { if (p && !p.paused) { p.pause(); const b = document.getElementById('play' + j); if (b) b.textContent = '▶'; } });
   cuePlayers.forEach((p, j) => { if (j !== k && p && !p.paused) stopCue(j); });
@@ -583,8 +937,8 @@ function toggleCue(k) {
   const dur = (cue && cue.dur) || 0;
   el.currentTime = 0;
   el.play().catch(() => toast('Не удалось воспроизвести', 'err'));
-  if (btn) btn.textContent = '⏸';
-  if (dur > 0) { cueTimers[k] = setTimeout(() => stopCue(k), dur * 1000); }
+  if (btn) btn.textContent = '❚❚';
+  if (dur > 0) cueTimers[k] = setTimeout(() => stopCue(k), dur * 1000);
 }
 function seekCue(e, k) {
   const el = cuePlayers[k]; if (!el || !el.duration) return;
@@ -592,68 +946,53 @@ function seekCue(e, k) {
   const r = bar.getBoundingClientRect();
   el.currentTime = Math.max(0, Math.min(1, (e.clientX - r.left) / r.width)) * el.duration;
 }
-function fmtTime(s) { if (!s || isNaN(s)) return '0:00'; const m = Math.floor(s / 60), x = Math.floor(s % 60); return m + ':' + (x < 10 ? '0' : '') + x; }
 
-// ============ фото ============
+// ---------- фото ----------
 function openPhoto(el) {
   const url = typeof el === 'string' ? el : (el && el.dataset ? el.dataset.url : '');
   if (!url) return;
-  $('#modalImg').src = url;
-  $('#photoModal').classList.add('open');
+  const img = $('#modalImg'); if (img) img.src = url;
+  const m = $('#photoModal'); if (m) m.classList.add('open');
 }
-function closePhoto() { $('#photoModal').classList.remove('open'); $('#modalImg').src = ''; }
+function closePhoto() {
+  const m = $('#photoModal'); if (m) m.classList.remove('open');
+  const img = $('#modalImg'); if (img) img.src = '';
+}
 
-// ============ эффекты ============
-let revealObs;
-function observeReveals() {
-  if (!('IntersectionObserver' in window)) { $$('.reveal').forEach(el => el.classList.add('in')); return; }
-  if (!revealObs) revealObs = new IntersectionObserver(es => es.forEach(en => { if (en.isIntersecting) { en.target.classList.add('in'); revealObs.unobserve(en.target); } }), { rootMargin: '0px 0px -8% 0px', threshold: .06 });
-  $$('.reveal:not(.in)').forEach(el => revealObs.observe(el));
-}
-function initTilt() {
-  return;
-  document.addEventListener('pointermove', (e) => {
-    const card = e.target.closest('.card');
-    if (!card) return;
-    const r = card.getBoundingClientRect();
-    const px = (e.clientX - r.left) / r.width, py = (e.clientY - r.top) / r.height;
-    card.style.setProperty('--mx', (px * 100).toFixed(2) + '%');
-    card.style.setProperty('--my', (py * 100).toFixed(2) + '%');
-    card.style.transform = `translateY(-6px) rotateX(${((.5 - py) * 5).toFixed(2)}deg) rotateY(${((px - .5) * 6).toFixed(2)}deg)`;
-  });
-  document.addEventListener('pointerout', (e) => {
-    if (e.target.closest('.card')) return;
-    $$('.card').forEach(c => c.style.transform = '');
-  });
-  let raf = null;
-  window.addEventListener('pointermove', (e) => {
-    if (raf) return;
-    raf = requestAnimationFrame(() => {
-      const x = (e.clientX / innerWidth - .5) * 20, y = (e.clientY / innerHeight - .5) * 14;
-      const a = $('#aurora'); if (a) a.style.transform = `translate3d(${x}px,${y}px,0)`;
-      raf = null;
-    });
-  }, { passive: true });
-}
+// ---------- эффекты ----------
 function initScroll() {
-  const bar = $('#progress');
   const hdr = document.querySelector('.hdr');
-  const onScroll = () => {
-    const max = document.documentElement.scrollHeight - innerHeight;
-    if (bar) bar.style.width = (max > 0 ? scrollY / max * 100 : 0) + '%';
-    if (hdr) hdr.classList.toggle('scrolled', scrollY > 8);
-  };
+  const onScroll = () => { if (hdr) hdr.classList.toggle('scrolled', scrollY > 8); };
   addEventListener('scroll', onScroll, { passive: true });
   onScroll();
 }
 
-addEventListener('keydown', (e) => { if (e.key === 'Escape') closePhoto(); });
+// ---------- старт ----------
+async function boot(fromLogin) {
+  const { data: s } = await sb.auth.getSession();
+  session = s.session || null;
+  await loadProfile();
+  await loadData();
+  if (fromLogin) { navigate('admin'); return; }
+  render();
+  updateNav();
+}
 
-// ============ старт ============
-render();
-updateNav();
-initTilt();
-initScroll();
+sb.auth.onAuthStateChange(async (event) => {
+  if (event === 'SIGNED_IN' || event === 'SIGNED_OUT' || event === 'TOKEN_REFRESHED') {
+    const { data: s } = await sb.auth.getSession();
+    session = s.session || null;
+    await loadProfile();
+    await loadData();
+    render();
+  }
+});
+
+addEventListener('keydown', e => { if (e.key === 'Escape') closePhoto(); });
+addEventListener('scroll', initScroll, { passive: true });
+
+boot();
+
 </script>
 </body>
 </html>
