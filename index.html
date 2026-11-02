@@ -64,8 +64,10 @@ button,input,textarea,select{font-family:inherit;font-size:inherit;color:inherit
 .wrap{max-width:1240px;margin:0 auto;padding:0 20px}
 
 /* заголовок раздела */
-.hero{position:relative;margin:18px 0 6px;min-height:340px;border-radius:16px;overflow:hidden;display:flex;align-items:flex-end;background:url('makima.jpg') center 22%/cover no-repeat;border:1px solid var(--line)}
-.hero::before{content:'';position:absolute;inset:0;background:linear-gradient(90deg,rgba(19,20,22,.94) 0%,rgba(19,20,22,.72) 42%,rgba(19,20,22,.16) 72%,rgba(19,20,22,.4) 100%),linear-gradient(0deg,rgba(19,20,22,.92) 0%,rgba(19,20,22,0) 58%)}
+.hero{position:relative;margin:18px 0 6px;min-height:340px;border-radius:16px;overflow:hidden;display:flex;align-items:flex-end;background:#15161a;border:1px solid var(--line)}
+.hero-art{position:absolute;inset:-2%;background:url('makima.jpg') center 22%/cover no-repeat;animation:kb 30s ease-in-out infinite alternate;will-change:transform}
+@keyframes kb{from{transform:scale(1)}to{transform:scale(1.08)}}
+.hero::before{content:'';position:absolute;inset:0;z-index:1;background:linear-gradient(90deg,rgba(19,20,22,.94) 0%,rgba(19,20,22,.72) 42%,rgba(19,20,22,.16) 72%,rgba(19,20,22,.4) 100%),linear-gradient(0deg,rgba(19,20,22,.92) 0%,rgba(19,20,22,0) 58%)}
 .hero-inner{position:relative;z-index:2;padding:34px 30px 30px;max-width:640px}
 .hero h1{font-size:clamp(1.9rem,4vw,2.8rem);font-weight:700;letter-spacing:-.025em;margin:0 0 8px;line-height:1.12}
 .hero p{color:#c9ccd1;font-size:15px;margin:0;max-width:46ch}
@@ -193,6 +195,22 @@ footer{margin-top:50px;border-top:1px solid var(--line)}
 @keyframes toastIn{from{opacity:0;transform:translateY(8px)}}
 @keyframes toastOut{to{opacity:0}}
 
+/* оживление */
+.hdr{transition:box-shadow .25s ease}
+.hdr.scrolled{box-shadow:0 8px 26px -14px rgba(0,0,0,.95)}
+@keyframes rise{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:none}}
+.card{animation:rise .55s cubic-bezier(.2,.7,.2,1) both}
+.card:nth-child(2){animation-delay:.05s}.card:nth-child(3){animation-delay:.1s}.card:nth-child(4){animation-delay:.15s}.card:nth-child(5){animation-delay:.2s}.card:nth-child(6){animation-delay:.25s}.card:nth-child(7){animation-delay:.3s}.card:nth-child(8){animation-delay:.35s}
+.card .cover{transition:transform .35s cubic-bezier(.2,.7,.2,1),box-shadow .35s ease}
+.card:hover .cover{transform:translateY(-4px) scale(1.015);box-shadow:0 16px 34px -16px rgba(0,0,0,.95)}
+.card .cover img.covimg{transition:transform .55s cubic-bezier(.2,.7,.2,1)}
+.card:hover .cover img.covimg{transform:scale(1.07)}
+.ctitle{transition:color .2s ease}
+.chapter{transition:background .18s ease,transform .18s ease}
+.chapter:hover{transform:translateX(3px)}
+.pill,.back,.nav2 button,.play,.cue-play{transition:background .2s ease,border-color .2s ease,color .2s ease,transform .12s ease}
+.pill:active,.back:active,.nav2 button:active,.play:active,.cue-play:active{transform:scale(.96)}
+@media(prefers-reduced-motion:reduce){.card{animation:none}.hero-art{animation:none}}
 @media(max-width:760px){
   .hero{min-height:240px;border-radius:12px;background-position:center 18%}
   .hero-inner{padding:22px 18px 20px}
@@ -344,7 +362,7 @@ function reveal(html) { return '<div class="reveal in">' + html + '</div>'; }
 function renderHome() {
   return reveal(`
     <div class="wrap">
-      <section class="hero">
+      <section class="hero"><div class="hero-art"></div>
         <div class="hero-inner">
           <div class="hero-tag">Библиотека</div>
           <h1>Книги, в которых есть музыка</h1>
@@ -619,7 +637,12 @@ function initTilt() {
 }
 function initScroll() {
   const bar = $('#progress');
-  const onScroll = () => { const max = document.documentElement.scrollHeight - innerHeight; bar.style.width = (max > 0 ? scrollY / max * 100 : 0) + '%'; };
+  const hdr = document.querySelector('.hdr');
+  const onScroll = () => {
+    const max = document.documentElement.scrollHeight - innerHeight;
+    if (bar) bar.style.width = (max > 0 ? scrollY / max * 100 : 0) + '%';
+    if (hdr) hdr.classList.toggle('scrolled', scrollY > 8);
+  };
   addEventListener('scroll', onScroll, { passive: true });
   onScroll();
 }
