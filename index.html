@@ -65,15 +65,15 @@ button,input,textarea,select{font-family:inherit;font-size:inherit;color:inherit
 .wrap{max-width:1240px;margin:0 auto;padding:0 20px}
 
 /* заголовок раздела */
-.hero{position:relative;margin:18px 0 6px;min-height:340px;border-radius:16px;overflow:hidden;display:flex;align-items:flex-end;background:#15161a;border:1px solid var(--line)}
-.hero-art{position:absolute;inset:-2%;background-image:url('makima.jpg');background-image:-webkit-image-set(url('makima.jpg') 1x,url('makima-2x.jpg') 2x);background-image:image-set(url('makima.jpg') 1x,url('makima-2x.jpg') 2x);background-position:center 22%;background-size:cover;background-repeat:no-repeat;animation:kb 30s ease-in-out infinite alternate;will-change:transform}
-@keyframes kb{from{transform:scale(1)}to{transform:scale(1.08)}}
-.hero::before{content:'';position:absolute;inset:0;z-index:1;background:linear-gradient(90deg,rgba(19,20,22,.94) 0%,rgba(19,20,22,.72) 42%,rgba(19,20,22,.16) 72%,rgba(19,20,22,.4) 100%),linear-gradient(0deg,rgba(19,20,22,.92) 0%,rgba(19,20,22,0) 58%)}
-.hero-inner{position:relative;z-index:2;padding:34px 30px 30px;max-width:640px}
+.hero{position:relative;margin:18px 0 6px;border-radius:16px;overflow:hidden;border:1px solid var(--line);background:#15161a;display:grid;grid-template-columns:1.02fr .98fr;min-height:320px}
+.hero-inner{position:relative;z-index:2;padding:34px 34px;display:flex;flex-direction:column;justify-content:center;max-width:none}
+.hero-art{position:relative;background-image:url('makima.jpg');background-image:image-set(url('makima.jpg') 1x,url('makima-2x.jpg') 2x);background-position:center 24%;background-size:cover;background-repeat:no-repeat;animation:kb 32s ease-in-out infinite alternate;will-change:transform}
+.hero-art::after{content:'';position:absolute;inset:0;background:linear-gradient(90deg,#15161a 0%,rgba(21,22,26,.6) 22%,rgba(21,22,26,0) 62%),linear-gradient(0deg,rgba(21,22,26,.5) 0%,rgba(21,22,26,0) 40%)}
+@keyframes kb{from{transform:scale(1.02)}to{transform:scale(1.1)}}
 .hero h1{font-size:clamp(1.9rem,4vw,2.8rem);font-weight:700;letter-spacing:-.025em;margin:0 0 8px;line-height:1.12}
 .hero p{color:#c9ccd1;font-size:15px;margin:0;max-width:46ch}
 .hero-tag{display:inline-flex;align-items:center;height:26px;padding:0 11px;border-radius:999px;background:rgba(207,58,47,.16);border:1px solid rgba(207,58,47,.42);color:#ff9c92;font-size:11.5px;letter-spacing:.06em;text-transform:uppercase;margin-bottom:14px}
-body::before{content:'';position:fixed;inset:0;background:url('makima.jpg') center 20%/cover no-repeat;opacity:.07;filter:blur(1px) saturate(.8);z-index:-1;pointer-events:none}
+
 .section-head{display:flex;align-items:baseline;justify-content:space-between;gap:14px;padding:22px 0 14px}
 .section-head h2{font-size:19px;font-weight:600;margin:0}
 .section-head .count{font-size:13px;color:var(--dim)}
@@ -283,7 +283,7 @@ html[data-theme="light"] .hero p{color:#e9e9ee}
 .pill:active,.back:active,.nav2 button:active,.play:active,.cue-play:active{transform:scale(.96)}
 @media(prefers-reduced-motion:reduce){.card{animation:none}.hero-art{animation:none}}
 @media(max-width:760px){
-  .hero{min-height:240px;border-radius:12px;background-position:center 18%}
+  .hero{grid-template-columns:1fr;min-height:0} .hero-art{height:210px;order:-1} .hero-art::after{background:linear-gradient(0deg,#15161a 0%,rgba(21,22,26,.35) 45%,rgba(21,22,26,0) 85%)} .row2{grid-template-columns:1fr}
   .hero-inner{padding:22px 18px 20px}
   .hero h1{font-size:1.75rem}
   .hero-tag{font-size:10.5px}
@@ -468,10 +468,8 @@ function render() {
 function renderAuthBar() {
   const box = $('#authbar');
   if (!box) return;
-  const isLight = document.documentElement.getAttribute('data-theme') === 'light';
-  const themeBtn = '<span class="pill themebtn" title="Светлая / тёмная тема" onclick="toggleTheme()">' + (isLight ? '☽' : '☀') + '</span>';
   if (!authed()) {
-    box.innerHTML = themeBtn + '<span class="pill" onclick="navigate(\'login\')">Войти</span>';
+    box.innerHTML = '<span class="pill" onclick="navigate(\'login\')">Войти</span>';
     return;
   }
   const name = (profile && profile.display_name) || (session.user.email || '').split('@')[0];
@@ -682,11 +680,7 @@ function renderProfile() {
     + '<input id="p-name" value="' + esc(name) + '" placeholder="Как тебя показывать"></div>'
     + '<div class="field"><label>Аватар — ссылка</label>'
     + '<input id="p-avatar-url" value="' + esc(avUrl) + '" placeholder="https://…/avatar.jpg"></div>'
-    + '<div class="field" style="margin-top:4px"><label>Тема оформления</label>'
-    + '<div style="display:flex;gap:8px">'
-    + '<button class="btn-ghost btn-sm" onclick="applyTheme(\'dark\');render()">Тёмная</button>'
-    + '<button class="btn-ghost btn-sm" onclick="applyTheme(\'light\');render()">Светлая</button>'
-    + '</div></div>'
+
     + '<div style="display:flex;gap:8px;flex-wrap:wrap">'
     + '<button class="btn-primary" onclick="saveProfile()">Сохранить</button>'
     + '<button class="btn-ghost" onclick="navigate(\'admin\')">Мои книги</button>'
