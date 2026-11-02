@@ -284,10 +284,7 @@ footer{margin-top:70px;padding:26px 0 40px;border-top:1px solid rgba(233,233,236
       <span class="logo-mark">📚</span>
       <span class="full">OkhBooks</span>
     </div>
-    <nav class="nav">
-      <a id="nav-home" onclick="navigate('home')">Библиотека</a>
-      <a id="nav-admin" onclick="navigate('admin')">Управление</a>
-    </nav>
+
   </div>
 </header>
 
@@ -347,10 +344,6 @@ function fmtDate(d) {
 function genId(p) { return p + '_' + Date.now().toString(36) + Math.random().toString(36).slice(2, 6); }
 
 function loadData() {
-  try {
-    const raw = localStorage.getItem(KEY);
-    if (raw) return normalize(JSON.parse(raw));
-  } catch (e) { toast('Хранилище повреждено — гружу заново', 'err'); }
   return normalize(JSON.parse(JSON.stringify(SEED)));
 }
 function normalize(d) {
@@ -401,7 +394,6 @@ function render() {
     case 'home': app.innerHTML = renderHome(); break;
     case 'book': app.innerHTML = renderBook(); break;
     case 'chapter': app.innerHTML = renderChapter(); break;
-    case 'admin': app.innerHTML = renderAdmin(); break;
     default: app.innerHTML = renderHome();
   }
   if (route.page === 'chapter') initAudio();
@@ -431,9 +423,8 @@ function renderHome() {
 
 function renderBooks(books) {
   if (!books.length) return `<div class="empty">
-    <h3>Библиотека пуста</h3>
-    <p>Добавь первую книгу в «Управлении» — и она появится здесь.</p>
-    <button class="btn btn-primary" onclick="navigate('admin')">Перейти к управлению</button>
+    <h3>Скоро здесь появятся книги</h3>
+    <p>Автор наполняет библиотеку — заходи чуть позже.</p>
   </div>`;
   return `<div class="grid">${books.map((b, i) => {
     const ch = chaptersOf(b.id);
@@ -663,199 +654,6 @@ function openPhoto(el) {
   $('#photoModal').classList.add('open');
 }
 function closePhoto() { $('#photoModal').classList.remove('open'); $('#modalImg').src = ''; }
-
-// ============ админка ============
-let tab = 'books';
-let editBookId = null, editChapterId = null, tempMedia = [];
-
-function renderAdmin() {
-  return `<div class="wrap"><section style="padding-top:40px"><div class="admin">
-    <div class="admin-head">
-      <div><p class="eyebrow" style="margin:0 0 6px">управление</p><h2 class="title" style="margin:0">Наполнение</h2></div>
-      <div style="display:flex;gap:8px">
-        <button class="btn btn-ghost btn-sm" onclick="exportData()">Экспорт JSON</button>
-        <button class="btn btn-danger btn-sm" onclick="resetData()">Сбросить</button>
-      </div>
-    </div>
-    <div class="tabs">
-      <button class="tab ${tab === 'books' ? 'active' : ''}" onclick="setTab('books')">📚 Книги</button>
-      <button class="tab ${tab === 'chapters' ? 'active' : ''}" onclick="setTab('chapters')">📑 Главы</button>
-    </div>
-    <div id="adminBody">${tab === 'books' ? renderAdminBooks() : renderAdminChapters()}</div>
-  </div></section></div>`;
-}
-function setTab(t) { tab = t; editBookId = null; editChapterId = null; tempMedia = []; render(); }
-
-function renderAdminBooks() {
-  const b = editBookId ? getBook(editBookId) : null;
-  const cur = b || { title: '', author: '', genre: '', desc: '', cover: 0 };
-  return `<div class="form-card">
-    <h3>${b ? '✏️ Редактировать книгу' : '➕ Новая книга'}</h3>
-    <div class="row2">
-      <div class="field"><label>Название</label><input id="b-title" value="${esc(cur.title)}" placeholder="Название книги"></div>
-      <div class="field"><label>Автор</label><input id="b-author" value="${esc(cur.author)}" placeholder="Имя автора"></div>
-    </div>
-    <div class="row2">
-      <div class="field"><label>Жанр</label><input id="b-genre" value="${esc(cur.genre)}" placeholder="Фэнтези, Романтика…"></div>
-      <div class="field"><label>Обложка</label><select id="b-cover">${COVERS.map((c, i) => `<option value="${i}" ${(cur.cover || 0) === i ? 'selected' : ''}>Вариант ${i + 1}</option>`).join('')}</select></div>
-    </div>
-    <div class="field"><label>Описание</label><textarea id="b-desc" placeholder="О чём книга">${esc(cur.desc)}</textarea></div>
-    <div style="display:flex;gap:8px">
-      <button class="btn btn-primary" onclick="saveBook()">${b ? 'Сохранить' : 'Добавить книгу'}</button>
-      ${b ? '<button class="btn btn-ghost" onclick="editBookId=null;render()">Отмена</button>' : ''}
-    </div>
-  </div>
-  <div class="list">${data.books.length ? data.books.map(x => `
-    <div class="item"><div><div class="t">${esc(x.title)}</div><div class="s">${esc(x.genre || 'Без жанра')} · ${chaptersOf(x.id).length} гл. · ${fmtDate(x.createdAt)}</div></div>
-    <div class="acts">
-      <button class="btn btn-ghost btn-sm" onclick="navigate('book',{bookId:'${x.id}'})">👁</button>
-      <button class="btn btn-ghost btn-sm" onclick="editBookId='${x.id}';render()">✏️</button>
-      <button class="btn btn-danger btn-sm" onclick="deleteBook('${x.id}')">🗑</button>
-    </div></div>`).join('') : '<div class="empty"><p>Нет книг</p></div>'}</div>`;
-}
-
-function saveBook() {
-  const title = ($('#b-title').value || '').trim();
-  if (!title) { toast('Введите название', 'err'); return; }
-  const obj = {
-    title,
-    author: ($('#b-author').value || '').trim(),
-    genre: ($('#b-genre').value || '').trim(),
-    desc: ($('#b-desc').value || '').trim(),
-    cover: parseInt($('#b-cover').value) || 0
-  };
-  if (editBookId) {
-    const i = data.books.findIndex(x => x.id === editBookId);
-    if (i >= 0) data.books[i] = { ...data.books[i], ...obj };
-    toast('Книга обновлена');
-  } else {
-    data.books.push({ id: genId('b'), ...obj, createdAt: new Date().toISOString().slice(0, 10) });
-    toast('Книга добавлена');
-  }
-  saveData(); editBookId = null; render();
-}
-function deleteBook(id) {
-  if (!confirm('Удалить книгу и все её главы?')) return;
-  data.books = data.books.filter(x => x.id !== id);
-  data.chapters = data.chapters.filter(x => x.bookId !== id);
-  saveData(); toast('Книга удалена'); render();
-}
-
-function renderAdminChapters() {
-  const ch = editChapterId ? getChapter(editChapterId) : null;
-  const cur = ch || { bookId: '', num: 1, title: '', content: '', media: [] };
-  tempMedia = mediaOf(cur).map(m => ({ ...m }));
-  return `<div class="form-card">
-    <h3>${ch ? '✏️ Редактировать главу' : '➕ Новая глава'}</h3>
-    <div class="row2">
-      <div class="field"><label>Книга</label><select id="c-book"><option value="">— выбери книгу —</option>${data.books.map(b => `<option value="${b.id}" ${cur.bookId === b.id ? 'selected' : ''}>${esc(b.title)}</option>`).join('')}</select></div>
-      <div class="field"><label>Номер главы</label><input id="c-num" type="number" min="1" value="${cur.num || 1}"></div>
-    </div>
-    <div class="field"><label>Название главы</label><input id="c-title" value="${esc(cur.title)}" placeholder="Название главы"></div>
-    <div class="field"><label>Текст (абзац = новая строка)</label><textarea id="c-content" style="min-height:180px" placeholder="Текст главы…"></textarea></div>
-    <div class="field">
-      <label>Медиа — музыка, видео, фото</label>
-      <div class="media-list" id="mediaList">${renderMedia()}</div>
-      <div class="madd">
-        <div class="mini"><label>Тип</label><select id="m-type"><option value="audio">🎧 музыка</option><option value="video">🎬 видео</option><option value="photo">📷 фото</option></select></div>
-        <div class="mini"><label>URL</label><input id="m-url" placeholder="https://…/файл.mp3"></div>
-        <div class="mini"><label>Название</label><input id="m-title" placeholder="Трек, подпись…"></div>
-        <div class="mini"><label>После абзаца №</label><input id="m-pos" type="number" min="0" placeholder="0"></div>
-        <div class="mini"><label>Сек (0 = весь)</label><input id="m-dur" type="number" min="0" placeholder="0"></div>
-        <button class="btn btn-primary btn-sm" onclick="addMedia()">+</button>
-      </div>
-    </div>
-    <div style="display:flex;gap:8px">
-      <button class="btn btn-primary" onclick="saveChapter()">${ch ? 'Сохранить' : 'Добавить главу'}</button>
-      ${ch ? '<button class="btn btn-ghost" onclick="editChapterId=null;render()">Отмена</button>' : ''}
-    </div>
-  </div>
-  <div class="list">${data.chapters.length ? data.chapters.slice().sort((a, b) => {
-    const ia = data.books.findIndex(x => x.id === a.bookId), ib = data.books.findIndex(x => x.id === b.bookId);
-    return (ia - ib) || (a.num - b.num);
-  }).map(x => {
-    const bk = getBook(x.bookId);
-    return `<div class="item"><div><div class="t">Гл. ${x.num} · ${esc(x.title)}</div><div class="s">${bk ? esc(bk.title) : 'Без книги'} · ${mediaOf(x).length} медиа</div></div>
-    <div class="acts">
-      <button class="btn btn-ghost btn-sm" onclick="navigate('chapter',{chapterId:'${x.id}'})">👁</button>
-      <button class="btn btn-ghost btn-sm" onclick="editChapterId='${x.id}';render()">✏️</button>
-      <button class="btn btn-danger btn-sm" onclick="deleteChapter('${x.id}')">🗑</button>
-    </div></div>`;
-  }).join('') : '<div class="empty"><p>Нет глав</p></div>'}</div>`;
-}
-
-const M_LABEL = { audio: '🎧 музыка', video: '🎬 видео', photo: '📷 фото' };
-function renderMedia() {
-  if (!tempMedia.length) return '<div style="font-size:.8rem;color:var(--dim);padding:6px">Медиа не добавлено</div>';
-  return tempMedia.map((m, i) => `
-    <div class="mrow">
-      <span class="mtype ${m.type}">${esc(M_LABEL[m.type] || m.type)}</span>
-      <span class="murl" title="${esc(m.url || '')}">${esc(m.url || '(без ссылки)')}</span>
-      <span class="murl" style="max-width:120px" title="${esc(m.title || '')}">${esc(m.title || '')}</span>
-      ${(m.pos || m.dur) ? `<span class="murl" style="max-width:110px;flex:0 0 auto">${m.pos ? 'после абз. ' + m.pos : ''}${m.dur ? (m.pos ? ' · ' : '') + m.dur + 'с' : ''}</span>` : ''}
-      <div class="mdel" onclick="tempMedia.splice(${i},1);renderMediaInto()">✕</div>
-    </div>`).join('');
-}
-function renderMediaInto() { $('#mediaList').innerHTML = renderMedia(); }
-function addMedia() {
-  const type = $('#m-type').value;
-  const url = ($('#m-url').value || '').trim();
-  const title = ($('#m-title').value || '').trim();
-  const pos = parseInt($('#m-pos').value) || 0;
-  const dur = parseInt($('#m-dur').value) || 0;
-  tempMedia.push({ type, url, title, caption: title, pos, dur });
-  $('#m-url').value = ''; $('#m-title').value = ''; $('#m-pos').value = ''; $('#m-dur').value = '';
-  renderMediaInto();
-}
-function saveChapter() {
-  const bookId = $('#c-book').value;
-  const title = ($('#c-title').value || '').trim();
-  if (!bookId) { toast('Выбери книгу', 'err'); return; }
-  if (!title) { toast('Введите название главы', 'err'); return; }
-  const obj = {
-    bookId,
-    num: parseInt($('#c-num').value) || 1,
-    title,
-    content: $('#c-content').value,
-    media: tempMedia.map(m => ({ ...m }))
-  };
-  if (editChapterId) {
-    const i = data.chapters.findIndex(x => x.id === editChapterId);
-    if (i >= 0) data.chapters[i] = { ...data.chapters[i], ...obj };
-    toast('Глава обновлена');
-  } else {
-    data.chapters.push({ id: genId('c'), ...obj, createdAt: new Date().toISOString().slice(0, 10) });
-    toast('Глава добавлена');
-  }
-  saveData(); editChapterId = null; tempMedia = []; render();
-}
-function deleteChapter(id) {
-  if (!confirm('Удалить эту главу?')) return;
-  data.chapters = data.chapters.filter(x => x.id !== id);
-  saveData(); toast('Глава удалена'); render();
-}
-
-function exportData() {
-  const clean = { books: data.books.map(b => ({ ...b })), chapters: data.chapters.map(c => ({ ...c })) };
-  const txt = JSON.stringify(clean, null, 2);
-  const ok = () => toast('JSON скопирован — вставь в SEED');
-  if (navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(txt).then(ok).catch(() => showRaw(txt));
-  else showRaw(txt);
-}
-function showRaw(txt) {
-  const area = document.createElement('textarea');
-  area.value = txt;
-  area.style.cssText = 'position:fixed;left:10%;right:10%;top:12%;bottom:12%;z-index:300;padding:16px;border-radius:16px;background:#fff;color:#1c1b19;border:1px solid rgba(0,0,0,.2);font-family:ui-monospace,monospace;font-size:12px';
-  document.body.appendChild(area); area.select(); area.focus();
-  area.addEventListener('blur', () => area.remove());
-  toast('Скопируй и закрой');
-}
-function resetData() {
-  if (!confirm('Очистить всё в этом браузере?')) return;
-  localStorage.removeItem(KEY);
-  data = loadData();
-  toast('Сброшено'); render();
-}
 
 // ============ эффекты ============
 let revealObs;
