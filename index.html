@@ -1,0 +1,891 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#07070b">
+<meta name="description" content="OkhBooks — книги с музыкой, фото и видео. Один файл, читай и слушай.">
+<meta property="og:title" content="OkhBooks — книги с музыкой, фото и видео">
+<meta property="og:description" content="Книги, которые можно читать, слушать и смотреть.">
+<meta property="og:type" content="website">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Cdefs%3E%3ClinearGradient id='g' x1='0' y1='0' x2='1' y2='1'%3E%3Cstop offset='0' stop-color='%238b5cf6'/%3E%3Cstop offset='1' stop-color='%23f472b6'/%3E%3C/linearGradient%3E%3C/defs%3E%3Crect width='64' height='64' rx='16' fill='url(%23g)'/%3E%3Cpath d='M16 44V18a4 4 0 0 1 4-4h28v26a6 6 0 0 1-6 6H18a2 2 0 0 0 2 2h28v6H22a6 6 0 0 1-6-6z' fill='%2307070b'/%3E%3C/svg%3E">
+<title>OkhBooks — книги с музыкой, фото и видео</title>
+<link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
+<link href="https://cdn.jsdelivr.net/fontsource/fonts/manrope@latest/cyrillic-400-normal.css" rel="stylesheet">
+<link href="https://cdn.jsdelivr.net/fontsource/fonts/manrope@latest/cyrillic-600-normal.css" rel="stylesheet">
+<link href="https://cdn.jsdelivr.net/fontsource/fonts/manrope@latest/cyrillic-800-normal.css" rel="stylesheet">
+<link href="https://cdn.jsdelivr.net/fontsource/fonts/manrope@latest/latin-400-normal.css" rel="stylesheet">
+<link href="https://cdn.jsdelivr.net/fontsource/fonts/manrope@latest/latin-600-normal.css" rel="stylesheet">
+<link href="https://cdn.jsdelivr.net/fontsource/fonts/manrope@latest/latin-800-normal.css" rel="stylesheet">
+<link href="https://cdn.jsdelivr.net/fontsource/fonts/unbounded@latest/cyrillic-700-normal.css" rel="stylesheet">
+<link href="https://cdn.jsdelivr.net/fontsource/fonts/unbounded@latest/latin-700-normal.css" rel="stylesheet">
+<link href="https://cdn.jsdelivr.net/fontsource/fonts/unbounded@latest/cyrillic-600-normal.css" rel="stylesheet">
+<link href="https://cdn.jsdelivr.net/fontsource/fonts/unbounded@latest/latin-600-normal.css" rel="stylesheet">
+<link href="https://cdn.jsdelivr.net/fontsource/fonts/merriweather@latest/cyrillic-400-normal.css" rel="stylesheet">
+<link href="https://cdn.jsdelivr.net/fontsource/fonts/merriweather@latest/latin-400-normal.css" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box}
+:root{
+  --bg:#07070b;--ink:#f3f1f8;--muted:#a5a1b8;--dim:#6d6a80;
+  --violet:#8b5cf6;--cyan:#22d3ee;--pink:#f472b6;
+  --stroke:rgba(255,255,255,.085);--radius:22px;--ease:cubic-bezier(.2,.7,.2,1);
+  --f-display:'Unbounded',system-ui,sans-serif;
+  --f-body:'Manrope',system-ui,-apple-system,'Segoe UI',sans-serif;
+  --f-read:'Merriweather',Georgia,serif;
+}
+html{scroll-behavior:smooth}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--f-body);font-size:16px;line-height:1.6;overflow-x:hidden;-webkit-font-smoothing:antialiased;text-rendering:optimizeLegibility}
+a{color:inherit;text-decoration:none}
+button,input,textarea,select{font-family:inherit;font-size:inherit;color:inherit}
+::selection{background:rgba(139,92,246,.35);color:#fff}
+::-webkit-scrollbar{width:10px}
+::-webkit-scrollbar-track{background:#07070b}
+::-webkit-scrollbar-thumb{background:#22222e;border-radius:6px;border:2px solid #07070b}
+::-webkit-scrollbar-thumb:hover{background:#3a3a4e}
+
+.aurora{position:fixed;inset:-25% -15%;z-index:0;pointer-events:none;filter:blur(80px);opacity:.6;will-change:transform}
+.aurora i{position:absolute;display:block;border-radius:50%;mix-blend-mode:screen;will-change:transform}
+.a1{width:56vw;height:56vw;left:-10vw;top:-12vw;background:radial-gradient(circle at 35% 35%,#6d28d9,transparent 62%);animation:drift1 28s var(--ease) infinite alternate}
+.a2{width:48vw;height:48vw;right:-12vw;top:-6vw;background:radial-gradient(circle at 50% 50%,#0e7490,transparent 62%);animation:drift2 34s var(--ease) infinite alternate}
+.a3{width:44vw;height:44vw;left:22vw;top:38vh;background:radial-gradient(circle at 50% 50%,#be185d,transparent 66%);opacity:.7;animation:drift3 40s var(--ease) infinite alternate}
+@keyframes drift1{to{transform:translate3d(9vw,7vh,0) scale(1.18)}}
+@keyframes drift2{to{transform:translate3d(-8vw,9vh,0) scale(1.12)}}
+@keyframes drift3{to{transform:translate3d(6vw,-8vh,0) scale(1.22)}}
+.grid-lines{position:fixed;inset:0;z-index:0;pointer-events:none;background-image:linear-gradient(rgba(255,255,255,.03) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.03) 1px,transparent 1px);background-size:64px 64px;-webkit-mask-image:radial-gradient(ellipse at 50% 0%,#000 15%,transparent 72%);mask-image:radial-gradient(ellipse at 50% 0%,#000 15%,transparent 72%)}
+.noise{position:fixed;inset:0;z-index:1;pointer-events:none;opacity:.05;mix-blend-mode:overlay;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='3'/%3E%3C/filter%3E%3Crect width='160' height='160' filter='url(%23n)'/%3E%3C/svg%3E")}
+
+.progress{position:fixed;top:0;left:0;height:2px;width:0;z-index:60;background:linear-gradient(90deg,var(--violet),var(--cyan),var(--pink));box-shadow:0 0 14px rgba(139,92,246,.9)}
+.hdr{position:sticky;top:0;z-index:50;background:rgba(7,7,11,.55);backdrop-filter:blur(18px) saturate(140%);-webkit-backdrop-filter:blur(18px) saturate(140%);border-bottom:1px solid rgba(255,255,255,.06)}
+.hdr-in{max-width:1200px;margin:0 auto;padding:0 24px;height:68px;display:flex;align-items:center;justify-content:space-between;gap:18px}
+.logo{display:flex;align-items:center;gap:11px;font-family:var(--f-display);font-weight:600;font-size:1rem;letter-spacing:-.01em;cursor:pointer}
+.logo-mark{width:34px;height:34px;border-radius:11px;background:linear-gradient(135deg,var(--violet),var(--pink));display:grid;place-items:center;font-size:1rem;box-shadow:0 8px 24px -8px rgba(139,92,246,.9),inset 0 1px 0 rgba(255,255,255,.5)}
+.nav{display:flex;gap:6px;align-items:center}
+.nav a{position:relative;padding:8px 13px;border-radius:10px;font-size:.9rem;font-weight:600;color:var(--muted);cursor:pointer;transition:color .3s,background .3s}
+.nav a:hover{color:var(--ink);background:rgba(255,255,255,.05)}
+.nav a.active{color:#fff}
+.nav a.active::after{content:'';position:absolute;left:13px;right:13px;bottom:3px;height:2px;border-radius:2px;background:linear-gradient(90deg,var(--violet),var(--pink))}
+
+.wrap{max-width:1200px;margin:0 auto;padding:0 24px;position:relative;z-index:2}
+section{scroll-margin-top:92px}
+.eyebrow{display:inline-flex;align-items:center;gap:10px;font-size:.74rem;font-weight:800;letter-spacing:.18em;text-transform:uppercase;color:var(--dim);margin:0 0 14px}
+.eyebrow::before{content:'';width:26px;height:2px;border-radius:2px;background:linear-gradient(90deg,var(--violet),var(--pink))}
+h2.title{font-family:var(--f-display);font-weight:600;font-size:clamp(1.6rem,3.2vw,2.4rem);line-height:1.12;letter-spacing:-.025em;margin:0 0 12px}
+.lead{color:var(--muted);max-width:56ch;margin:0 0 32px;font-size:1.02rem}
+
+/* герой */
+.hero{padding:clamp(46px,8vh,96px) 0 28px}
+.pill{display:inline-flex;align-items:center;gap:9px;padding:7px 15px 7px 11px;border-radius:999px;border:1px solid rgba(244,114,182,.3);background:rgba(244,114,182,.1);font-size:.8rem;font-weight:700;color:#ffd3e8;backdrop-filter:blur(8px)}
+.dot{width:7px;height:7px;border-radius:50%;background:#f472b6;box-shadow:0 0 0 0 rgba(244,114,182,.6);animation:pulse 2.4s infinite}
+@keyframes pulse{70%{box-shadow:0 0 0 9px rgba(244,114,182,0)}100%{box-shadow:0 0 0 0 rgba(244,114,182,0)}}
+.hero h1{font-family:var(--f-display);font-weight:700;font-size:clamp(2rem,5.8vw,4.2rem);line-height:1.05;letter-spacing:-.035em;margin:22px 0 18px;max-width:20ch}
+.grad{background:linear-gradient(100deg,#a78bfa,#f472b6 45%,#22d3ee 80%,#a78bfa);background-size:220% 100%;-webkit-background-clip:text;background-clip:text;color:transparent;animation:shine 9s linear infinite}
+@keyframes shine{to{background-position:220% 0}}
+.search{max-width:520px;position:relative;margin:0 0 44px}
+.search input{width:100%;padding:15px 20px 15px 50px;border-radius:14px;border:1px solid rgba(255,255,255,.1);background:rgba(255,255,255,.045);color:var(--ink);font-size:1rem;backdrop-filter:blur(10px);transition:border-color .3s,box-shadow .3s}
+.search input::placeholder{color:#5c5970}
+.search input:focus{outline:none;border-color:rgba(244,114,182,.6);box-shadow:0 0 0 3px rgba(244,114,182,.16)}
+.search svg{position:absolute;left:18px;top:50%;transform:translateY(-50%);color:#5c5970}
+
+/* сетка книг */
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:22px;perspective:1200px}
+.card{position:relative;border-radius:var(--radius);padding:1px;background:linear-gradient(160deg,rgba(255,255,255,.16),rgba(255,255,255,.03) 42%,rgba(255,255,255,.02));transition:transform .45s var(--ease),box-shadow .45s var(--ease);transform-style:preserve-3d;will-change:transform;cursor:pointer}
+.card:hover{box-shadow:0 34px 80px -34px rgba(244,114,182,.5)}
+.card-in{position:relative;display:flex;flex-direction:column;height:100%;border-radius:calc(var(--radius) - 1px);overflow:hidden;background:linear-gradient(180deg,rgba(19,19,27,.94),rgba(10,10,16,.97));backdrop-filter:blur(18px) saturate(130%)}
+.spot{position:absolute;inset:0;z-index:3;pointer-events:none;opacity:0;transition:opacity .4s;background:radial-gradient(340px circle at var(--mx,50%) var(--my,50%),rgba(244,114,182,.16),transparent 65%)}
+.card:hover .spot{opacity:1}
+.cover{position:relative;height:170px;display:flex;align-items:flex-end;padding:18px;overflow:hidden;isolation:isolate}
+.cover::before{content:'';position:absolute;inset:0;background:var(--cover,linear-gradient(135deg,#4c1d95,#0e7490))}
+.cover::after{content:'';position:absolute;inset:0;background:radial-gradient(circle at 28% 18%,rgba(255,255,255,.26),transparent 46%),linear-gradient(transparent 46%,rgba(6,6,10,.78))}
+.cover i{position:absolute;inset:0;opacity:.5;background-image:linear-gradient(rgba(255,255,255,.14) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.14) 1px,transparent 1px);background-size:22px 22px;-webkit-mask-image:radial-gradient(circle at 70% 80%,#000,transparent 60%);mask-image:radial-gradient(circle at 70% 80%,#000,transparent 60%)}
+.cover h3{position:relative;z-index:2;font-family:var(--f-display);font-weight:700;font-size:1.25rem;line-height:1.25;letter-spacing:-.02em;margin:0;text-shadow:0 8px 28px rgba(0,0,0,.6)}
+.sample-tag{position:absolute;z-index:4;top:12px;right:12px;padding:4px 10px;border-radius:999px;font-size:.66rem;font-weight:800;letter-spacing:.09em;text-transform:uppercase;color:#e9e4ff;background:rgba(12,12,20,.55);border:1px solid rgba(255,255,255,.18);backdrop-filter:blur(8px)}
+.card-body{display:flex;flex-direction:column;gap:11px;padding:18px 20px 16px;flex:1}
+.card-body .genre{display:inline-block;padding:4px 10px;border-radius:7px;font-size:.71rem;font-weight:700;color:#ffc9e1;background:rgba(244,114,182,.14);border:1px solid rgba(244,114,182,.22);align-self:flex-start}
+.card-body p{margin:0;color:var(--muted);font-size:.9rem;line-height:1.55;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.meta{display:flex;gap:14px;font-size:.78rem;color:var(--dim);font-weight:700;margin-top:auto}
+.meta span{display:inline-flex;align-items:center;gap:5px}
+
+/* пусто */
+.empty{text-align:center;padding:60px 24px;border-radius:22px;border:1px dashed rgba(255,255,255,.14);background:rgba(255,255,255,.02)}
+.empty h3{font-family:var(--f-display);font-weight:600;margin:0 0 8px}
+.empty p{color:var(--muted);margin:0 0 18px}
+
+/* страница книги */
+.breadcrumbs{display:flex;align-items:center;gap:8px;margin:22px 0 26px;font-size:.85rem;color:var(--dim);flex-wrap:wrap}
+.breadcrumbs a{color:var(--muted);cursor:pointer;transition:color .3s}
+.breadcrumbs a:hover{color:var(--ink)}
+.book-head{display:flex;gap:30px;flex-wrap:wrap;margin-bottom:40px}
+.book-cover{width:210px;height:300px;border-radius:20px;flex-shrink:0;display:flex;align-items:flex-end;padding:20px;position:relative;overflow:hidden;box-shadow:0 30px 70px -30px rgba(0,0,0,.9)}
+.book-cover::before{content:'';position:absolute;inset:0;background:var(--cover,linear-gradient(135deg,#4c1d95,#0e7490))}
+.book-cover::after{content:'';position:absolute;inset:0;background:radial-gradient(circle at 28% 16%,rgba(255,255,255,.24),transparent 46%),linear-gradient(transparent 50%,rgba(6,6,10,.8))}
+.book-cover h2{position:relative;z-index:2;font-family:var(--f-display);font-weight:700;font-size:1.4rem;line-height:1.3;margin:0;text-shadow:0 8px 28px rgba(0,0,0,.6)}
+.book-info{flex:1;min-width:260px}
+.book-info h1{font-family:var(--f-display);font-weight:700;font-size:clamp(1.6rem,3.4vw,2.4rem);letter-spacing:-.03em;margin:0 0 8px}
+.book-info .genre{display:inline-block;padding:5px 12px;border-radius:8px;font-size:.78rem;font-weight:700;color:#ffc9e1;background:rgba(244,114,182,.14);border:1px solid rgba(244,114,182,.22);margin-bottom:14px}
+.book-info .author{color:var(--muted);margin-bottom:14px;font-size:.92rem}
+.book-info .author b{color:var(--ink)}
+.book-info .desc{color:var(--muted);line-height:1.7;margin:0 0 20px;max-width:60ch}
+.stats{display:flex;gap:16px;flex-wrap:wrap}
+.stat{padding:12px 18px;border-radius:14px;background:linear-gradient(180deg,rgba(255,255,255,.06),rgba(255,255,255,.015));border:1px solid rgba(255,255,255,.08)}
+.stat b{display:block;font-family:var(--f-display);font-size:1.3rem;font-weight:600;letter-spacing:-.02em;color:var(--ink);line-height:1.2}
+.stat span{font-size:.7rem;font-weight:700;color:var(--dim);text-transform:uppercase;letter-spacing:.1em}
+
+/* список глав */
+.chapters{display:flex;flex-direction:column;gap:10px}
+.chapter{display:flex;align-items:center;gap:16px;padding:16px 18px;border-radius:16px;background:linear-gradient(180deg,rgba(255,255,255,.055),rgba(255,255,255,.015));border:1px solid rgba(255,255,255,.08);cursor:pointer;transition:.3s var(--ease)}
+.chapter:hover{background:rgba(139,92,246,.12);border-color:rgba(167,139,250,.35);transform:translateX(4px)}
+.num{width:38px;height:38px;border-radius:10px;background:rgba(139,92,246,.16);color:#c9bff5;display:grid;place-items:center;font-family:var(--f-display);font-size:.95rem;flex-shrink:0}
+.ch-title{font-weight:700;font-size:.95rem}
+.ch-sub{font-size:.76rem;color:var(--dim);margin-top:2px}
+.badges{margin-left:auto;display:flex;gap:6px}
+.badge{padding:3px 8px;border-radius:6px;font-size:.68rem;font-weight:800;text-transform:uppercase;letter-spacing:.05em}
+.b-audio{background:rgba(34,197,94,.14);color:#86efac}
+.b-video{background:rgba(239,68,68,.14);color:#fca5a5}
+.b-photo{background:rgba(59,130,246,.14);color:#93c5fd}
+
+/* читалка */
+.reader{max-width:760px;margin:0 auto;padding-bottom:60px}
+.back{display:inline-flex;align-items:center;gap:7px;color:var(--muted);font-size:.9rem;cursor:pointer;margin-bottom:20px;transition:color .3s}
+.back:hover{color:var(--ink)}
+.reader h1{font-family:var(--f-display);font-weight:700;font-size:clamp(1.5rem,3.4vw,2.2rem);letter-spacing:-.025em;margin:0 0 6px}
+.reader .sub{color:var(--dim);font-size:.9rem;margin-bottom:28px}
+.reader-content{font-family:var(--f-read);font-size:1.06rem;line-height:1.95;color:#d9d6e6;margin-bottom:36px}
+.reader-content p{margin:0 0 1.25em}
+.media-block{margin-bottom:30px}
+.media-label{display:flex;align-items:center;gap:8px;font-size:.76rem;font-weight:800;letter-spacing:.13em;text-transform:uppercase;color:var(--dim);margin-bottom:12px}
+
+.audio{display:flex;align-items:center;gap:15px;padding:16px 18px;border-radius:16px;background:linear-gradient(135deg,rgba(139,92,246,.12),rgba(244,114,182,.08));border:1px solid rgba(167,139,250,.22);margin-bottom:10px}
+.play{width:46px;height:46px;border-radius:50%;background:linear-gradient(135deg,var(--violet),var(--pink));display:grid;place-items:center;cursor:pointer;flex-shrink:0;border:1px solid rgba(255,255,255,.2);transition:.3s var(--ease)}
+.play:hover{transform:scale(1.07)}
+.play.disabled{background:rgba(255,255,255,.07);cursor:not-allowed;border-color:rgba(255,255,255,.1)}
+.play.disabled:hover{transform:none}
+.a-info{flex:1;min-width:0}
+.a-title{font-weight:700;font-size:.9rem;margin-bottom:7px}
+.a-bar{height:4px;border-radius:2px;background:rgba(0,0,0,.4);cursor:pointer;overflow:hidden}
+.a-fill{height:100%;width:0;background:linear-gradient(90deg,var(--violet),var(--pink));transition:width .1s linear}
+.a-time{display:flex;justify-content:space-between;font-size:.72rem;color:var(--dim);margin-top:4px}
+.a-hint{font-size:.76rem;color:var(--dim);margin-top:6px}
+
+.video{background:rgba(0,0,0,.5);border-radius:16px;overflow:hidden;border:1px solid rgba(255,255,255,.08)}
+.video video{width:100%;display:block;max-height:420px;background:#000}
+.video .cap{padding:12px 16px;font-size:.85rem;color:var(--muted)}
+
+.photos{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:12px}
+.photo{border-radius:14px;overflow:hidden;cursor:pointer;aspect-ratio:4/3;position:relative;background:rgba(255,255,255,.04);transition:.3s var(--ease)}
+.photo:hover{transform:scale(1.03);box-shadow:0 20px 50px -20px rgba(0,0,0,.9)}
+.photo img{width:100%;height:100%;object-fit:cover}
+.photo .cap{position:absolute;left:0;right:0;bottom:0;padding:8px 12px;font-size:.72rem;color:#fff;background:linear-gradient(transparent,rgba(0,0,0,.75))}
+
+.nav2{display:flex;justify-content:space-between;gap:14px;margin-top:44px;padding-top:22px;border-top:1px solid rgba(255,255,255,.08)}
+.nav2 button{padding:11px 20px;border-radius:12px;font-weight:700;font-size:.9rem;border:1px solid rgba(255,255,255,.1);background:rgba(255,255,255,.04);cursor:pointer;transition:.3s var(--ease)}
+.nav2 button:hover:not(:disabled){background:rgba(139,92,246,.16);border-color:rgba(167,139,250,.35)}
+.nav2 button:disabled{opacity:.35;cursor:not-allowed}
+
+/* модалка фото */
+.modal{position:fixed;inset:0;z-index:100;display:grid;place-items:center;padding:20px;opacity:0;pointer-events:none;transition:opacity .3s}
+.modal.open{opacity:1;pointer-events:all}
+.modal-bg{position:absolute;inset:0;background:rgba(4,4,8,.82);backdrop-filter:blur(8px)}
+.modal img{position:relative;max-width:92vw;max-height:86vh;border-radius:14px;object-fit:contain;box-shadow:0 40px 100px -30px rgba(0,0,0,.9)}
+.modal .close{position:absolute;top:18px;right:22px;width:44px;height:44px;border-radius:50%;background:rgba(255,255,255,.1);color:#fff;font-size:1.4rem;display:grid;place-items:center;cursor:pointer;z-index:2;transition:.3s}
+.modal .close:hover{background:rgba(255,255,255,.2)}
+
+/* админка */
+.admin{max-width:900px;margin:0 auto}
+.admin-head{display:flex;align-items:center;justify-content:space-between;gap:14px;margin-bottom:22px;flex-wrap:wrap}
+.tabs{display:flex;gap:4px;padding:4px;border-radius:14px;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);margin-bottom:26px}
+.tab{flex:1;padding:10px;border-radius:10px;font-weight:700;font-size:.9rem;color:var(--muted);background:transparent;border:none;cursor:pointer;transition:.3s}
+.tab.active{background:linear-gradient(135deg,#7c3aed,#db2777);color:#fff}
+.form-card{padding:26px;border-radius:20px;background:linear-gradient(180deg,rgba(255,255,255,.055),rgba(255,255,255,.015));border:1px solid rgba(255,255,255,.08);backdrop-filter:blur(18px);margin-bottom:24px}
+.form-card h3{font-family:var(--f-display);font-weight:600;font-size:1.06rem;margin:0 0 18px}
+.field{margin-bottom:14px}
+.field label{display:block;font-size:.71rem;font-weight:800;letter-spacing:.1em;text-transform:uppercase;color:var(--dim);margin-bottom:6px}
+.field input,.field textarea,.field select{width:100%;padding:11px 14px;border-radius:11px;border:1px solid rgba(255,255,255,.1);background:rgba(7,7,11,.7);transition:border-color .3s,box-shadow .3s}
+.field textarea{min-height:110px;resize:vertical;font-family:var(--f-read);line-height:1.8}
+.field input:focus,.field textarea:focus,.field select:focus{outline:none;border-color:rgba(139,92,246,.65);box-shadow:0 0 0 3px rgba(139,92,246,.16)}
+.row2{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;padding:11px 18px;border-radius:12px;font-weight:700;font-size:.9rem;border:1px solid transparent;background:transparent;cursor:pointer;transition:.3s var(--ease)}
+.btn-primary{color:#fff;background:linear-gradient(135deg,#7c3aed,#db2777);box-shadow:0 10px 28px -12px rgba(219,39,119,.8),inset 0 1px 0 rgba(255,255,255,.25)}
+.btn-primary:hover{transform:translateY(-2px)}
+.btn-ghost{color:var(--ink);background:rgba(255,255,255,.045);border-color:rgba(255,255,255,.1)}
+.btn-ghost:hover{background:rgba(255,255,255,.085)}
+.btn-danger{color:#fca5a5;background:rgba(239,68,68,.12);border-color:rgba(239,68,68,.25)}
+.btn-danger:hover{background:rgba(239,68,68,.2)}
+.btn-sm{padding:7px 12px;font-size:.8rem;border-radius:9px}
+.list{display:flex;flex-direction:column;gap:9px}
+.item{display:flex;align-items:center;gap:12px;padding:13px 16px;border-radius:14px;background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.07)}
+.item .t{font-weight:700;font-size:.9rem}
+.item .s{font-size:.78rem;color:var(--dim)}
+.item .acts{margin-left:auto;display:flex;gap:6px}
+
+/* медиа-конструктор */
+.media-list{display:flex;flex-direction:column;gap:8px;margin-top:10px}
+.mrow{display:flex;align-items:center;gap:9px;padding:10px 13px;border-radius:11px;background:rgba(7,7,11,.55);border:1px solid rgba(255,255,255,.08)}
+.mtype{padding:3px 9px;border-radius:6px;font-size:.68rem;font-weight:800;text-transform:uppercase;letter-spacing:.05em;flex-shrink:0}
+.mtype.audio{background:rgba(34,197,94,.15);color:#86efac}
+.mtype.video{background:rgba(239,68,68,.15);color:#fca5a5}
+.mtype.photo{background:rgba(59,130,246,.15);color:#93c5fd}
+.murl{flex:1;font-size:.8rem;color:var(--muted);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.mdel{width:28px;height:28px;border-radius:8px;background:rgba(239,68,68,.12);color:#fca5a5;display:grid;place-items:center;cursor:pointer;border:1px solid rgba(239,68,68,.25);font-size:.9rem;flex-shrink:0}
+.madd{display:grid;grid-template-columns:110px 1fr 1fr auto;gap:9px;align-items:end;margin-top:12px;padding:13px;border-radius:12px;background:rgba(7,7,11,.55);border:1px dashed rgba(255,255,255,.14)}
+.madd select,.madd input{padding:9px 11px;border-radius:9px;border:1px solid rgba(255,255,255,.1);background:rgba(255,255,255,.04);font-size:.85rem}
+.madd input::placeholder{color:#5c5970}
+.mini label{display:block;font-size:.68rem;font-weight:700;color:var(--dim);margin-bottom:4px}
+
+/* о проекте */
+.two{display:grid;grid-template-columns:1fr 1fr;gap:22px;align-items:start}
+.glass{padding:26px;border-radius:20px;background:linear-gradient(180deg,rgba(255,255,255,.055),rgba(255,255,255,.015));border:1px solid rgba(255,255,255,.08);backdrop-filter:blur(18px) saturate(130%)}
+.glass p{color:var(--muted);margin:0 0 13px}
+.glass p:last-child{margin:0}
+footer{margin-top:70px;padding:26px 0 40px;border-top:1px solid rgba(255,255,255,.06)}
+.foot{display:flex;align-items:center;justify-content:space-between;gap:14px;flex-wrap:wrap;color:var(--dim);font-size:.82rem}
+.foot a{color:var(--muted)}
+.foot a:hover{color:var(--ink)}
+
+.toast-box{position:fixed;left:50%;bottom:28px;transform:translateX(-50%);z-index:200;display:flex;flex-direction:column;gap:8px;align-items:center;pointer-events:none}
+.toast{padding:12px 18px;border-radius:12px;font-size:.86rem;font-weight:700;color:#fff;background:rgba(20,20,30,.95);border:1px solid rgba(255,255,255,.14);box-shadow:0 18px 40px -16px rgba(0,0,0,.9);animation:toastIn .3s var(--ease),toastOut .3s ease 2.6s forwards}
+.toast.ok{border-color:rgba(74,222,128,.45)}
+.toast.err{border-color:rgba(248,113,113,.45)}
+@keyframes toastIn{from{opacity:0;transform:translateY(14px)}}
+@keyframes toastOut{to{opacity:0;transform:translateY(10px)}}
+
+.reveal{opacity:0;transform:translateY(26px);transition:opacity .7s var(--ease),transform .7s var(--ease)}
+.reveal.in{opacity:1;transform:none}
+
+@media(max-width:860px){.two{grid-template-columns:1fr}}
+@media(max-width:640px){
+  .hdr-in{height:60px;padding:0 16px}
+  .nav a{padding:7px 9px;font-size:.82rem}
+  .logo span.full{display:none}
+  .wrap{padding:0 16px}
+  .grid{grid-template-columns:1fr;gap:16px}
+  .book-cover{width:100%;height:190px}
+  .row2{grid-template-columns:1fr}
+  .madd{grid-template-columns:1fr 1fr}
+  .glass{padding:20px}
+}
+@media(prefers-reduced-motion:reduce){
+  *,*::before,*::after{animation-duration:.001ms!important;animation-iteration-count:1!important;transition-duration:.001ms!important}
+  .reveal{opacity:1;transform:none}
+}
+</style>
+</head>
+<body>
+
+<div class="progress" id="progress"></div>
+<div class="aurora" id="aurora"><i class="a1"></i><i class="a2"></i><i class="a3"></i></div>
+<div class="grid-lines"></div>
+<div class="noise"></div>
+
+<header class="hdr">
+  <div class="hdr-in">
+    <div class="logo" onclick="navigate('home')">
+      <span class="logo-mark">📚</span>
+      <span class="full">OkhBooks</span>
+    </div>
+    <nav class="nav">
+      <a id="nav-home" onclick="navigate('home')">Библиотека</a>
+      <a id="nav-about" onclick="navigate('about')">О проекте</a>
+      <a id="nav-admin" onclick="navigate('admin')">Управление</a>
+    </nav>
+  </div>
+</header>
+
+<main id="app"></main>
+
+<div class="modal" id="photoModal">
+  <div class="modal-bg" onclick="closePhoto()"></div>
+  <div class="close" onclick="closePhoto()">✕</div>
+  <img id="modalImg" src="" alt="" onclick="event.stopPropagation()">
+</div>
+
+<div class="toast-box" id="toasts"></div>
+
+<script>
+// ============================================================
+// OkhBooks. Замени SEED своими книгами и выложи файл.
+// Данные живут в localStorage; «Экспорт» в админке копирует JSON.
+// ============================================================
+const SITE = 'OkhBooks';
+const KEY = 'okhbooks_v1';
+
+const COVERS = [
+  'linear-gradient(135deg,#1e1b4b,#4c1d95 55%,#0e7490)',
+  'linear-gradient(135deg,#0f172a,#0e7490 60%,#22d3ee)',
+  'linear-gradient(135deg,#2e1065,#701a75 55%,#be185d)',
+  'linear-gradient(135deg,#052e16,#065f46 55%,#22d3ee)',
+  'linear-gradient(135deg,#3f1d0b,#7c2d12 55%,#f59e0b)',
+  'linear-gradient(135deg,#1e1b4b,#312e81 50%,#7c3aed)'
+];
+
+const SEED = {
+  books: [
+    { id: 'b1', sample: true, title: 'Тени Забвения', author: 'Александр Волков', genre: 'Тёмное фэнтези',
+      desc: 'В мире, где память — валюта, молодой вор обнаруживает, что его собственное прошлое хранит тайну, способную разрушить империю.',
+      cover: 0, createdAt: '2026-09-15' },
+    { id: 'b2', sample: true, title: 'Неоновый Рассвет', author: 'Александр Волков', genre: 'Киберпанк',
+      desc: '2147 год. Хакер Кай получает зашифрованное послание из прошлого — код, который может освободить сознание каждого от цифрового контроля.',
+      cover: 1, createdAt: '2026-10-01' }
+  ],
+  chapters: [
+    { id: 'c1', bookId: 'b1', num: 1, title: 'Пробуждение в Чужом Городе',
+      content: 'Серый туман стелился по булыжным мостовым Мёртвого Города. Кориан открыл глаза и обнаружил, что лежит на холодном камне, а над ним — небо цвета старого серебра.\n\nВ этом мире память имела вес. Буквально. Каждое воспоминание можно было извлечь, взвесить на ладони и обменять на хлеб, на кров, на ещё один день жизни.\n\nЧто-то очень важное было украдено у него. И он намерен это вернуть.',
+      media: [
+        { type: 'audio', url: '', title: 'Атмосфера — Туманный Город', caption: '' },
+        { type: 'photo', url: 'https://picsum.photos/seed/castle1/800/600', caption: 'Руины Мёртвого Города на рассвете' }
+      ], createdAt: '2026-09-20' },
+    { id: 'c2', bookId: 'b1', num: 2, title: 'Торговец Воспоминаниями',
+      content: 'Лавка торговца пряталась в переулках, где даже тени боялись друг друга.\n\nЗа прилавком сидел старик с глазами, в которых плескалась целая библиотека чужих жизней.\n\n— Ищешь что-то конкретное или просто хочешь забыть?\n\n— Мне нужно найти то, что у меня украли.',
+      media: [
+        { type: 'audio', url: '', title: 'Лавка торговца — эмбиент', caption: '' },
+        { type: 'photo', url: 'https://picsum.photos/seed/merchant1/800/600', caption: 'Полки с воспоминаниями' }
+      ], createdAt: '2026-09-25' },
+    { id: 'c3', bookId: 'b2', num: 1, title: 'Код 77-Аврора',
+      content: 'Неон пульсировал в ритме сердца города. Кай сидел в своей капсуле на 247-м уровне башни, и перед ним мерцали голографические строки кода.\n\nСегодня ночью ему пришло сообщение. Без отправителя, зашифрованное алгоритмом, которого не существовало последние пятьдесят лет. Это был шифр его деда.\n\nВ сообщении было всего три слова: «АВРОРА ПРОСНУЛАСЬ».',
+      media: [
+        { type: 'audio', url: '', title: 'Synthwave — Neon Pulse', caption: '' },
+        { type: 'video', url: '', title: 'Концепт-арт Нео-Токио', caption: 'Визуализация мегаполиса будущего' },
+        { type: 'photo', url: 'https://picsum.photos/seed/neon1/800/600', caption: 'Неоновые улицы' }
+      ], createdAt: '2026-10-05' }
+  ]
+};
+
+// ============ данные ============
+const $ = (s, r = document) => r.querySelector(s);
+const $$ = (s, r = document) => Array.from(r.querySelectorAll(s));
+const reduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+function esc(v) {
+  if (v === null || v === undefined) return '';
+  return String(v).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;').replace(/'/g, '&#39;');
+}
+function toast(msg, kind) {
+  const t = document.createElement('div');
+  t.className = 'toast ' + (kind || 'ok');
+  t.textContent = msg;
+  $('#toasts').appendChild(t);
+  setTimeout(() => t.remove(), 3000);
+}
+function fmtDate(d) {
+  if (!d) return '';
+  const dt = new Date(d);
+  if (isNaN(dt.getTime())) return esc(String(d));
+  return dt.toLocaleDateString('ru-RU', { day: 'numeric', month: 'long', year: 'numeric' });
+}
+function genId(p) { return p + '_' + Date.now().toString(36) + Math.random().toString(36).slice(2, 6); }
+
+function loadData() {
+  try {
+    const raw = localStorage.getItem(KEY);
+    if (raw) return normalize(JSON.parse(raw));
+  } catch (e) { toast('Хранилище повреждено — гружу пример', 'err'); }
+  return normalize(JSON.parse(JSON.stringify(SEED)));
+}
+function normalize(d) {
+  const o = { books: [], chapters: [] };
+  o.books = Array.isArray(d && d.books) ? d.books.filter(b => b && b.id) : [];
+  o.chapters = Array.isArray(d && d.chapters) ? d.chapters.filter(c => c && c.id) : [];
+  o.chapters.forEach(c => {
+    if (!Array.isArray(c.media)) c.media = [];
+    c.media = c.media.filter(m => m && m.type);
+    if (typeof c.content !== 'string') c.content = '';
+    if (!c.num) c.num = 1;
+  });
+  return o;
+}
+function saveData() {
+  try { localStorage.setItem(KEY, JSON.stringify(data)); return true; }
+  catch (e) { toast('Хранилище переполнено', 'err'); return false; }
+}
+let data = loadData();
+
+const getBook = id => data.books.find(b => b.id === id);
+const getChapter = id => data.chapters.find(c => c.id === id);
+const chaptersOf = bookId => data.chapters.filter(c => c.bookId === bookId).sort((a, b) => a.num - b.num);
+const mediaOf = c => Array.isArray(c && c.media) ? c.media : [];
+const wc = t => { const s = (t || '').trim(); return s ? s.split(/\s+/).length : 0; };
+const coverOf = b => COVERS[b.cover] || COVERS[0];
+
+// ============ роутер ============
+let route = { page: 'home' };
+function navigate(page, params = {}) {
+  route = { page, ...params };
+  render();
+  scrollTo({ top: 0, behavior: 'smooth' });
+  updateNav();
+}
+function updateNav() {
+  $$('#app ~ *').forEach(() => {});
+  const map = { home: 'nav-home', book: 'nav-home', chapter: 'nav-home', about: 'nav-about', admin: 'nav-admin' };
+  ['nav-home', 'nav-about', 'nav-admin'].forEach(id => {
+    const el = document.getElementById(id);
+    if (el) el.classList.toggle('active', map[route.page] === id);
+  });
+}
+
+// ============ рендер ============
+function render() {
+  const app = $('#app');
+  switch (route.page) {
+    case 'home': app.innerHTML = renderHome(); break;
+    case 'book': app.innerHTML = renderBook(); break;
+    case 'chapter': app.innerHTML = renderChapter(); break;
+    case 'about': app.innerHTML = renderAbout(); break;
+    case 'admin': app.innerHTML = renderAdmin(); break;
+    default: app.innerHTML = renderHome();
+  }
+  if (route.page === 'chapter') initAudio();
+  observeReveals();
+}
+
+function reveal(html) { return '<div class="reveal in">' + html + '</div>'; }
+
+function renderHome() {
+  return reveal(`
+    <div class="wrap">
+      <section class="hero">
+        <div class="pill"><i class="dot"></i> книги, которые можно слушать и смотреть</div>
+        <h1>Читай, <span class="grad">слушай</span> и смотри книги</h1>
+        <p class="lead">${SITE} — это библиотека, где у каждой главы есть текст, музыка, фотографии и видео. Всё в одном файле, без сервера.</p>
+        <div class="search">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
+          <input id="search" type="search" placeholder="Поиск по книгам, жанру, автору…" autocomplete="off" oninput="filterBooks()">
+        </div>
+      </section>
+      <section>
+        <div id="booksGrid">${renderBooks(data.books)}</div>
+      </section>
+    </div>
+  `);
+}
+
+function renderBooks(books) {
+  if (!books.length) return `<div class="empty">
+    <h3>Библиотека пуста</h3>
+    <p>Добавь первую книгу в «Управлении» — и она появится здесь.</p>
+    <button class="btn btn-primary" onclick="navigate('admin')">Перейти к управлению</button>
+  </div>`;
+  return `<div class="grid">${books.map((b, i) => {
+    const ch = chaptersOf(b.id);
+    const na = ch.reduce((s, c) => s + mediaOf(c).filter(m => m.type === 'audio').length, 0);
+    const np = ch.reduce((s, c) => s + mediaOf(c).filter(m => m.type === 'photo').length, 0);
+    return `<article class="card reveal in" style="transition-delay:${Math.min(i, 8) * 55}ms" onclick="navigate('book',{bookId:'${b.id}'})">
+      <div class="card-in">
+        <div class="spot"></div>
+        <div class="cover" style="--cover:${coverOf(b)}"><i></i><h3>${esc(b.title)}</h3>${b.sample ? '<span class="sample-tag">образец</span>' : ''}</div>
+        <div class="card-body">
+          <span class="genre">${esc(b.genre || 'Без жанра')}</span>
+          <p>${esc(b.desc || '')}</p>
+          <div class="meta">
+            <span>📑 ${ch.length} гл.</span>
+            ${na ? `<span>🎧 ${na}</span>` : ''}${np ? `<span>📷 ${np}</span>` : ''}
+            <span style="margin-left:auto">${fmtDate(b.createdAt)}</span>
+          </div>
+        </div>
+      </div>
+    </article>`;
+  }).join('')}</div>`;
+}
+
+function filterBooks() {
+  const q = ($('#search').value || '').toLowerCase().trim();
+  const list = data.books.filter(b =>
+    (b.title || '').toLowerCase().includes(q) || (b.genre || '').toLowerCase().includes(q) ||
+    (b.author || '').toLowerCase().includes(q) || (b.desc || '').toLowerCase().includes(q));
+  $('#booksGrid').innerHTML = renderBooks(list);
+}
+
+function renderBook() {
+  const book = getBook(route.bookId);
+  if (!book) return `<div class="wrap"><div class="empty"><h3>Книга не найдена</h3></div></div>`;
+  const ch = chaptersOf(book.id);
+  const words = ch.reduce((s, c) => s + wc(c.content), 0);
+  const na = ch.reduce((s, c) => s + mediaOf(c).filter(m => m.type === 'audio').length, 0);
+  const np = ch.reduce((s, c) => s + mediaOf(c).filter(m => m.type === 'photo').length, 0);
+  return `<div class="wrap">
+    <div class="breadcrumbs"><a onclick="navigate('home')">Библиотека</a><span>›</span><span>${esc(book.title)}</span></div>
+    <div class="book-head">
+      <div class="book-cover" style="--cover:${coverOf(book)}"><h2>${esc(book.title)}</h2></div>
+      <div class="book-info">
+        <h1>${esc(book.title)}</h1>
+        <span class="genre">${esc(book.genre || 'Без жанра')}</span>
+        ${book.author ? `<div class="author">Автор: <b>${esc(book.author)}</b></div>` : ''}
+        <p class="desc">${esc(book.desc || 'Описание не добавлено.')}</p>
+        <div class="stats">
+          <div class="stat"><b>${ch.length}</b><span>глав</span></div>
+          <div class="stat"><b>${words}</b><span>слов</span></div>
+          <div class="stat"><b>${na}</b><span>аудио</span></div>
+          <div class="stat"><b>${np}</b><span>фото</span></div>
+        </div>
+      </div>
+    </div>
+    <h2 class="title">Главы</h2>
+    <div class="chapters">
+      ${ch.length ? ch.map(c => {
+        const m = mediaOf(c);
+        const has = t => m.some(x => x.type === t);
+        return `<div class="chapter" onclick="navigate('chapter',{chapterId:'${c.id}'})">
+          <div class="num">${c.num}</div>
+          <div><div class="ch-title">${esc(c.title)}</div><div class="ch-sub">${fmtDate(c.createdAt)}</div></div>
+          <div class="badges">
+            ${has('audio') ? '<span class="badge b-audio">🎧</span>' : ''}
+            ${has('video') ? '<span class="badge b-video">🎬</span>' : ''}
+            ${has('photo') ? '<span class="badge b-photo">📷</span>' : ''}
+          </div>
+        </div>`;
+      }).join('') : `<div class="empty"><p>Глав пока нет</p></div>`}
+    </div>
+  </div>`;
+}
+
+function renderChapter() {
+  const chapter = getChapter(route.chapterId);
+  if (!chapter) return `<div class="wrap"><div class="empty"><h3>Глава не найдена</h3></div></div>`;
+  const book = getBook(chapter.bookId);
+  const all = chaptersOf(chapter.bookId);
+  const idx = all.findIndex(c => c.id === chapter.id);
+  const prev = idx > 0 ? all[idx - 1] : null;
+  const next = idx < all.length - 1 ? all[idx + 1] : null;
+  const m = mediaOf(chapter);
+  const audios = m.filter(x => x.type === 'audio');
+  const videos = m.filter(x => x.type === 'video');
+  const photos = m.filter(x => x.type === 'photo');
+  const text = (chapter.content || '').split('\n').filter(p => p.trim()).map(p => `<p>${esc(p)}</p>`).join('');
+
+  return `<div class="wrap"><div class="reader">
+    <a class="back" onclick="navigate('book',{bookId:'${chapter.bookId}'})">← К книге</a>
+    <h1>${esc(chapter.title)}</h1>
+    <div class="sub">${book ? esc(book.title) : ''} · Глава ${chapter.num}</div>
+
+    ${audios.length ? `<div class="media-block"><div class="media-label">🎧 музыка</div>
+      ${audios.map((a, i) => `
+        <div class="audio">
+          <div class="play ${a.url ? '' : 'disabled'}" id="play${i}" onclick="toggleAudio(${i})">▶</div>
+          <div class="a-info">
+            <div class="a-title">${esc(a.title || 'Музыка')}</div>
+            <div class="a-bar" id="bar${i}" onclick="seekAudio(event, ${i})"><div class="a-fill" id="fill${i}"></div></div>
+            <div class="a-time"><span id="cur${i}">0:00</span><span id="dur${i}">—</span></div>
+            ${a.url ? '' : '<div class="a-hint">Ссылку на трек добавь в «Управлении» — там поле URL</div>'}
+          </div>
+        </div>`).join('')}
+    </div>` : ''}
+
+    ${text ? `<div class="reader-content">${text}</div>` : `<div class="empty" style="padding:30px"><p>Текст главы пока пуст</p></div>`}
+
+    ${videos.length ? `<div class="media-block"><div class="media-label">🎬 видео</div>
+      ${videos.map(v => `<div class="video">${v.url ? `<video controls preload="metadata"><source src="${esc(v.url)}"></video>` : `<div style="padding:36px;text-align:center;color:var(--dim)">Видео-ссылка не указана</div>`}${v.caption ? `<div class="cap">${esc(v.caption)}</div>` : ''}</div>`).join('')}
+    </div>` : ''}
+
+    ${photos.length ? `<div class="media-block"><div class="media-label">📷 иллюстрации</div><div class="photos">
+      ${photos.map(p => `<div class="photo" data-url="${esc(p.url || '')}" onclick="openPhoto(this)">${p.url ? `<img src="${esc(p.url)}" alt="${esc(p.caption || '')}" loading="lazy">` : ''}${p.caption ? `<div class="cap">${esc(p.caption)}</div>` : ''}</div>`).join('')}
+    </div></div>` : ''}
+
+    <div class="nav2">
+      <button ${prev ? `onclick="navigate('chapter',{chapterId:'${prev.id}'})"` : 'disabled'}>← Предыдущая</button>
+      <button ${next ? `onclick="navigate('chapter',{chapterId:'${next.id}'})"` : 'disabled'}>Следующая →</button>
+    </div>
+  </div></div>`;
+}
+
+function renderAbout() {
+  return `<div class="wrap"><section style="padding-top:56px">
+    <p class="eyebrow">о проекте</p>
+    <h2 class="title">Что такое ${SITE}</h2>
+    <div class="two">
+      <div class="glass reveal in">
+        <p>Это личная библиотека в одном файле. Каждая книга — главы с текстом, а к главе можно прикрепить музыку, фотографии и видео. Читатель открывает книгу, листает главы, слушает трек и смотрит иллюстрации — всё в одном месте.</p>
+        <p>Никакого сервера и базы данных: всё хранится в браузере, а файл можно выложить на GitHub Pages — и получится настоящий сайт с книгами.</p>
+      </div>
+      <div class="glass reveal in">
+        <p><b style="color:var(--ink)">Как добавить книгу:</b></p>
+        <p>1. Открой «Управление» → вкладка «Книги» → добавь книгу.<br>2. Вкладка «Главы» → выбери книгу → пиши текст, прикрепляй медиа (тип + URL + подпись).<br>3. Аудио/видео — по ссылке на mp3/mp4, фото — по ссылке на картинку.</p>
+        <p>Кнопка «Экспорт» копирует весь каталог в JSON — вставь его в файл вместо SEED, чтобы книги были зашиты в сайт.</p>
+      </div>
+    </div>
+  </section></div>`;
+}
+
+// ============ аудио ============
+let players = [];
+function initAudio() {
+  players = [];
+  const chapter = getChapter(route.chapterId);
+  if (!chapter) return;
+  const audios = mediaOf(chapter).filter(m => m.type === 'audio');
+  audios.forEach((a, i) => {
+    const el = new Audio();
+    if (a.url) el.src = a.url;
+    players[i] = el;
+    el.addEventListener('timeupdate', () => {
+      if (!el.duration) return;
+      const f = document.getElementById('fill' + i); if (f) f.style.width = (el.currentTime / el.duration * 100) + '%';
+      const c = document.getElementById('cur' + i); if (c) c.textContent = fmtTime(el.currentTime);
+    });
+    el.addEventListener('loadedmetadata', () => { const d = document.getElementById('dur' + i); if (d) d.textContent = fmtTime(el.duration); });
+    el.addEventListener('ended', () => { const p = document.getElementById('play' + i); if (p) p.textContent = '▶'; });
+  });
+}
+function toggleAudio(i) {
+  const el = players[i]; if (!el) return;
+  const btn = document.getElementById('play' + i);
+  if (!el.getAttribute('src')) { toast('Ссылка на трек не указана', 'err'); return; }
+  if (el.paused) {
+    players.forEach((p, j) => { if (j !== i && p && !p.paused) { p.pause(); const b = document.getElementById('play' + j); if (b) b.textContent = '▶'; } });
+    el.play().catch(() => toast('Не удалось воспроизвести', 'err'));
+    if (btn) btn.textContent = '⏸';
+  } else { el.pause(); if (btn) btn.textContent = '▶'; }
+}
+function seekAudio(e, i) {
+  const el = players[i]; if (!el || !el.duration) return;
+  const bar = document.getElementById('bar' + i); if (!bar) return;
+  const r = bar.getBoundingClientRect();
+  el.currentTime = Math.max(0, Math.min(1, (e.clientX - r.left) / r.width)) * el.duration;
+}
+function fmtTime(s) { if (!s || isNaN(s)) return '0:00'; const m = Math.floor(s / 60), x = Math.floor(s % 60); return m + ':' + (x < 10 ? '0' : '') + x; }
+
+// ============ фото ============
+function openPhoto(el) {
+  const url = typeof el === 'string' ? el : (el && el.dataset ? el.dataset.url : '');
+  if (!url) return;
+  $('#modalImg').src = url;
+  $('#photoModal').classList.add('open');
+}
+function closePhoto() { $('#photoModal').classList.remove('open'); $('#modalImg').src = ''; }
+
+// ============ админка ============
+let tab = 'books';
+let editBookId = null, editChapterId = null, tempMedia = [];
+
+function renderAdmin() {
+  return `<div class="wrap"><section style="padding-top:40px"><div class="admin">
+    <div class="admin-head">
+      <div><p class="eyebrow" style="margin:0 0 6px">управление</p><h2 class="title" style="margin:0">Наполнение</h2></div>
+      <div style="display:flex;gap:8px">
+        <button class="btn btn-ghost btn-sm" onclick="exportData()">Экспорт JSON</button>
+        <button class="btn btn-danger btn-sm" onclick="resetData()">Сбросить к примеру</button>
+      </div>
+    </div>
+    <div class="tabs">
+      <button class="tab ${tab === 'books' ? 'active' : ''}" onclick="setTab('books')">📚 Книги</button>
+      <button class="tab ${tab === 'chapters' ? 'active' : ''}" onclick="setTab('chapters')">📑 Главы</button>
+    </div>
+    <div id="adminBody">${tab === 'books' ? renderAdminBooks() : renderAdminChapters()}</div>
+  </div></section></div>`;
+}
+function setTab(t) { tab = t; editBookId = null; editChapterId = null; tempMedia = []; render(); }
+
+function renderAdminBooks() {
+  const b = editBookId ? getBook(editBookId) : null;
+  const cur = b || { title: '', author: '', genre: '', desc: '', cover: 0 };
+  return `<div class="form-card">
+    <h3>${b ? '✏️ Редактировать книгу' : '➕ Новая книга'}</h3>
+    <div class="row2">
+      <div class="field"><label>Название</label><input id="b-title" value="${esc(cur.title)}" placeholder="Название книги"></div>
+      <div class="field"><label>Автор</label><input id="b-author" value="${esc(cur.author)}" placeholder="Имя автора"></div>
+    </div>
+    <div class="row2">
+      <div class="field"><label>Жанр</label><input id="b-genre" value="${esc(cur.genre)}" placeholder="Фэнтези, Романтика…"></div>
+      <div class="field"><label>Обложка</label><select id="b-cover">${COVERS.map((c, i) => `<option value="${i}" ${(cur.cover || 0) === i ? 'selected' : ''}>Вариант ${i + 1}</option>`).join('')}</select></div>
+    </div>
+    <div class="field"><label>Описание</label><textarea id="b-desc" placeholder="О чём книга">${esc(cur.desc)}</textarea></div>
+    <div style="display:flex;gap:8px">
+      <button class="btn btn-primary" onclick="saveBook()">${b ? 'Сохранить' : 'Добавить книгу'}</button>
+      ${b ? '<button class="btn btn-ghost" onclick="editBookId=null;render()">Отмена</button>' : ''}
+    </div>
+  </div>
+  <div class="list">${data.books.length ? data.books.map(x => `
+    <div class="item"><div><div class="t">${esc(x.title)}</div><div class="s">${esc(x.genre || 'Без жанра')} · ${chaptersOf(x.id).length} гл. · ${fmtDate(x.createdAt)}</div></div>
+    <div class="acts">
+      <button class="btn btn-ghost btn-sm" onclick="navigate('book',{bookId:'${x.id}'})">👁</button>
+      <button class="btn btn-ghost btn-sm" onclick="editBookId='${x.id}';render()">✏️</button>
+      <button class="btn btn-danger btn-sm" onclick="deleteBook('${x.id}')">🗑</button>
+    </div></div>`).join('') : '<div class="empty"><p>Нет книг</p></div>'}</div>`;
+}
+
+function saveBook() {
+  const title = ($('#b-title').value || '').trim();
+  if (!title) { toast('Введите название', 'err'); return; }
+  const obj = {
+    title,
+    author: ($('#b-author').value || '').trim(),
+    genre: ($('#b-genre').value || '').trim(),
+    desc: ($('#b-desc').value || '').trim(),
+    cover: parseInt($('#b-cover').value) || 0
+  };
+  if (editBookId) {
+    const i = data.books.findIndex(x => x.id === editBookId);
+    if (i >= 0) data.books[i] = { ...data.books[i], ...obj };
+    toast('Книга обновлена');
+  } else {
+    data.books.push({ id: genId('b'), ...obj, createdAt: new Date().toISOString().slice(0, 10) });
+    toast('Книга добавлена');
+  }
+  saveData(); editBookId = null; render();
+}
+function deleteBook(id) {
+  if (!confirm('Удалить книгу и все её главы?')) return;
+  data.books = data.books.filter(x => x.id !== id);
+  data.chapters = data.chapters.filter(x => x.bookId !== id);
+  saveData(); toast('Книга удалена'); render();
+}
+
+function renderAdminChapters() {
+  const ch = editChapterId ? getChapter(editChapterId) : null;
+  const cur = ch || { bookId: '', num: 1, title: '', content: '', media: [] };
+  tempMedia = mediaOf(cur).map(m => ({ ...m }));
+  return `<div class="form-card">
+    <h3>${ch ? '✏️ Редактировать главу' : '➕ Новая глава'}</h3>
+    <div class="row2">
+      <div class="field"><label>Книга</label><select id="c-book"><option value="">— выбери книгу —</option>${data.books.map(b => `<option value="${b.id}" ${cur.bookId === b.id ? 'selected' : ''}>${esc(b.title)}</option>`).join('')}</select></div>
+      <div class="field"><label>Номер главы</label><input id="c-num" type="number" min="1" value="${cur.num || 1}"></div>
+    </div>
+    <div class="field"><label>Название главы</label><input id="c-title" value="${esc(cur.title)}" placeholder="Название главы"></div>
+    <div class="field"><label>Текст (абзац = новая строка)</label><textarea id="c-content" style="min-height:180px" placeholder="Текст главы…">${esc(cur.content)}</textarea></div>
+    <div class="field">
+      <label>Медиа — музыка, видео, фото</label>
+      <div class="media-list" id="mediaList">${renderMedia()}</div>
+      <div class="madd">
+        <div class="mini"><label>Тип</label><select id="m-type"><option value="audio">🎧 музыка</option><option value="video">🎬 видео</option><option value="photo">📷 фото</option></select></div>
+        <div class="mini"><label>URL</label><input id="m-url" placeholder="https://…/файл.mp3"></div>
+        <div class="mini"><label>Название / подпись</label><input id="m-title" placeholder="Трек, подпись к фото…"></div>
+        <button class="btn btn-primary btn-sm" onclick="addMedia()">+</button>
+      </div>
+    </div>
+    <div style="display:flex;gap:8px">
+      <button class="btn btn-primary" onclick="saveChapter()">${ch ? 'Сохранить' : 'Добавить главу'}</button>
+      ${ch ? '<button class="btn btn-ghost" onclick="editChapterId=null;render()">Отмена</button>' : ''}
+    </div>
+  </div>
+  <div class="list">${data.chapters.length ? data.chapters.slice().sort((a, b) => {
+    const ia = data.books.findIndex(x => x.id === a.bookId), ib = data.books.findIndex(x => x.id === b.bookId);
+    return (ia - ib) || (a.num - b.num);
+  }).map(x => {
+    const bk = getBook(x.bookId);
+    return `<div class="item"><div><div class="t">Гл. ${x.num} · ${esc(x.title)}</div><div class="s">${bk ? esc(bk.title) : 'Без книги'} · ${mediaOf(x).length} медиа</div></div>
+    <div class="acts">
+      <button class="btn btn-ghost btn-sm" onclick="navigate('chapter',{chapterId:'${x.id}'})">👁</button>
+      <button class="btn btn-ghost btn-sm" onclick="editChapterId='${x.id}';render()">✏️</button>
+      <button class="btn btn-danger btn-sm" onclick="deleteChapter('${x.id}')">🗑</button>
+    </div></div>`;
+  }).join('') : '<div class="empty"><p>Нет глав</p></div>'}</div>`;
+}
+
+const M_LABEL = { audio: '🎧 музыка', video: '🎬 видео', photo: '📷 фото' };
+function renderMedia() {
+  if (!tempMedia.length) return '<div style="font-size:.8rem;color:var(--dim);padding:6px">Медиа не добавлено</div>';
+  return tempMedia.map((m, i) => `
+    <div class="mrow">
+      <span class="mtype ${m.type}">${esc(M_LABEL[m.type] || m.type)}</span>
+      <span class="murl" title="${esc(m.url || '')}">${esc(m.url || '(без ссылки)')}</span>
+      <span class="murl" style="max-width:130px" title="${esc(m.title || '')}">${esc(m.title || '')}</span>
+      <div class="mdel" onclick="tempMedia.splice(${i},1);renderMediaInto()">✕</div>
+    </div>`).join('');
+}
+function renderMediaInto() { $('#mediaList').innerHTML = renderMedia(); }
+function addMedia() {
+  const type = $('#m-type').value;
+  const url = ($('#m-url').value || '').trim();
+  const title = ($('#m-title').value || '').trim();
+  tempMedia.push({ type, url, title, caption: title });
+  $('#m-url').value = ''; $('#m-title').value = '';
+  renderMediaInto();
+}
+function saveChapter() {
+  const bookId = $('#c-book').value;
+  const title = ($('#c-title').value || '').trim();
+  if (!bookId) { toast('Выбери книгу', 'err'); return; }
+  if (!title) { toast('Введите название главы', 'err'); return; }
+  const obj = {
+    bookId,
+    num: parseInt($('#c-num').value) || 1,
+    title,
+    content: $('#c-content').value,
+    media: tempMedia.map(m => ({ ...m }))
+  };
+  if (editChapterId) {
+    const i = data.chapters.findIndex(x => x.id === editChapterId);
+    if (i >= 0) data.chapters[i] = { ...data.chapters[i], ...obj };
+    toast('Глава обновлена');
+  } else {
+    data.chapters.push({ id: genId('c'), ...obj, createdAt: new Date().toISOString().slice(0, 10) });
+    toast('Глава добавлена');
+  }
+  saveData(); editChapterId = null; tempMedia = []; render();
+}
+function deleteChapter(id) {
+  if (!confirm('Удалить эту главу?')) return;
+  data.chapters = data.chapters.filter(x => x.id !== id);
+  saveData(); toast('Глава удалена'); render();
+}
+
+function exportData() {
+  const clean = { books: data.books.map(b => ({ ...b, sample: false })), chapters: data.chapters.map(c => ({ ...c })) };
+  const txt = JSON.stringify(clean, null, 2);
+  const ok = () => toast('JSON скопирован — вставь в SEED');
+  if (navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(txt).then(ok).catch(() => showRaw(txt));
+  else showRaw(txt);
+}
+function showRaw(txt) {
+  const area = document.createElement('textarea');
+  area.value = txt;
+  area.style.cssText = 'position:fixed;left:10%;right:10%;top:12%;bottom:12%;z-index:300;padding:16px;border-radius:16px;background:#0d0d14;color:#e8e6f0;border:1px solid rgba(255,255,255,.2);font-family:ui-monospace,monospace;font-size:12px';
+  document.body.appendChild(area); area.select(); area.focus();
+  area.addEventListener('blur', () => area.remove());
+  toast('Скопируй и закрой');
+}
+function resetData() {
+  if (!confirm('Вернуть данные к примеру? Твои изменения в этом браузере будут удалены.')) return;
+  localStorage.removeItem(KEY);
+  data = loadData();
+  toast('Сброшено к примеру'); render();
+}
+
+// ============ эффекты ============
+let revealObs;
+function observeReveals() {
+  if (!('IntersectionObserver' in window)) { $$('.reveal').forEach(el => el.classList.add('in')); return; }
+  if (!revealObs) revealObs = new IntersectionObserver(es => es.forEach(en => { if (en.isIntersecting) { en.target.classList.add('in'); revealObs.unobserve(en.target); } }), { rootMargin: '0px 0px -8% 0px', threshold: .06 });
+  $$('.reveal:not(.in)').forEach(el => revealObs.observe(el));
+}
+function initTilt() {
+  if (reduced) return;
+  document.addEventListener('pointermove', (e) => {
+    const card = e.target.closest('.card');
+    if (!card) return;
+    const r = card.getBoundingClientRect();
+    const px = (e.clientX - r.left) / r.width, py = (e.clientY - r.top) / r.height;
+    card.style.setProperty('--mx', (px * 100).toFixed(2) + '%');
+    card.style.setProperty('--my', (py * 100).toFixed(2) + '%');
+    card.style.transform = `translateY(-6px) rotateX(${((.5 - py) * 5).toFixed(2)}deg) rotateY(${((px - .5) * 6).toFixed(2)}deg)`;
+  });
+  document.addEventListener('pointerout', (e) => {
+    if (e.target.closest('.card')) return;
+    $$('.card').forEach(c => c.style.transform = '');
+  });
+  let raf = null;
+  window.addEventListener('pointermove', (e) => {
+    if (raf) return;
+    raf = requestAnimationFrame(() => {
+      const x = (e.clientX / innerWidth - .5) * 20, y = (e.clientY / innerHeight - .5) * 14;
+      const a = $('#aurora'); if (a) a.style.transform = `translate3d(${x}px,${y}px,0)`;
+      raf = null;
+    });
+  }, { passive: true });
+}
+function initScroll() {
+  const bar = $('#progress');
+  const onScroll = () => { const max = document.documentElement.scrollHeight - innerHeight; bar.style.width = (max > 0 ? scrollY / max * 100 : 0) + '%'; };
+  addEventListener('scroll', onScroll, { passive: true });
+  onScroll();
+}
+
+addEventListener('keydown', (e) => { if (e.key === 'Escape') closePhoto(); });
+
+// ============ старт ============
+render();
+updateNav();
+initTilt();
+initScroll();
+</script>
+</body>
+</html>
