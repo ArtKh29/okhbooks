@@ -623,19 +623,61 @@ function renderLogin() {
 function renderProfile() {
   if (!authed()) return renderLogin();
   const name = (profile && profile.display_name) || (session.user.email || '').split('@')[0];
-  const av = profile && profile.avatar_url ? '<img class="avatar avatar-lg" src="' + esc(profile.avatar_url) + '" alt="">' : '<span class="avatar avatar-lg avatar-empty">' + esc(name.slice(0, 1).toUpperCase()) + '</span>';
+  const avUrl = (profile && profile.avatar_url) || '';
+  const av = avUrl
+    ? '<img class="avatar avatar-lg" id="p-av-img" src="' + esc(avUrl) + '" alt="">'
+    : '<span class="avatar avatar-lg avatar-empty" id="p-av-img">' + esc(name.slice(0, 1).toUpperCase()) + '</span>';
   const mine = data.books.filter(b => b.ownerId === myId());
   return '<div class="wrap"><div class="reader" style="max-width:520px">'
     + '<h1 style="margin-top:34px">Профиль</h1>'
     + '<div class="profile-card">' + av
-    + '<div><div class="pname">' + esc(name) + '</div>'
+    + '<div style="flex:1;min-width:0">'
     + '<div class="pemail">' + esc(session.user.email || '') + '</div>'
-    + '<div class="pmeta">книг: ' + mine.length + '</div></div>'
-    + '</div>'
-    + '<div style="display:flex;gap:10px;margin-top:18px;flex-wrap:wrap">'
-    + '<button class="btn-primary" onclick="navigate(\'admin\')">Мои книги</button>'
+    + '<div class="pmeta">книг: ' + mine.length + '</div>'
+    + '<label class="btn-ghost btn-sm" style="cursor:pointer;display:inline-flex;margin-top:8px">Сменить аватар'
+    + '<input type="file" accept="image/*" style="display:none" onchange="uploadAvatar(this)"></label>'
+    + '</div></div>'
+    + '<div class="field" style="margin-top:16px"><label>Ник</label>'
+    + '<input id="p-name" value="' + esc(name) + '" placeholder="Как тебя показывать"></div>'
+    + '<div class="field"><label>Аватар — ссылка</label>'
+    + '<input id="p-avatar-url" value="' + esc(avUrl) + '" placeholder="https://…/avatar.jpg"></div>'
+    + '<div style="display:flex;gap:8px;flex-wrap:wrap">'
+    + '<button class="btn-primary" onclick="saveProfile()">Сохранить</button>'
+    + '<button class="btn-ghost" onclick="navigate(\'admin\')">Мои книги</button>'
     + '<button class="btn-ghost" onclick="signOut()">Выйти</button>'
     + '</div></div></div>';
+}
+
+async function uploadAvatar(input) {
+  const f = input.files && input.files[0];
+  if (!f) return;
+  const url = await uploadFile(f);
+  if (!url) return;
+  const inp = document.getElementById('p-avatar-url');
+  if (inp) inp.value = url;
+  const img = document.getElementById('p-av-img');
+  if (img) {
+    const fresh = document.createElement('img');
+    fresh.className = 'avatar avatar-lg';
+    fresh.id = 'p-av-img';
+    fresh.alt = '';
+    fresh.src = url;
+    img.replaceWith(fresh);
+  }
+  toast('Аватар загружен — нажми «Сохранить»');
+}
+
+async function saveProfile() {
+  const nameEl = document.getElementById('p-name');
+  const avEl = document.getElementById('p-avatar-url');
+  const name = nameEl ? nameEl.value.trim() : '';
+  const avatar = avEl ? avEl.value.trim() : '';
+  if (!name) { toast('Введи ник', 'err'); return; }
+  const res = await sb.from('profiles').update({ display_name: name, avatar_url: avatar || null }).eq('id', myId());
+  if (res.error) { toast(res.error.message, 'err'); return; }
+  await loadProfile();
+  render();
+  toast('Профиль сохранён');
 }
 
 async function signInEmail() {
