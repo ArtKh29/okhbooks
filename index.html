@@ -30,6 +30,7 @@
 <style>
 *,*::before,*::after{box-sizing:border-box}
 :root{
+  color-scheme:dark;
   --bg:#131416;--panel:#18191b;--panel2:#1c1d20;--line:#26282c;
   --ink:#fafafa;--muted:#9aa1ad;--dim:#6b7280;--accent:#cf3a2f;--accent-hover:#e04b3e;
   --r:10px;--ease:cubic-bezier(.2,.7,.2,1);
@@ -195,6 +196,23 @@ footer{margin-top:50px;border-top:1px solid var(--line)}
 @keyframes toastIn{from{opacity:0;transform:translateY(8px)}}
 @keyframes toastOut{to{opacity:0}}
 
+/* ---- светлая тема ---- */
+html[data-theme="light"]{color-scheme:light;--bg:#f4f4f6;--panel:#ffffff;--panel2:#eeeef1;--line:#e0e0e5;--ink:#17171a;--muted:#5d6067;--dim:#8a8d95}
+html[data-theme="light"] body{background:#f4f4f6;color:#17171a}
+html[data-theme="light"] .hdr{background:#fff;border-bottom-color:#e6e6ea}
+html[data-theme="light"] .hsearch input,html[data-theme="light"] .pill,html[data-theme="light"] .userchip{background:#f1f1f4;border-color:#e2e2e7;color:#17171a}
+html[data-theme="light"] .a-bar,html[data-theme="light"] .cue-bar{background:#dcdde2}
+html[data-theme="light"] .chapter:not(:last-child){border-bottom-color:#ececf0}
+html[data-theme="light"] .toast{background:#fff;color:#17171a;border-color:#e2e2e7}
+html[data-theme="light"] .form-card,html[data-theme="light"] .item,html[data-theme="light"] .mrow,html[data-theme="light"] .madd,html[data-theme="light"] .profile-card{background:#fff;border-color:#e2e2e7}
+html[data-theme="light"] .field input,html[data-theme="light"] .field textarea,html[data-theme="light"] .field select,html[data-theme="light"] .mini input,html[data-theme="light"] .mini select,html[data-theme="light"] .finput{background:#f7f7f9;border-color:#e0e0e6;color:#17171a}
+html[data-theme="light"] .mtype{background:#eeeef1;color:#5d6067}
+html[data-theme="light"] .btn-ghost{background:#fff;border-color:#dcdce2;color:#17171a}
+html[data-theme="light"] .btn-ghost:hover{background:#f0f0f3}
+html[data-theme="light"] .cover h3{color:#fff}
+html[data-theme="light"] .reader-content{color:#2a2a30}
+html[data-theme="light"] .hero p{color:#e9e9ee}
+.themebtn{font-size:15px;padding:0 12px}
 /* --- аккаунт и редактор --- */
 .authbar{display:flex;align-items:center;gap:8px}
 .userchip{display:inline-flex;align-items:center;gap:8px;height:36px;padding:0 12px 0 4px;border-radius:999px;background:var(--panel);border:1px solid var(--line);cursor:pointer;font-size:13px;transition:background .2s,border-color .2s}
@@ -450,8 +468,10 @@ function render() {
 function renderAuthBar() {
   const box = $('#authbar');
   if (!box) return;
+  const isLight = document.documentElement.getAttribute('data-theme') === 'light';
+  const themeBtn = '<span class="pill themebtn" title="Светлая / тёмная тема" onclick="toggleTheme()">' + (isLight ? '☽' : '☀') + '</span>';
   if (!authed()) {
-    box.innerHTML = '<span class="pill" onclick="navigate(\'login\')">Войти</span>';
+    box.innerHTML = themeBtn + '<span class="pill" onclick="navigate(\'login\')">Войти</span>';
     return;
   }
   const name = (profile && profile.display_name) || (session.user.email || '').split('@')[0];
@@ -662,6 +682,11 @@ function renderProfile() {
     + '<input id="p-name" value="' + esc(name) + '" placeholder="Как тебя показывать"></div>'
     + '<div class="field"><label>Аватар — ссылка</label>'
     + '<input id="p-avatar-url" value="' + esc(avUrl) + '" placeholder="https://…/avatar.jpg"></div>'
+    + '<div class="field" style="margin-top:4px"><label>Тема оформления</label>'
+    + '<div style="display:flex;gap:8px">'
+    + '<button class="btn-ghost btn-sm" onclick="applyTheme(\'dark\');render()">Тёмная</button>'
+    + '<button class="btn-ghost btn-sm" onclick="applyTheme(\'light\');render()">Светлая</button>'
+    + '</div></div>'
     + '<div style="display:flex;gap:8px;flex-wrap:wrap">'
     + '<button class="btn-primary" onclick="saveProfile()">Сохранить</button>'
     + '<button class="btn-ghost" onclick="navigate(\'admin\')">Мои книги</button>'
@@ -1031,7 +1056,19 @@ function initScroll() {
 }
 
 // ---------- старт ----------
+function savedTheme() { try { return localStorage.getItem('okh_theme') || 'dark'; } catch (e) { return 'dark'; } }
+function applyTheme(t) {
+  document.documentElement.setAttribute('data-theme', t);
+  try { localStorage.setItem('okh_theme', t); } catch (e) {}
+}
+function toggleTheme() {
+  const cur = document.documentElement.getAttribute('data-theme') === 'light' ? 'dark' : 'light';
+  applyTheme(cur);
+  render();
+}
+
 async function boot(fromLogin) {
+  applyTheme(savedTheme());
   const { data: s } = await sb.auth.getSession();
   session = s.session || null;
   await loadProfile();
