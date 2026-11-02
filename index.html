@@ -607,17 +607,38 @@ function renderChapter() {
 function renderLogin() {
   return '<div class="wrap"><div class="reader" style="max-width:420px">'
     + '<h1 style="margin-top:40px">Вход</h1>'
-    + '<div class="sub">Регистрация по приглашению — аккаунт создаёт автор.</div>'
+    + '<div class="sub">Доступ по приглашению. Введи свою почту — пришлём ссылку для входа.</div>'
     + '<div class="authbox">'
-    + '<label class="flabel">E-mail</label>'
+    + '<label class="flabel">Почта</label>'
     + '<input id="auth-email" type="email" class="finput" placeholder="you@example.com" autocomplete="email">'
-    + '<label class="flabel" style="margin-top:12px">Пароль</label>'
-    + '<input id="auth-pass" type="password" class="finput" placeholder="••••••••" autocomplete="current-password">'
-    + '<button class="btn-primary" style="width:100%;margin-top:16px" onclick="signInEmail()">Войти</button>'
-    + '<div class="orline"><span>или</span></div>'
-    + '<button class="btn-ghost" style="width:100%" onclick="signInGoogle()">Продолжить с Google</button>'
-    + '<p class="fnote">Google-вход включится, как только автор добавит OAuth-ключи в Supabase.</p>'
+    + '<button class="btn-primary" style="width:100%;margin-top:14px" onclick="sendMagicLink()">Прислать ссылку</button>'
+    + '<div id="login-hint" class="fnote" style="margin-top:10px"></div>'
+    + '<details style="margin-top:16px"><summary class="fnote" style="cursor:pointer">Войти с паролем</summary>'
+    + '<input id="auth-pass" type="password" class="finput" style="margin-top:10px" placeholder="Пароль" autocomplete="current-password">'
+    + '<button class="btn-ghost" style="width:100%;margin-top:8px" onclick="signInEmail()">Войти</button>'
+    + '</details>'
+    + '<p class="fnote" style="margin-top:14px">Если письма нет — проверь «Спам». Ссылка одноразовая и живёт час.</p>'
     + '</div></div></div>';
+}
+
+async function sendMagicLink() {
+  const emailEl = document.getElementById('auth-email');
+  const email = emailEl ? emailEl.value.trim() : '';
+  if (!email) { toast('Введи почту', 'err'); return; }
+  const hint = document.getElementById('login-hint');
+  if (hint) hint.textContent = 'Отправляю…';
+  const redirectTo = location.origin + location.pathname;
+  const { error } = await sb.auth.signInWithOtp({
+    email,
+    options: { emailRedirectTo: redirectTo, shouldCreateUser: false }
+  });
+  if (error) {
+    if (hint) hint.textContent = '';
+    toast(error.message, 'err');
+    return;
+  }
+  if (hint) hint.innerHTML = 'Письмо отправлено на <b>' + esc(email) + '</b>. Открой его и нажми ссылку.';
+  toast('Письмо отправлено');
 }
 
 function renderProfile() {
