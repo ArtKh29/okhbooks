@@ -265,7 +265,7 @@ html[data-theme="light"] .hero p{color:#e9e9ee}
 .pname{font-size:17px;font-weight:600}
 .pemail{font-size:13px;color:var(--muted);margin-top:2px}
 .pmeta{font-size:12px;color:var(--dim);margin-top:4px}
-@media(max-width:760px){.madd{grid-template-columns:1fr 1fr}.item{flex-wrap:wrap}.item .acts{margin-left:0;width:100%}}
+
 /* оживление */
 .hdr{transition:box-shadow .25s ease}
 .hdr.scrolled{box-shadow:0 8px 26px -14px rgba(0,0,0,.95)}
@@ -283,18 +283,27 @@ html[data-theme="light"] .hero p{color:#e9e9ee}
 .pill:active,.back:active,.nav2 button:active,.play:active,.cue-play:active{transform:scale(.96)}
 @media(prefers-reduced-motion:reduce){.card{animation:none}.hero-art{animation:none}}
 @media(max-width:760px){
-  .hero{grid-template-columns:1fr;min-height:0} .hero-art{height:210px;order:-1} .hero-art::after{background:linear-gradient(0deg,#15161a 0%,rgba(21,22,26,.35) 45%,rgba(21,22,26,0) 85%)} .row2{grid-template-columns:1fr}
-  .hero-inner{padding:22px 18px 20px}
-  .hero h1{font-size:1.75rem}
+  .hero{grid-template-columns:1fr;min-height:0}
+  .hero-art{height:300px;order:-1;background-image:url('makima-mobile.jpg');background-position:center 16%;background-size:cover}
+  .hero-art::after{background:linear-gradient(0deg,#15161a 0%,rgba(21,22,26,.42) 42%,rgba(21,22,26,0) 88%)}
+  .hero-inner{padding:20px 18px 22px}
+  .hero h1{font-size:1.7rem;line-height:1.15}
+  .hero p{font-size:14px}
   .hero-tag{font-size:10.5px}
-  .hdr-in{padding:0 14px;height:56px;gap:10px}
+  .hdr-in{padding:0 12px;height:56px;gap:8px}
   .hsearch{max-width:none}
   .hnav{display:none}
+  .authbar .pill{height:32px;padding:0 12px;font-size:12.5px}
+  .userchip > span:last-child{display:none}
   .wrap{padding:0 14px}
   .grid{grid-template-columns:repeat(auto-fill,minmax(128px,1fr));gap:16px 12px}
   .book-head{gap:18px}
-  .book-cover{width:140px}
+  .book-cover{width:130px}
   .foot{padding:16px 14px 34px}
+  .row2{grid-template-columns:1fr}
+  .madd{grid-template-columns:1fr 1fr}
+  .item{flex-wrap:wrap}
+  .item .acts{margin-left:0;width:100%}
 }
 @media(prefers-reduced-motion:reduce){
   *,*::before,*::after{animation-duration:.001ms!important;transition-duration:.001ms!important}
@@ -319,7 +328,8 @@ html[data-theme="light"] .hero p{color:#e9e9ee}
       <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
       <input id="search" type="search" placeholder="Поиск книг" autocomplete="off" oninput="filterBooks()">
     </div>
-    <nav class="hnav"><span class="pill on" onclick="navigate('home')">Библиотека</span><span id="authbar" class="authbar"></span></nav>
+    <div id="authbar" class="authbar"></div>
+    <nav class="hnav"><span class="pill on" onclick="navigate('home')">Библиотека</span></nav>
   </div>
 </header>
 
