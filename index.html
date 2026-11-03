@@ -618,12 +618,21 @@ function homePageOwner() {
   return keys.length ? keys[0] : null;
 }
 
+function pageBlockHasContent(b) {
+  if (!b) return false;
+  if (b.type === 'divider') return true;
+  if (b.type === 'gallery') return Array.isArray(b.urls) && b.urls.length > 0;
+  if (b.type === 'heading' || b.type === 'text' || b.type === 'quote') return !!(b.text || '').trim();
+  if (b.type === 'button') return !!(b.text || '').trim() || !!(b.url || '').trim();
+  return !!(b.url || '').trim() || !!(b.caption || '').trim();
+}
+
 function renderHome() {
   const books = data.books.filter(b => b.status === 'published');
   const owner = homePageOwner();
   const page = owner && data.pages ? data.pages[owner] : null;
   const pd = page && page.data ? page.data : null;
-  const custom = pd && Array.isArray(pd.blocks) && pd.blocks.length > 0;
+  const custom = pd && Array.isArray(pd.blocks) && pd.blocks.some(pageBlockHasContent);
   const bg = pd && pd.background ? pd.background : '';
 
   const hero = '<section class="hero"><div class="hero-art"></div>'
