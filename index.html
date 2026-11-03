@@ -312,6 +312,26 @@ html[data-theme="light"] .hero p{color:#e9e9ee}
 /* ---------- компактный плеер в тексте ---------- */
 .a-embed{display:block;width:100%;max-width:320px;height:34px;margin-top:6px;border-radius:8px}
 .media-block .a-title{font-size:12.5px;color:var(--muted);margin-bottom:2px}
+.ma-player{display:flex;align-items:center;gap:10px;max-width:430px;padding:4px 0}
+.ma-play{width:30px;height:30px;flex-shrink:0;border-radius:50%;border:1px solid var(--line);background:var(--panel);color:var(--ink);cursor:pointer;font-size:10px;display:grid;place-items:center;padding:0}
+.ma-play:hover{border-color:var(--accent);color:var(--accent)}
+.ma-bar{flex:1;height:3px;background:var(--line);border-radius:2px;cursor:pointer;position:relative;overflow:hidden}
+.ma-bar i{display:block;height:100%;width:0;background:var(--accent);border-radius:2px;transition:width .1s linear}
+.ma-time{flex-shrink:0;font-size:11.5px;color:var(--muted);font-variant-numeric:tabular-nums;min-width:78px;text-align:right}
+
+/* ---------- меню пользователя ---------- */
+.usermenu{position:fixed;z-index:95;width:220px;background:var(--panel2);border:1px solid var(--line);border-radius:12px;padding:6px;box-shadow:0 18px 46px rgba(0,0,0,.55)}
+.usermenu .um-head{padding:9px 11px 10px;border-bottom:1px solid var(--line);margin-bottom:5px}
+.usermenu .um-head b{display:block;font-size:13.5px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.usermenu .um-head small{display:block;color:var(--dim);font-size:11.5px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;margin-top:2px}
+.usermenu button{display:block;width:100%;text-align:left;background:none;border:0;color:var(--ink);font-size:13px;padding:8px 11px;border-radius:8px;cursor:pointer}
+.usermenu button:hover{background:var(--panel)}
+.usermenu button.danger{color:#ff9c92}
+
+/* ---------- настройки ---------- */
+.settings-sec{border:1px solid var(--line);background:var(--panel);border-radius:12px;padding:18px;margin-bottom:14px}
+.settings-sec h3{margin:0 0 14px;font-size:16px}
+.settings-sec .hint{margin-top:10px;color:var(--dim);font-size:12.5px}
 
 /* ---------- конструктор страницы ---------- */
 .pblock{position:relative;border:1px solid var(--line);background:var(--panel);border-radius:12px;padding:14px;margin-bottom:10px}
@@ -543,6 +563,7 @@ function render() {
     case 'chapter': app.innerHTML = renderChapter(); break;
     case 'login': app.innerHTML = renderLogin(); break;
     case 'profile': app.innerHTML = renderProfile(); break;
+    case 'settings': app.innerHTML = renderSettings(); break;
     case 'admin': app.innerHTML = renderAdmin(); break;
     default: app.innerHTML = renderHome();
   }
@@ -562,8 +583,31 @@ function renderAuthBar() {
     ? '<img class="avatar" src="' + esc(profile.avatar_url) + '" alt="">'
     : '<span class="avatar avatar-empty">' + esc(name.slice(0, 1).toUpperCase()) + '</span>';
   box.innerHTML = '<span class="pill" onclick="navigate(\'admin\')" id="nav-admin">Мои книги</span>'
-    + '<span class="userchip" onclick="navigate(\'profile\')">' + av + '<span>' + esc(name) + '</span></span>';
+    + '<span class="userchip" onclick="toggleUserMenu(event)">' + av + '<span>' + esc(name) + '</span></span>';
 }
+
+function toggleUserMenu(e) {
+  e.preventDefault();
+  e.stopPropagation();
+  closeUserMenu();
+  const name = (profile && profile.display_name) || (session.user.email || '').split('@')[0];
+  const email = (session.user && session.user.email) || '';
+  const m = document.createElement('div');
+  m.id = 'usermenu';
+  m.className = 'usermenu';
+  const r = e.currentTarget.getBoundingClientRect();
+  m.style.left = Math.max(8, Math.min(innerWidth - 232, r.right - 220)) + 'px';
+  m.style.top = (r.bottom + 8) + 'px';
+  m.innerHTML = '<div class="um-head"><b>' + esc(name) + '</b><small>' + esc(email) + '</small></div>'
+    + '<button onclick="closeUserMenu();navigate(\'profile\')">Профиль</button>'
+    + '<button onclick="closeUserMenu();navigate(\'admin\')">Мои книги</button>'
+    + '<button onclick="closeUserMenu();navigate(\'settings\')">Настройки</button>'
+    + '<button class="danger" onclick="closeUserMenu();signOut()">Выйти</button>';
+  document.body.appendChild(m);
+}
+
+function closeUserMenu() { const m = document.getElementById('usermenu'); if (m) m.remove(); }
+document.addEventListener('click', closeUserMenu);
 
 function homePageOwner() {
   if (authed() && data.pages && data.pages[myId()]) return myId();
@@ -757,12 +801,68 @@ function inlineMediaHtml(url, kind, title) {
       + (title ? '<div class="cap">' + esc(title) + '</div>' : '')
       + '</div></div>';
   }
-  return '<div class="media-block"><div class="media-label">музыка</div>'
-    + '<div class="audio" style="display:block"><div class="a-info" style="width:100%">'
-    + (title ? '<div class="a-title">' + esc(title) + '</div>' : '')
-    + '<audio controls preload="metadata" src="' + u + '" class="a-embed"></audio>'
-    + (url ? '' : '<div class="a-hint">Ссылка не указана</div>')
-    + '</div></div></div>';
+  return '<div class="media-block">' + miniAudioHtml(url) + '</div>';
+}
+
+function miniAudioHtml(url) {
+  return '<div class="ma-player" data-src="' + esc(url || '') + '">'
+    + '<button class="ma-play" onclick="maToggle(this)">▶</button>'
+    + '<div class="ma-bar" onclick="maSeek(event,this)"><i></i></div>'
+    + '<span class="ma-time">0:00</span>'
+    + '</div>';
+}
+
+const MA = new WeakMap();
+const maFmt = (s) => {
+  if (!s || isNaN(s)) return '0:00';
+  s = Math.floor(s);
+  return Math.floor(s / 60) + ':' + String(s % 60).padStart(2, '0');
+};
+
+function maToggle(btn) {
+  const box = btn.closest('.ma-player');
+  if (!box) return;
+  const src = box.getAttribute('data-src') || '';
+  if (!src) { toast('Ссылка не указана', 'err'); return; }
+  let a = MA.get(box);
+  if (!a) {
+    a = new Audio(src);
+    a.preload = 'metadata';
+    MA.set(box, a);
+    const bar = box.querySelector('.ma-bar i');
+    const tm = box.querySelector('.ma-time');
+    a.addEventListener('timeupdate', () => {
+      if (bar && a.duration) bar.style.width = (a.currentTime / a.duration * 100) + '%';
+      if (tm) tm.textContent = maFmt(a.currentTime) + ' / ' + maFmt(a.duration);
+    });
+    a.addEventListener('loadedmetadata', () => { if (tm) tm.textContent = '0:00 / ' + maFmt(a.duration); });
+    a.addEventListener('ended', () => {
+      btn.textContent = '▶';
+      if (bar) bar.style.width = '0%';
+      if (tm) tm.textContent = '0:00 / ' + maFmt(a.duration);
+    });
+  }
+  document.querySelectorAll('.ma-player').forEach((other) => {
+    if (other === box) return;
+    const oa = MA.get(other);
+    if (oa && !oa.paused) { oa.pause(); const ob = other.querySelector('.ma-play'); if (ob) ob.textContent = '▶'; }
+  });
+  if (a.paused) {
+    a.play().catch(() => toast('Не удалось воспроизвести', 'err'));
+    btn.textContent = '❚❚';
+  } else {
+    a.pause();
+    btn.textContent = '▶';
+  }
+}
+
+function maSeek(e, bar) {
+  const box = bar.closest('.ma-player');
+  if (!box) return;
+  const a = MA.get(box);
+  if (!a || !a.duration) return;
+  const r = bar.getBoundingClientRect();
+  a.currentTime = Math.max(0, Math.min(1, (e.clientX - r.left) / r.width)) * a.duration;
 }
 
 function insertAtCursor(el, text) {
@@ -967,6 +1067,7 @@ function renderProfile() {
 
     + '<div style="display:flex;gap:8px;flex-wrap:wrap">'
     + '<button class="btn-primary" onclick="saveProfile()">Сохранить</button>'
+    + '<button class="btn-ghost" onclick="navigate(\'settings\')">Настройки</button>'
     + '<button class="btn-ghost" onclick="navigate(\'admin\')">Мои книги</button>'
     + '<button class="btn-ghost" onclick="signOut()">Выйти</button>'
     + '</div></div></div>';
@@ -1007,6 +1108,61 @@ async function signOut() {
   toast('Вы вышли');
 }
 
+function renderSettings() {
+  if (!authed()) return renderLogin();
+  const name = (profile && profile.display_name) || (session.user.email || '').split('@')[0];
+  const avUrl = (profile && profile.avatar_url) || '';
+  const av = avUrl
+    ? '<img class="avatar avatar-lg" id="p-av-img" src="' + esc(avUrl) + '" alt="">'
+    : '<span class="avatar avatar-lg avatar-empty" id="p-av-img">' + esc(name.slice(0, 1).toUpperCase()) + '</span>';
+  return '<div class="wrap"><div class="admin" style="padding-top:26px">'
+    + '<div class="breadcrumbs"><a onclick="navigate(\'profile\')">Профиль</a><span>/</span><span>Настройки</span></div>'
+    + '<h2 style="margin:8px 0 18px;font-size:22px">Настройки</h2>'
+    + '<div class="settings-sec"><h3>Профиль</h3>'
+    + '<div style="display:flex;gap:14px;align-items:center;margin-bottom:14px">' + av
+    + '<div><div class="pemail">' + esc(session.user.email || '') + '</div>'
+    + '<label class="btn-ghost btn-sm" style="cursor:pointer;display:inline-flex;margin-top:6px">Сменить аватар'
+    + '<input type="file" accept="image/*" style="display:none" onchange="uploadAvatar(this)"></label></div></div>'
+    + '<div class="field"><label>Ник</label><input id="p-name" value="' + esc(name) + '" placeholder="Как тебя показывать"></div>'
+    + '<button class="btn-primary" onclick="saveProfile()">Сохранить</button>'
+    + '</div>'
+    + '<div class="settings-sec"><h3>Безопасность</h3>'
+    + '<div class="field"><label>Новый пароль</label><input id="sec-pass" type="password" placeholder="Минимум 6 символов" autocomplete="new-password"></div>'
+    + '<div class="field"><label>Повтори пароль</label><input id="sec-pass2" type="password" placeholder="Ещё раз" autocomplete="new-password"></div>'
+    + '<div style="display:flex;gap:8px;flex-wrap:wrap">'
+    + '<button class="btn-primary" onclick="changePassword()">Сменить пароль</button>'
+    + '<button class="btn-ghost" onclick="signOutAll()">Выйти со всех устройств</button>'
+    + '</div>'
+    + '<div class="hint">Смена пароля действует сразу. «Выйти со всех устройств» завершит все сессии, включая эту.</div>'
+    + '</div>'
+    + '<div class="settings-sec"><h3>Сайт</h3>'
+    + '<div class="hint" style="margin:0 0 12px">Главная страница собирается из блоков. Добавь блок, заполни поля; ПКМ по блоку — меню.</div>'
+    + renderAdminPage()
+    + '</div>'
+    + '</div></div>';
+}
+
+async function changePassword() {
+  const p1 = ($('#sec-pass').value || '');
+  const p2 = ($('#sec-pass2').value || '');
+  if (p1.length < 6) return toast('Пароль — минимум 6 символов', 'err');
+  if (p1 !== p2) return toast('Пароли не совпадают', 'err');
+  const { error } = await sb.auth.updateUser({ password: p1 });
+  if (error) return toast(error.message, 'err');
+  $('#sec-pass').value = '';
+  $('#sec-pass2').value = '';
+  toast('Пароль изменён');
+}
+
+async function signOutAll() {
+  const { error } = await sb.auth.signOut({ scope: 'global' });
+  if (error) { toast(error.message, 'err'); return; }
+  session = null; profile = null;
+  await loadData();
+  navigate('home');
+  toast('Вышли со всех устройств');
+}
+
 // ---------- редактор ----------
 let editBookId = null, editChapterId = null, tempMedia = [], tab = 'books';
 let outlineBookId = null, outlineNoteFor = null, outlineDragId = null;
@@ -1026,12 +1182,10 @@ function renderAdmin() {
     + '<button class="tab ' + (tab === 'books' ? 'active' : '') + '" onclick="setTab(\'books\')">Книги</button>'
     + '<button class="tab ' + (tab === 'chapters' ? 'active' : '') + '" onclick="setTab(\'chapters\')">Главы</button>'
     + '<button class="tab ' + (tab === 'outline' ? 'active' : '') + '" onclick="setTab(\'outline\')">Сюжет</button>'
-    + '<button class="tab ' + (tab === 'page' ? 'active' : '') + '" onclick="setTab(\'page\')">Страница</button>'
     + '</div>'
     + (tab === 'books' ? renderAdminBooks(mine)
       : tab === 'chapters' ? renderAdminChapters(mine)
-      : tab === 'outline' ? renderAdminOutline(mine)
-      : renderAdminPage())
+      : renderAdminOutline(mine))
     + '</div></section></div>';
 }
 
@@ -1364,8 +1518,7 @@ function renderPageBlocks(pd) {
         return b.kind === 'video'
           ? '<div class="video"><video controls preload="metadata"><source src="' + esc(b.url || '') + '"></video>'
             + (b.caption ? '<div class="cap">' + esc(b.caption) + '</div>' : '') + '</div>'
-          : '<div class="audio" style="display:block"><div class="a-info" style="width:100%">'
-            + '<audio controls preload="metadata" src="' + esc(b.url || '') + '" class="a-embed"></audio></div></div>';
+          : miniAudioHtml(b.url || '');
       case 'button':
         return '<a class="pb-btn" href="' + esc(b.url || '#') + '" target="_blank" rel="noopener">' + esc(b.text || 'Ссылка') + '</a>';
       case 'quote':
@@ -1421,9 +1574,9 @@ function pageBlockCard(b) {
 function renderAdminPage() {
   if (!authed()) return renderLogin();
   const pd = pageGet();
-  return '<div class="form-card">'
+  return '<div>'
     + '<div class="otoolbar">'
-    + '<strong style="font-size:15px">Страница сайта</strong>'
+    + '<strong style="font-size:14px">Блоки страницы</strong>'
     + '<span class="grow"></span>'
     + '<button class="btn-ghost btn-sm" onclick="pageSave()">Сохранить</button>'
     + '</div>'
