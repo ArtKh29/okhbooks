@@ -490,18 +490,20 @@ const mediaOf = c => Array.isArray(c && c.media) ? c.media : [];
 // ---------- загрузка данных ----------
 async function loadData() {
   loading = true;
-  const [b, c, m, o, pg, ar] = await Promise.all([
+  const [b, c, m, o, pg, ar, bm] = await Promise.all([
     sb.from('books').select('*').order('created_at', { ascending: false }),
     sb.from('chapters').select('*').order('num', { ascending: true }),
     sb.from('media').select('*').order('created_at', { ascending: true }),
     sb.from('book_outline').select('*'),
     sb.from('site_pages').select('*'),
-    sb.from('access_requests').select('*')
+    sb.from('access_requests').select('*'),
+    sb.from('book_marks').select('*')
   ]);
   if (b.error) toast('Не удалось загрузить книги: ' + b.error.message, 'err');
   const books = (b.data || []).map(x => ({
     id: x.id, ownerId: x.owner_id, title: x.title, author: x.author, genre: x.genre,
-    desc: x.description, cover_url: x.cover_url, status: x.status, createdAt: x.created_at
+    desc: x.description, cover_url: x.cover_url, status: x.status, stage: x.stage || 'writing',
+    createdAt: x.created_at
   }));
   const chapters = (c.data || []).map(x => ({
     id: x.id, bookId: x.book_id, num: x.num, title: x.title, content: x.content,
@@ -517,8 +519,68 @@ async function loadData() {
   (o.data || []).forEach(row => { outlines[row.book_id] = Array.isArray(row.data) ? row.data : []; });
   const pages = {};
   (pg.data || []).forEach(row => { pages[row.user_id] = { slug: row.slug, data: row.data || {} }; });
-  data = { books, chapters, outlines, pages, requests: (ar.data || []) };
+  const marks = {};
+  (bm.data || []).forEach(row => {
+    if (!marks[row.user_id]) marks[row.user_id] = {};
+    marks[row.user_id][row.book_id] = row.status;
+  });
+  data = { books, chapters, outlines, pages, requests: (ar.data || []), marks };
   loading = false;
+}
+
+// ---------- закладки читателя ----------
+const MARK_LABELS = { planned: 'В планах', reading: 'Читаю', read: 'Прочитано', dropped: 'Брошено' };
+
+function markOf(bookId) {
+  const mm = (data.marks && data.marks[myId()]) || {};
+  return mm[bookId] || null;
+}
+
+async function setMark(bookId, status) {
+  if (!authed()) { toast('Войди, чтобы сохранять закладки', 'err'); return; }
+  if (!data.marks) data.marks = {};
+  if (!data.marks[myId()]) data.marks[myId()] = {};
+  const cur = data.marks[myId()][bookId];
+  if (cur === status) {
+    delete data.marks[myId()][bookId];
+    const r = await sb.from('book_marks').delete().eq('user_id', myId()).eq('book_id', bookId);
+    if (r.error) { toast(r.error.message, 'err'); return; }
+  } else {
+    data.marks[myId()][bookId] = status;
+    const r = await sb.from('book_marks').upsert({
+      user_id: myId(), book_id: bookId, status, updated_at: new Date().toISOString()
+    });
+    if (r.error) { toast(r.error.message, 'err'); return; }
+  }
+  render();
+}
+
+function bookCard(b) {
+  const ch = chaptersOf(b.id);
+  return '<article class="card" onclick="navigate(\'book\',{bookId:\'' + b.id + '\'})">'
+    + '<div class="cover" style="--cover:' + esc(coverOf(b)) + '">'
+    + (b.cover_url ? '<img class="covimg" src="' + esc(b.cover_url) + '" alt="" loading="lazy">' : '')
+    + '<h3>' + esc(b.title) + '</h3></div>'
+    + '<div class="ctitle">' + esc(b.title) + '</div>'
+    + '<div class="cmeta"><span>' + esc(b.genre || 'Без жанра') + '</span><span>' + ch.length + ' гл.</span></div>'
+    + '</article>';
+}
+
+function renderMarks() {
+  if (!authed()) return renderLogin();
+  const mm = (data.marks && data.marks[myId()]) || {};
+  const keys = ['reading', 'planned', 'read', 'dropped'];
+  const cur = route.status && MARK_LABELS[route.status] ? route.status : 'reading';
+  const ids = Object.keys(mm).filter(id => mm[id] === cur);
+  const books = data.books.filter(b => ids.indexOf(b.id) !== -1);
+  return '<div class="wrap"><div class="admin" style="padding-top:26px">'
+    + '<h2 style="margin:0 0 16px;font-size:22px">Закладки</h2>'
+    + '<div class="tabs">' + keys.map(k =>
+      '<button class="tab ' + (cur === k ? 'active' : '') + '" onclick="navigate(\'marks\',{status:\'' + k + '\'})">' + MARK_LABELS[k] + (Object.keys(mm).filter(id => mm[id] === k).length ? ' · ' + Object.keys(mm).filter(id => mm[id] === k).length : '') + '</button>'
+    ).join('') + '</div>'
+    + (books.length ? '<div class="grid">' + books.map(bookCard).join('') + '</div>'
+      : '<div class="empty"><p>Тут пока пусто. Отмечай книги на их страницах — «Читаю», «Прочитано» и так далее.</p></div>')
+    + '</div></div>';
 }
 
 async function loadProfile() {
@@ -566,6 +628,7 @@ function render() {
     case 'login': app.innerHTML = renderLogin(); break;
     case 'profile': app.innerHTML = renderProfile(); break;
     case 'settings': app.innerHTML = renderSettings(); break;
+    case 'marks': app.innerHTML = renderMarks(); break;
     case 'admin': app.innerHTML = renderAdmin(); break;
     default: app.innerHTML = renderHome();
   }
@@ -603,6 +666,7 @@ function toggleUserMenu(e) {
   m.innerHTML = '<div class="um-head"><b>' + esc(name) + '</b><small>' + esc(email) + '</small></div>'
     + '<button onclick="closeUserMenu();navigate(\'profile\')">Профиль</button>'
     + '<button onclick="closeUserMenu();navigate(\'admin\')">Мои книги</button>'
+    + '<button onclick="closeUserMenu();navigate(\'marks\',{status:\'reading\'})">Закладки</button>'
     + '<button onclick="closeUserMenu();navigate(\'settings\')">Настройки</button>'
     + '<button class="danger" onclick="closeUserMenu();signOut()">Выйти</button>';
   document.body.appendChild(m);
@@ -659,16 +723,7 @@ function renderBooks(books) {
       + (authed() ? 'Добавь первую книгу в «Мои книги».' : 'Автор ещё наполняет библиотеку.')
       + '</p></div>';
   }
-  return '<div class="grid">' + books.map(b => {
-    const ch = chaptersOf(b.id);
-    return '<article class="card" onclick="navigate(\'book\',{bookId:\'' + b.id + '\'})">'
-      + '<div class="cover" style="--cover:' + esc(coverOf(b)) + '">'
-      + (b.cover_url ? '<img class="covimg" src="' + esc(b.cover_url) + '" alt="" loading="lazy">' : '')
-      + '<h3>' + esc(b.title) + '</h3></div>'
-      + '<div class="ctitle">' + esc(b.title) + '</div>'
-      + '<div class="cmeta"><span>' + esc(b.genre || 'Без жанра') + '</span><span>' + ch.length + ' гл.</span></div>'
-      + '</article>';
-  }).join('') + '</div>';
+  return '<div class="grid">' + books.map(bookCard).join('') + '</div>';
 }
 
 function renderBook() {
@@ -687,8 +742,15 @@ function renderBook() {
     + '<div class="book-info">'
     + '<h1>' + esc(book.title) + '</h1>'
     + '<span class="genre">' + esc(book.genre || 'Без жанра') + '</span>'
+    + '<span class="badge" style="margin-left:8px">' + (book.stage === 'finished' ? 'закончена' : 'пишется') + '</span>'
     + (book.author ? '<div class="author">Автор: <b>' + esc(book.author) + '</b></div>' : '')
     + '<p class="desc">' + esc(book.desc || 'Описание не добавлено.') + '</p>'
+    + (authed()
+      ? '<div class="marks" style="display:flex;gap:6px;flex-wrap:wrap;margin:0 0 14px">'
+        + Object.keys(MARK_LABELS).map(k =>
+          '<button class="pill ' + (markOf(book.id) === k ? 'on' : '') + '" onclick="setMark(\'' + book.id + '\',\'' + k + '\')">' + MARK_LABELS[k] + '</button>').join('')
+        + '</div>'
+      : '<div class="fnote" style="margin:0 0 14px">Войди, чтобы отметить: «Читаю», «Прочитано», «В планах».</div>')
     + '<div class="stats">'
     + '<div class="stat"><b>' + ch.length + '</b><span>глав</span></div>'
     + '<div class="stat"><b>' + words + '</b><span>слов</span></div>'
@@ -1232,6 +1294,13 @@ function renderAdminBooks(mine) {
     + '</select></div>'
     + '</div>'
     + '<div class="field"><label>Описание</label><textarea id="b-desc" placeholder="О чём книга">' + esc(cur.desc || '') + '</textarea></div>'
+    + '<div class="row2">'
+    + '<div class="field"><label>Состояние</label><select id="b-stage">'
+    + '<option value="writing" ' + (cur.stage !== 'finished' ? 'selected' : '') + '>пишется</option>'
+    + '<option value="finished" ' + (cur.stage === 'finished' ? 'selected' : '') + '>закончена</option>'
+    + '</select></div>'
+    + '<div class="field"></div>'
+    + '</div>'
     + '<div class="field"><label>Обложка</label>'
     + '<div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap">'
     + '<input id="b-cover-url" value="' + esc(cur.cover_url || '') + '" placeholder="https://…/cover.jpg" style="flex:1;min-width:200px">'
@@ -1280,7 +1349,8 @@ async function saveBook() {
     genre: ($('#b-genre').value || '').trim() || null,
     description: ($('#b-desc').value || '').trim() || null,
     cover_url: ($('#b-cover-url').value || '').trim() || null,
-    status: $('#b-status').value
+    status: $('#b-status').value,
+    stage: $('#b-stage') ? $('#b-stage').value : 'writing'
   };
   let res;
   if (editBookId) res = await sb.from('books').update(payload).eq('id', editBookId).select();
