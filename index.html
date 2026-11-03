@@ -621,25 +621,44 @@ function renderChapter() {
   const photos = m.filter(x => x.type === 'photo');
   const topAudios = audios.filter(a => !(a.pos > 0));
   const cueAudios = audios.filter(a => a.pos > 0);
-  const paras = (chapter.content || '').split('\n').map(p => p.trim()).filter(Boolean);
   const cuesByPos = {};
   cueAudios.forEach((a, k) => { const p = a.pos; (cuesByPos[p] = cuesByPos[p] || []).push(k); });
-  const contentHtml = paras.map((p, i) => {
-    const num = i + 1;
-    let h = '<p>' + esc(p) + '</p>';
-    if (cuesByPos[num]) {
-      h += cuesByPos[num].map(k => {
-        const a = cueAudios[k];
-        return '<div class="cue">'
-          + '<div class="cue-play ' + (a.url ? '' : 'disabled') + '" id="cuePlay' + k + '" onclick="toggleCue(' + k + ')">▶</div>'
-          + '<div class="cue-info">'
-          + '<div class="cue-title">' + esc(a.title || 'Музыка') + '</div>'
-          + '<div class="cue-bar" onclick="seekCue(event,' + k + ')"><div class="cue-fill" id="cueFill' + k + '"></div></div>'
-          + '<div class="cue-time"><span id="cueCur' + k + '">0:00</span> / <span>' + (a.dur > 0 ? a.dur + ' с' : 'весь трек') + '</span></div>'
-          + '</div></div>';
-      }).join('');
+  let paraNum = 0;
+  const contentHtml = (chapter.content || '').split('\n').map(line => {
+    const t = line.trim();
+    if (!t) return '';
+    // строка без медиа-маркеров — обычный абзац
+    if (t.indexOf('[[media:') === -1) {
+      paraNum++;
+      let h = '<p>' + esc(t) + '</p>';
+      if (cuesByPos[paraNum]) {
+        h += cuesByPos[paraNum].map(k => {
+          const a = cueAudios[k];
+          return '<div class="cue">'
+            + '<div class="cue-play ' + (a.url ? '' : 'disabled') + '" id="cuePlay' + k + '" onclick="toggleCue(' + k + ')">▶</div>'
+            + '<div class="cue-info">'
+            + '<div class="cue-title">' + esc(a.title || 'Музыка') + '</div>'
+            + '<div class="cue-bar" onclick="seekCue(event,' + k + ')"><div class="cue-fill" id="cueFill' + k + '"></div></div>'
+            + '<div class="cue-time"><span id="cueCur' + k + '">0:00</span> / <span>' + (a.dur > 0 ? a.dur + ' с' : 'весь трек') + '</span></div>'
+            + '</div></div>';
+        }).join('');
+      }
+      return h;
     }
-    return h;
+    // строка с маркерами [[media:URL|kind|title]]
+    const re = /\[\[media:([^|\]]+)\|(audio|photo|video)\|([^\]]*)\]\]/g;
+    let out = '';
+    let last = 0;
+    let m;
+    while ((m = re.exec(t))) {
+      const before = t.slice(last, m.index).trim();
+      if (before) out += '<p>' + esc(before) + '</p>';
+      out += inlineMediaHtml(m[1], m[2], m[3]);
+      last = m.index + m[0].length;
+    }
+    const after = t.slice(last).trim();
+    if (after) out += '<p>' + esc(after) + '</p>';
+    return out;
   }).join('');
 
   return '<div class="wrap"><div class="reader">'
@@ -673,6 +692,86 @@ function renderChapter() {
     + '<button ' + (next ? 'onclick="navigate(\'chapter\',{chapterId:\'' + next.id + '\'})"' : 'disabled') + '>Следующая →</button>'
     + '</div></div></div>';
 }
+
+// ---------- медиа внутри текста ----------
+function inlineMediaHtml(url, kind, title) {
+  const u = esc(url || '');
+  if (kind === 'photo') {
+    return '<div class="media-block"><div class="photos"><div class="photo" data-url="' + u + '" onclick="openPhoto(this)">'
+      + (url ? '<img src="' + u + '" alt="" loading="lazy">' : '<div style="padding:20px;color:var(--dim)">фото без ссылки</div>')
+      + (title ? '<div class="cap">' + esc(title) + '</div>' : '')
+      + '</div></div></div>';
+  }
+  if (kind === 'video') {
+    return '<div class="media-block"><div class="video">'
+      + (url ? '<video controls preload="metadata"><source src="' + u + '"></video>' : '<div style="padding:30px;text-align:center;color:var(--dim)">Ссылка не указана</div>')
+      + (title ? '<div class="cap">' + esc(title) + '</div>' : '')
+      + '</div></div>';
+  }
+  return '<div class="media-block"><div class="media-label">музыка</div>'
+    + '<div class="audio" style="display:block"><div class="a-info" style="width:100%">'
+    + '<div class="a-title">' + esc(title || 'Музыка') + '</div>'
+    + '<audio controls preload="metadata" src="' + u + '" style="width:100%;margin-top:8px"></audio>'
+    + (url ? '' : '<div class="a-hint">Ссылка не указана</div>')
+    + '</div></div></div>';
+}
+
+function insertAtCursor(el, text) {
+  if (!el) return;
+  const s = typeof el.selectionStart === 'number' ? el.selectionStart : el.value.length;
+  const e = typeof el.selectionEnd === 'number' ? el.selectionEnd : el.value.length;
+  el.value = el.value.slice(0, s) + text + el.value.slice(e);
+  const pos = s + text.length;
+  if (el.setSelectionRange) el.setSelectionRange(pos, pos);
+  el.focus();
+}
+
+function mediaKindOf(file) {
+  const t = (file.type || '').toLowerCase();
+  if (t.indexOf('image') === 0) return 'photo';
+  if (t.indexOf('video') === 0) return 'video';
+  return 'audio';
+}
+
+async function insertMediaFile(file) {
+  const ta = document.getElementById('c-content');
+  if (!ta) { toast('Сначала открой редактор главы', 'err'); return; }
+  if (!file) return;
+  toast('Загружаю файл…');
+  const url = await uploadFile(file);
+  if (!url) return;
+  const kind = mediaKindOf(file);
+  const title = (file.name || '').replace(/\.[^.]+$/, '').slice(0, 60).replace(/[|\]]/g, ' ');
+  const marker = '\n[[media:' + url + '|' + kind + '|' + title + ']]\n';
+  insertAtCursor(ta, marker);
+  toast('Файл вставлен в текст');
+}
+
+function insertMediaInline(input) {
+  const f = input.files && input.files[0];
+  input.value = '';
+  if (f) insertMediaFile(f);
+}
+
+document.addEventListener('dragover', (e) => {
+  const ta = e.target;
+  if (ta && ta.id === 'c-content') { e.preventDefault(); e.dataTransfer.dropEffect = 'copy'; }
+});
+document.addEventListener('drop', (e) => {
+  const ta = e.target;
+  if (!ta || ta.id !== 'c-content') return;
+  e.preventDefault();
+  try {
+    if (document.caretRangeFromPoint) {
+      const range = document.caretRangeFromPoint(e.clientX, e.clientY);
+      if (range && range.startContainer === ta) {
+        ta.selectionStart = ta.selectionEnd = range.startOffset;
+      }
+    }
+  } catch (err) {}
+  const f = e.dataTransfer.files && e.dataTransfer.files[0];
+  if (f) insertMediaFile(f);
+});
 
 // ---------- вход / регистрация ----------
 let authMode = 'in'; // in | up | code
@@ -981,8 +1080,15 @@ function renderAdminChapters(mine) {
     + '<div class="field"><label>Номер главы</label><input id="c-num" type="number" min="1" value="' + (cur.num || 1) + '"></div>'
     + '</div>'
     + '<div class="field"><label>Название главы</label><input id="c-title" value="' + esc(cur.title || '') + '" placeholder="Название главы"></div>'
-    + '<div class="field"><label>Текст (абзац = новая строка)</label><textarea id="c-content" style="min-height:170px">' + esc(cur.content || '') + '</textarea></div>'
-    + '<div class="field"><label>Медиа</label>'
+    + '<div class="field"><label>Текст (абзац = новая строка)</label>'
+    + '<textarea id="c-content" style="min-height:170px" placeholder="Пиши текст. Файл вставится туда, где стоит курсор.">' + esc(cur.content || '') + '</textarea>'
+    + '<div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin-top:8px">'
+    + '<label class="btn-ghost btn-sm" style="cursor:pointer">🎧 ＋ файл в текст'
+    + '<input type="file" id="inline-media-file" accept="audio/*,image/*,video/*" style="display:none" onchange="insertMediaInline(this)"></label>'
+    + '<span class="fnote">или перетащи файл прямо в текст — вставится на место курсора</span>'
+    + '</div></div>'
+    + '<details style="margin-bottom:12px"><summary class="fnote" style="cursor:pointer">Медиа по абзацу (старый способ)</summary>'
+    + '<div class="field" style="margin-top:10px"><label>Медиа</label>'
     + '<div class="media-list" id="mediaList">' + renderMedia() + '</div>'
     + '<div class="madd">'
     + '<div class="mini"><label>Тип</label><select id="m-type"><option value="audio">музыка</option><option value="video">видео</option><option value="photo">фото</option></select></div>'
@@ -992,7 +1098,7 @@ function renderAdminChapters(mine) {
     + '<div class="mini" style="max-width:86px"><label>Сек</label><input id="m-dur" type="number" min="0" placeholder="0"></div>'
     + '<label class="btn-ghost btn-sm" style="cursor:pointer;align-self:end">Файл<input type="file" id="m-file" style="display:none" onchange="uploadMediaFile(this)"></label>'
     + '<button class="btn-primary btn-sm" style="align-self:end" onclick="addMedia()">+</button>'
-    + '</div></div>'
+    + '</div></div></details>'
     + '<div style="display:flex;gap:8px">'
     + '<button class="btn-primary" onclick="saveChapter()">' + (ch ? 'Сохранить' : 'Добавить главу') + '</button>'
     + (ch ? '<button class="btn-ghost" onclick="editChapterId=null;render()">Отмена</button>' : '')
