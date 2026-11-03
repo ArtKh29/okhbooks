@@ -309,6 +309,12 @@ html[data-theme="light"] .hero p{color:#e9e9ee}
   *,*::before,*::after{animation-duration:.001ms!important;transition-duration:.001ms!important}
 }
 
+/* ---------- шапка: поиск ровно по центру ---------- */
+@media(min-width:761px){
+  .hdr-in{position:relative}
+  .hsearch{position:absolute;left:50%;transform:translateX(-50%);width:min(520px,calc(100% - 460px));margin:0;max-width:none}
+}
+
 /* ---------- компактный плеер в тексте ---------- */
 .a-embed{display:block;width:100%;max-width:320px;height:34px;margin-top:6px;border-radius:8px}
 .media-block .a-title{font-size:12.5px;color:var(--muted);margin-bottom:2px}
