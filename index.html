@@ -1009,11 +1009,15 @@ function renderLogin() {
 
   let body = '';
   if (authMode === 'up') {
-    body = '<div class="fnote" style="margin-bottom:12px">Регистрация закрыта: доступ по приглашению. Оставь почту — автор пришлёт приглашение на неё.</div>'
-      + '<label class="flabel">Почта</label>'
-      + '<input id="access-email" type="email" class="finput" placeholder="you@example.com" autocomplete="email">'
-      + '<button class="btn-primary" style="width:100%;margin-top:14px" onclick="requestAccess()">Запросить доступ</button>'
-      + err + hint;
+    body = '<label class="flabel">Почта</label>'
+      + '<input id="auth-email" type="email" class="finput" placeholder="you@example.com" autocomplete="email">'
+      + '<label class="flabel" style="margin-top:10px">Пароль</label>'
+      + '<input id="auth-pass" type="password" class="finput" placeholder="Минимум 6 символов" autocomplete="new-password">'
+      + '<label class="flabel" style="margin-top:10px">Повтори пароль</label>'
+      + '<input id="auth-pass2" type="password" class="finput" placeholder="Ещё раз" autocomplete="new-password">'
+      + '<button class="btn-primary" style="width:100%;margin-top:14px" onclick="doSignUp()">Создать аккаунт</button>'
+      + err + hint
+      + '<p class="fnote" style="margin-top:12px">После регистрации на почту придёт письмо — подтверди его. Потом сможешь входить по паролю или по коду из письма.</p>';
   } else if (authMode === 'code') {
     body = '<label class="flabel">Почта</label>'
       + '<input id="auth-email" type="email" class="finput" placeholder="you@example.com" autocomplete="email">'
@@ -1038,10 +1042,10 @@ function renderLogin() {
   }
 
   return '<div class="wrap"><div class="reader" style="max-width:440px">'
-    + '<h1 style="margin-top:40px">' + (authMode === 'up' ? 'Доступ' : 'Вход') + '</h1>'
-    + '<div class="sub">' + (authMode === 'up' ? 'Регистрация по приглашению.' : 'Войди по паролю или по коду из письма.') + '</div>'
+    + '<h1 style="margin-top:40px">' + (authMode === 'up' ? 'Регистрация' : 'Вход') + '</h1>'
+    + '<div class="sub">' + (authMode === 'up' ? 'Создай аккаунт — и подтверди почту.' : 'Войди по паролю или по коду из письма.') + '</div>'
     + '<div class="authbox">'
-    + '<div class="tabs" style="margin-bottom:14px">' + tab('in', 'Вход') + tab('up', 'По приглашению') + '</div>'
+    + '<div class="tabs" style="margin-bottom:14px">' + tab('in', 'Вход') + tab('up', 'Регистрация') + '</div>'
     + body
     + '</div></div></div>';
 }
@@ -1064,6 +1068,22 @@ async function doSignIn() {
   }
   await boot(true);
   toast('Вы вошли');
+}
+
+async function doSignUp() {
+  const email = ($('#auth-email').value || '').trim();
+  const pass = $('#auth-pass').value || '';
+  const pass2 = $('#auth-pass2').value || '';
+  if (!email) return authErr('Введи почту');
+  if (pass.length < 6) return authErr('Пароль — минимум 6 символов');
+  if (pass !== pass2) return authErr('Пароли не совпадают');
+  const redirectTo = location.origin + location.pathname;
+  const { data, error } = await sb.auth.signUp({ email, password: pass, options: { emailRedirectTo: redirectTo } });
+  if (error) return authErr(error.message);
+  if (data && data.session) { await boot(true); toast('Аккаунт создан'); return; }
+  const hint = document.getElementById('login-hint');
+  if (hint) hint.innerHTML = 'Аккаунт создан. Проверь <b>' + esc(email) + '</b> — там письмо для подтверждения. После него войди по паролю.';
+  toast('Проверь почту');
 }
 
 async function requestAccess() {
@@ -1216,10 +1236,6 @@ function renderSettings() {
     + '<button class="btn-ghost" onclick="signOutAll()">Выйти со всех устройств</button>'
     + '</div>'
     + '<div class="hint">Смена пароля действует сразу. «Выйти со всех устройств» завершит все сессии, включая эту.</div>'
-    + '</div>'
-    + '<div class="settings-sec"><h3>Заявки на доступ</h3>'
-    + renderRequests()
-    + '<div class="hint">Регистрация закрыта. Приглашение выдаётся вручную: Supabase → Authentication → Users → «Invite user» на почту из заявки — человек получит письмо и задаст пароль.</div>'
     + '</div>'
     + '<div class="settings-sec"><h3>Сайт</h3>'
     + '<div class="hint" style="margin:0 0 12px">Главная страница собирается из блоков. Добавь блок, заполни поля; ПКМ по блоку — меню.</div>'
