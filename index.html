@@ -309,8 +309,37 @@ html[data-theme="light"] .hero p{color:#e9e9ee}
   *,*::before,*::after{animation-duration:.001ms!important;transition-duration:.001ms!important}
 }
 
-/* ---------- сюжетное дерево ---------- */
-.otoolbar{display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin-bottom:14px}
+/* ---------- компактный плеер в тексте ---------- */
+.a-embed{display:block;width:100%;max-width:320px;height:34px;margin-top:6px;border-radius:8px}
+.media-block .a-title{font-size:12.5px;color:var(--muted);margin-bottom:2px}
+
+/* ---------- конструктор страницы ---------- */
+.pblock{position:relative;border:1px solid var(--line);background:var(--panel);border-radius:12px;padding:14px;margin-bottom:10px}
+.pblock-head{display:flex;align-items:center;gap:8px;margin-bottom:9px}
+.pblock-type{font-size:10.5px;text-transform:uppercase;letter-spacing:.07em;color:var(--dim)}
+.pblock-acts{margin-left:auto;display:flex;gap:4px}
+.pblock input,.pblock textarea,.pblock select{width:100%;padding:9px 11px;border-radius:9px;border:1px solid var(--line);background:var(--bg);color:var(--ink);font-size:13.5px;font-family:inherit}
+.pblock textarea{min-height:72px;resize:vertical;line-height:1.55}
+.pblock input:focus,.pblock textarea:focus,.pblock select:focus{outline:none;border-color:var(--accent)}
+.pblock .two{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:8px}
+.pblock .two:last-child{margin-bottom:0}
+.pctx{position:fixed;z-index:90;min-width:180px;background:var(--panel2);border:1px solid var(--line);border-radius:10px;padding:5px;box-shadow:0 16px 40px rgba(0,0,0,.55)}
+.pctx button{display:block;width:100%;text-align:left;background:none;border:0;color:var(--ink);font-size:13px;padding:8px 10px;border-radius:7px;cursor:pointer}
+.pctx button:hover{background:var(--panel)}
+.pctx button.danger{color:#ff9c92}
+.pb-page{max-width:820px;margin:0 auto;padding:26px 0 10px}
+.pb-page h1{font-size:2rem;line-height:1.15;margin:0 0 14px}
+.pb-page h2{font-size:1.4rem;margin:22px 0 10px}
+.pb-page p{font-family:var(--f-read);font-size:17px;line-height:1.8;color:#e6e6e6;margin:0 0 14px}
+.pb-page blockquote{margin:16px 0;padding:10px 16px;border-left:3px solid var(--accent);color:var(--muted);font-family:var(--f-read);font-size:17px}
+.pb-page hr{border:0;border-top:1px solid var(--line);margin:26px 0}
+.pb-page .pb-img img{width:100%;border-radius:12px;border:1px solid var(--line);display:block}
+.pb-page .pb-img .cap,.pb-page .cap{color:var(--dim);font-size:12.5px;margin-top:6px}
+.pb-page .photos{margin:14px 0}
+.pb-btn{display:inline-flex;align-items:center;height:40px;padding:0 20px;border-radius:10px;background:var(--accent);color:#fff;font-weight:600;text-decoration:none;margin:6px 0}
+.pb-btn:hover{background:var(--accent-hover)}
+
+/* ---------- сюжетное дерево ---------- */.otoolbar{display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin-bottom:14px}
 .otoolbar .grow{flex:1}
 .otree{display:flex;flex-direction:column;gap:3px}
 .okids{display:flex;flex-direction:column;gap:3px}
@@ -440,11 +469,12 @@ const mediaOf = c => Array.isArray(c && c.media) ? c.media : [];
 // ---------- загрузка данных ----------
 async function loadData() {
   loading = true;
-  const [b, c, m, o] = await Promise.all([
+  const [b, c, m, o, pg] = await Promise.all([
     sb.from('books').select('*').order('created_at', { ascending: false }),
     sb.from('chapters').select('*').order('num', { ascending: true }),
     sb.from('media').select('*').order('created_at', { ascending: true }),
-    sb.from('book_outline').select('*')
+    sb.from('book_outline').select('*'),
+    sb.from('site_pages').select('*')
   ]);
   if (b.error) toast('Не удалось загрузить книги: ' + b.error.message, 'err');
   const books = (b.data || []).map(x => ({
@@ -463,7 +493,9 @@ async function loadData() {
   });
   const outlines = {};
   (o.data || []).forEach(row => { outlines[row.book_id] = Array.isArray(row.data) ? row.data : []; });
-  data = { books, chapters, outlines };
+  const pages = {};
+  (pg.data || []).forEach(row => { pages[row.user_id] = { slug: row.slug, data: row.data || {} }; });
+  data = { books, chapters, outlines, pages };
   loading = false;
 }
 
@@ -533,19 +565,36 @@ function renderAuthBar() {
     + '<span class="userchip" onclick="navigate(\'profile\')">' + av + '<span>' + esc(name) + '</span></span>';
 }
 
+function homePageOwner() {
+  if (authed() && data.pages && data.pages[myId()]) return myId();
+  const owners = [];
+  (data.books || []).forEach(b => { if (b.ownerId && owners.indexOf(b.ownerId) === -1) owners.push(b.ownerId); });
+  for (let i = 0; i < owners.length; i++) if (data.pages && data.pages[owners[i]]) return owners[i];
+  const keys = data.pages ? Object.keys(data.pages) : [];
+  return keys.length ? keys[0] : null;
+}
+
 function renderHome() {
   const books = data.books.filter(b => b.status === 'published');
-  const mine = data.books.filter(b => b.ownerId === myId());
-  return '<div class="wrap">'
-    + '<section class="hero"><div class="hero-art"></div>'
+  const owner = homePageOwner();
+  const page = owner && data.pages ? data.pages[owner] : null;
+  const pd = page && page.data ? page.data : null;
+  const custom = pd && Array.isArray(pd.blocks) && pd.blocks.length > 0;
+  const bg = pd && pd.background ? pd.background : '';
+
+  const hero = '<section class="hero"><div class="hero-art"></div>'
     + '<div class="hero-inner">'
     + '<div class="hero-tag">Библиотека</div>'
     + '<h1>Книги, в которых есть музыка</h1>'
     + '<p>Текст, музыка, снимки и видео внутри глав. Читай, слушай и смотри.</p>'
-    + '</div></section>'
+    + '</div></section>';
+
+  return '<div class="wrap">'
+    + (custom
+      ? '<div class="pb-page" style="' + (bg ? 'background:' + esc(bg) + ';border-radius:16px;padding:24px 22px;margin-top:16px' : '') + '">' + renderPageBlocks(pd) + '</div>'
+      : hero)
     + '<div class="section-head"><h2>Новые книги</h2><span class="count">' + books.length + ' книг</span></div>'
     + '<div id="booksGrid">' + renderBooks(books) + '</div>'
-    + (mine.length && authed() ? '' : '')
     + '</div>';
 }
 
@@ -710,8 +759,8 @@ function inlineMediaHtml(url, kind, title) {
   }
   return '<div class="media-block"><div class="media-label">музыка</div>'
     + '<div class="audio" style="display:block"><div class="a-info" style="width:100%">'
-    + '<div class="a-title">' + esc(title || 'Музыка') + '</div>'
-    + '<audio controls preload="metadata" src="' + u + '" style="width:100%;margin-top:8px"></audio>'
+    + (title ? '<div class="a-title">' + esc(title) + '</div>' : '')
+    + '<audio controls preload="metadata" src="' + u + '" class="a-embed"></audio>'
     + (url ? '' : '<div class="a-hint">Ссылка не указана</div>')
     + '</div></div></div>';
 }
@@ -741,7 +790,8 @@ async function insertMediaFile(file) {
   const url = await uploadFile(file);
   if (!url) return;
   const kind = mediaKindOf(file);
-  const title = (file.name || '').replace(/\.[^.]+$/, '').slice(0, 60).replace(/[|\]]/g, ' ');
+  let title = (file.name || '').replace(/\.[^.]+$/, '').slice(0, 60).replace(/[|\]]/g, ' ');
+  if (/^[\d\s._-]+$/.test(title)) title = '';
   const marker = '\n[[media:' + url + '|' + kind + '|' + title + ']]\n';
   insertAtCursor(ta, marker);
   toast('Файл вставлен в текст');
@@ -976,8 +1026,12 @@ function renderAdmin() {
     + '<button class="tab ' + (tab === 'books' ? 'active' : '') + '" onclick="setTab(\'books\')">Книги</button>'
     + '<button class="tab ' + (tab === 'chapters' ? 'active' : '') + '" onclick="setTab(\'chapters\')">Главы</button>'
     + '<button class="tab ' + (tab === 'outline' ? 'active' : '') + '" onclick="setTab(\'outline\')">Сюжет</button>'
+    + '<button class="tab ' + (tab === 'page' ? 'active' : '') + '" onclick="setTab(\'page\')">Страница</button>'
     + '</div>'
-    + (tab === 'books' ? renderAdminBooks(mine) : tab === 'chapters' ? renderAdminChapters(mine) : renderAdminOutline(mine))
+    + (tab === 'books' ? renderAdminBooks(mine)
+      : tab === 'chapters' ? renderAdminChapters(mine)
+      : tab === 'outline' ? renderAdminOutline(mine)
+      : renderAdminPage())
     + '</div></section></div>';
 }
 
@@ -1182,6 +1236,208 @@ async function deleteChapter(id) {
   const r = await sb.from('chapters').delete().eq('id', id);
   if (r.error) { toast(r.error.message, 'err'); return; }
   await loadData(); render(); toast('Удалена');
+}
+
+// ---------- конструктор страницы ----------
+const PAGE_TYPES = {
+  heading: 'Заголовок', text: 'Текст', image: 'Картинка', gallery: 'Галерея',
+  media: 'Музыка / видео', button: 'Кнопка', quote: 'Цитата', divider: 'Разделитель'
+};
+let pageSaveTimer = null;
+
+function pageGet() {
+  const id = myId();
+  if (!data.pages) data.pages = {};
+  if (!data.pages[id]) data.pages[id] = { slug: 'home', data: { blocks: [] } };
+  const d = data.pages[id].data;
+  if (!d || typeof d !== 'object') data.pages[id].data = { blocks: [] };
+  if (!Array.isArray(data.pages[id].data.blocks)) data.pages[id].data.blocks = [];
+  if (typeof data.pages[id].data.background !== 'string') data.pages[id].data.background = '';
+  return data.pages[id].data;
+}
+
+function pageScheduleSave() {
+  clearTimeout(pageSaveTimer);
+  pageSaveTimer = setTimeout(pageSave, 700);
+}
+
+async function pageSave() {
+  if (!authed()) return;
+  const pd = pageGet();
+  const res = await sb.from('site_pages').upsert({
+    user_id: myId(), slug: 'home', data: pd, updated_at: new Date().toISOString()
+  });
+  if (res.error) toast('Страница не сохранилась: ' + res.error.message, 'err');
+}
+
+function pageBlockDefaults(type) {
+  return {
+    id: 'bl' + Date.now().toString(36) + Math.random().toString(36).slice(2, 4),
+    type, text: type === 'heading' ? 'Заголовок' : (type === 'button' ? 'Кнопка' : ''),
+    url: '', caption: '', kind: 'audio', level: 1, urls: []
+  };
+}
+
+function pageAdd(type) {
+  const pd = pageGet();
+  pd.blocks.push(pageBlockDefaults(type));
+  pageSave(); render();
+}
+
+function pageFind(id) { return pageGet().blocks.find(b => b.id === id); }
+
+function pageField(id, field, value) {
+  if (id === '__bg') { pageGet().background = value; pageScheduleSave(); return; }
+  const b = pageFind(id); if (!b) return;
+  if (field === 'urls') b.urls = String(value).split('\n').map(s => s.trim()).filter(Boolean);
+  else if (field === 'level') b.level = Number(value) || 1;
+  else b[field] = value;
+  pageScheduleSave();
+}
+
+function pageMove(id, dir) {
+  const pd = pageGet();
+  const i = pd.blocks.findIndex(b => b.id === id);
+  const j = i + dir;
+  if (i < 0 || j < 0 || j >= pd.blocks.length) return;
+  const t = pd.blocks[i]; pd.blocks[i] = pd.blocks[j]; pd.blocks[j] = t;
+  pageSave(); render();
+}
+
+function pageDel(id) {
+  const pd = pageGet();
+  pd.blocks = pd.blocks.filter(b => b.id !== id);
+  pageSave(); render();
+}
+
+function pageDup(id) {
+  const pd = pageGet();
+  const i = pd.blocks.findIndex(b => b.id === id);
+  if (i < 0) return;
+  const copy = JSON.parse(JSON.stringify(pd.blocks[i]));
+  copy.id = pageBlockDefaults('x').id;
+  pd.blocks.splice(i + 1, 0, copy);
+  pageSave(); render();
+}
+
+function pageCtx(e, id) {
+  e.preventDefault();
+  const old = document.getElementById('pctx'); if (old) old.remove();
+  const menu = document.createElement('div');
+  menu.className = 'pctx'; menu.id = 'pctx';
+  menu.style.left = Math.min(e.clientX, Math.max(8, innerWidth - 210)) + 'px';
+  menu.style.top = Math.min(e.clientY, Math.max(8, innerHeight - 200)) + 'px';
+  menu.innerHTML =
+    '<button onclick="pageCtxDo(\'dup\',\'' + id + '\')">Дублировать</button>'
+    + '<button onclick="pageCtxDo(\'up\',\'' + id + '\')">Выше</button>'
+    + '<button onclick="pageCtxDo(\'down\',\'' + id + '\')">Ниже</button>'
+    + '<button class="danger" onclick="pageCtxDo(\'del\',\'' + id + '\')">Удалить</button>';
+  document.body.appendChild(menu);
+}
+
+function pageCtxDo(action, id) {
+  const m = document.getElementById('pctx'); if (m) m.remove();
+  if (action === 'up') pageMove(id, -1);
+  else if (action === 'down') pageMove(id, 1);
+  else if (action === 'del') pageDel(id);
+  else if (action === 'dup') pageDup(id);
+}
+
+document.addEventListener('click', () => { const m = document.getElementById('pctx'); if (m) m.remove(); });
+document.addEventListener('scroll', () => { const m = document.getElementById('pctx'); if (m) m.remove(); }, { passive: true });
+
+function renderPageBlocks(pd) {
+  return (pd.blocks || []).map(b => {
+    switch (b.type) {
+      case 'heading':
+        return b.level === 2 ? '<h2>' + esc(b.text || '') + '</h2>' : '<h1>' + esc(b.text || '') + '</h1>';
+      case 'text':
+        return (b.text || '').split('\n').filter(t => t.trim()).map(t => '<p>' + esc(t) + '</p>').join('');
+      case 'image':
+        return '<div class="pb-img">' + (b.url ? '<img src="' + esc(b.url) + '" alt="" loading="lazy">' : '')
+          + (b.caption ? '<div class="cap">' + esc(b.caption) + '</div>' : '') + '</div>';
+      case 'gallery':
+        return '<div class="photos">' + (b.urls || []).filter(Boolean).map(u =>
+          '<div class="photo" data-url="' + esc(u) + '" onclick="openPhoto(this)"><img src="' + esc(u) + '" alt="" loading="lazy"></div>').join('')
+          + '</div>' + (b.caption ? '<div class="cap">' + esc(b.caption) + '</div>' : '');
+      case 'media':
+        return b.kind === 'video'
+          ? '<div class="video"><video controls preload="metadata"><source src="' + esc(b.url || '') + '"></video>'
+            + (b.caption ? '<div class="cap">' + esc(b.caption) + '</div>' : '') + '</div>'
+          : '<div class="audio" style="display:block"><div class="a-info" style="width:100%">'
+            + '<audio controls preload="metadata" src="' + esc(b.url || '') + '" class="a-embed"></audio></div></div>';
+      case 'button':
+        return '<a class="pb-btn" href="' + esc(b.url || '#') + '" target="_blank" rel="noopener">' + esc(b.text || 'Ссылка') + '</a>';
+      case 'quote':
+        return '<blockquote>' + esc(b.text || '') + '</blockquote>';
+      case 'divider':
+        return '<hr>';
+      default:
+        return '';
+    }
+  }).join('');
+}
+
+function pageBlockCard(b) {
+  const inp = (field, ph, val) =>
+    '<input value="' + esc(val || '') + '" placeholder="' + esc(ph) + '" oninput="pageField(\'' + b.id + '\',\'' + field + '\',this.value)">';
+  const area = (field, ph, val) =>
+    '<textarea placeholder="' + esc(ph) + '" oninput="pageField(\'' + b.id + '\',\'' + field + '\',this.value)">' + esc(val || '') + '</textarea>';
+
+  let fields = '';
+  if (b.type === 'heading') {
+    fields = '<div class="two">' + inp('text', 'Текст заголовка', b.text)
+      + '<select onchange="pageField(\'' + b.id + '\',\'level\',this.value)">'
+      + '<option value="1" ' + (b.level !== 2 ? 'selected' : '') + '>Крупный</option>'
+      + '<option value="2" ' + (b.level === 2 ? 'selected' : '') + '>Средний</option></select></div>';
+  } else if (b.type === 'text') {
+    fields = area('text', 'Текст. Каждая строка — новый абзац', b.text);
+  } else if (b.type === 'image') {
+    fields = '<div class="two">' + inp('url', 'Ссылка на картинку', b.url) + inp('caption', 'Подпись', b.caption) + '</div>';
+  } else if (b.type === 'gallery') {
+    fields = area('urls', 'Ссылки на фото — по одной в строке', (b.urls || []).join('\n')) + inp('caption', 'Подпись (необязательно)', b.caption);
+  } else if (b.type === 'media') {
+    fields = '<div class="two">' + inp('url', 'Ссылка на файл (mp3 / mp4)', b.url)
+      + '<select onchange="pageField(\'' + b.id + '\',\'kind\',this.value)">'
+      + '<option value="audio" ' + (b.kind !== 'video' ? 'selected' : '') + '>Музыка</option>'
+      + '<option value="video" ' + (b.kind === 'video' ? 'selected' : '') + '>Видео</option></select></div>'
+      + inp('caption', 'Подпись', b.caption);
+  } else if (b.type === 'button') {
+    fields = '<div class="two">' + inp('text', 'Надпись', b.text) + inp('url', 'Куда ведёт', b.url) + '</div>';
+  } else if (b.type === 'quote') {
+    fields = area('text', 'Цитата', b.text);
+  }
+
+  return '<div class="pblock" oncontextmenu="pageCtx(event,\'' + b.id + '\')">'
+    + '<div class="pblock-head"><span class="pblock-type">' + esc(PAGE_TYPES[b.type] || b.type) + '</span>'
+    + '<span class="pblock-acts">'
+    + '<button class="btn-ghost btn-sm" title="Выше" onclick="pageMove(\'' + b.id + '\',-1)">↑</button>'
+    + '<button class="btn-ghost btn-sm" title="Ниже" onclick="pageMove(\'' + b.id + '\',1)">↓</button>'
+    + '<button class="btn-danger btn-sm" title="Удалить" onclick="pageDel(\'' + b.id + '\')">✕</button>'
+    + '</span></div>'
+    + fields + '</div>';
+}
+
+function renderAdminPage() {
+  if (!authed()) return renderLogin();
+  const pd = pageGet();
+  return '<div class="form-card">'
+    + '<div class="otoolbar">'
+    + '<strong style="font-size:15px">Страница сайта</strong>'
+    + '<span class="grow"></span>'
+    + '<button class="btn-ghost btn-sm" onclick="pageSave()">Сохранить</button>'
+    + '</div>'
+    + '<div class="field"><label>Фон страницы (цвет или ссылка на картинку)</label>'
+    + '<input value="' + esc(pd.background || '') + '" placeholder="#131416 или https://…/bg.jpg" oninput="pageField(\'__bg\',\'background\',this.value)"></div>'
+    + '<div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-bottom:14px">'
+    + '<select id="page-new-type" class="finput" style="width:auto;height:36px;padding:0 12px;border-radius:999px">'
+    + Object.keys(PAGE_TYPES).map(t => '<option value="' + t + '">' + PAGE_TYPES[t] + '</option>').join('')
+    + '</select>'
+    + '<button class="btn-primary btn-sm" onclick="pageAdd(document.getElementById(\'page-new-type\').value)">＋ добавить блок</button>'
+    + '<span class="fnote">ПКМ по блоку — меню: дублировать / выше / ниже / удалить</span>'
+    + '</div>'
+    + (pd.blocks.length ? pd.blocks.map(pageBlockCard).join('') : '<div class="empty"><p>Пока нет блоков. Добавь первый — заголовок или текст.</p></div>')
+    + '</div>';
 }
 
 // ---------- сюжетное дерево ----------
