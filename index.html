@@ -530,8 +530,7 @@ function renderAuthBar() {
     ? '<img class="avatar" src="' + esc(profile.avatar_url) + '" alt="">'
     : '<span class="avatar avatar-empty">' + esc(name.slice(0, 1).toUpperCase()) + '</span>';
   box.innerHTML = '<span class="pill" onclick="navigate(\'admin\')" id="nav-admin">Мои книги</span>'
-    + '<span class="userchip" onclick="navigate(\'profile\')">' + av + '<span>' + esc(name) + '</span></span>'
-    + '<span class="pill" onclick="signOut()" title="Выйти из аккаунта" style="padding:0 12px">⏻</span>';
+    + '<span class="userchip" onclick="navigate(\'profile\')">' + av + '<span>' + esc(name) + '</span></span>';
 }
 
 function renderHome() {
@@ -820,6 +819,7 @@ function renderProfile() {
     + '<div style="display:flex;gap:8px;flex-wrap:wrap">'
     + '<button class="btn-primary" onclick="saveProfile()">Сохранить</button>'
     + '<button class="btn-ghost" onclick="navigate(\'admin\')">Мои книги</button>'
+    + '<button class="btn-ghost" onclick="signOut()">Выйти</button>'
     + '</div></div></div>';
 }
 
