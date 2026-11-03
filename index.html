@@ -495,14 +495,16 @@ const mediaOf = c => Array.isArray(c && c.media) ? c.media : [];
 // ---------- загрузка данных ----------
 async function loadData() {
   loading = true;
-  const [b, c, m, o, pg, ar, bm] = await Promise.all([
+  const [b, c, m, o, pg, ar, bm, fr, pr] = await Promise.all([
     sb.from('books').select('*').order('created_at', { ascending: false }),
     sb.from('chapters').select('*').order('num', { ascending: true }),
     sb.from('media').select('*').order('created_at', { ascending: true }),
     sb.from('book_outline').select('*'),
     sb.from('site_pages').select('*'),
     sb.from('access_requests').select('*'),
-    sb.from('book_marks').select('*')
+    sb.from('book_marks').select('*'),
+    sb.from('friendships').select('*'),
+    sb.from('profiles').select('*')
   ]);
   if (b.error) toast('Не удалось загрузить книги: ' + b.error.message, 'err');
   const books = (b.data || []).map(x => ({
@@ -529,9 +531,118 @@ async function loadData() {
     if (!marks[row.user_id]) marks[row.user_id] = {};
     marks[row.user_id][row.book_id] = row.status;
   });
-  data = { books, chapters, outlines, pages, requests: (ar.data || []), marks };
+  data = { books, chapters, outlines, pages, requests: (ar.data || []), marks, friends: (fr.data || []), profiles: (pr.data || []) };
   loading = false;
 }
+
+// ---------- друзья ----------
+let frQuery = '';
+
+function friendRecord(uid) {
+  const me = myId();
+  return (data.friends || []).find(f =>
+    (f.requester_id === me && f.addressee_id === uid) ||
+    (f.addressee_id === me && f.requester_id === uid)) || null;
+}
+
+function friendState(uid) {
+  const f = friendRecord(uid);
+  if (!f) return null;
+  if (f.status === 'accepted') return 'friends';
+  return f.requester_id === myId() ? 'outgoing' : 'incoming';
+}
+
+function profileOf(id) {
+  return (data.profiles || []).find(p => p.id === id) || null;
+}
+
+function friendName(id) {
+  const p = profileOf(id);
+  return (p && p.display_name) || 'пользователь';
+}
+
+function friendAvatarHtml(id) {
+  const p = profileOf(id);
+  const name = friendName(id);
+  if (p && p.avatar_url) return '<img class="avatar" src="' + esc(p.avatar_url) + '" alt="">';
+  return '<span class="avatar avatar-empty">' + esc(name.slice(0, 1).toUpperCase()) + '</span>';
+}
+
+async function sendFriend(uid) {
+  if (!authed()) { toast('Войди, чтобы добавлять друзей', 'err'); return; }
+  const r = await sb.from('friendships').insert({ requester_id: myId(), addressee_id: uid });
+  if (r.error) { toast(r.error.message, 'err'); return; }
+  await loadData(); render(); toast('Заявка отправлена');
+}
+
+async function acceptFriend(id) {
+  const r = await sb.from('friendships').update({ status: 'accepted' }).eq('id', id);
+  if (r.error) { toast(r.error.message, 'err'); return; }
+  await loadData(); render(); toast('Теперь вы друзья');
+}
+
+async function removeFriendship(id) {
+  const r = await sb.from('friendships').delete().eq('id', id);
+  if (r.error) { toast(r.error.message, 'err'); return; }
+  await loadData(); render();
+}
+
+function friendRowHtml(id, actions) {
+  return '<div class="item"><div style="display:flex;align-items:center;gap:10px">' + friendAvatarHtml(id)
+    + '<div><div class="t">' + esc(friendName(id)) + '</div></div></div>'
+    + '<div class="acts">' + actions + '</div></div>';
+}
+
+function renderFriends() {
+  if (!authed()) return renderLogin();
+  const me = myId();
+  const all = data.friends || [];
+  const friends = all.filter(f => f.status === 'accepted');
+  const incoming = all.filter(f => f.status === 'pending' && f.addressee_id === me);
+  const outgoing = all.filter(f => f.status === 'pending' && f.requester_id === me);
+  const q = frQuery.trim().toLowerCase();
+  const others = (data.profiles || [])
+    .filter(p => p.id !== me)
+    .filter(p => !q || String(p.display_name || '').toLowerCase().includes(q));
+
+  return '<div class="wrap"><div class="admin" style="padding-top:26px">'
+    + '<h2 style="margin:0 0 16px;font-size:22px">Друзья</h2>'
+    + '<div class="settings-sec"><h3>Найти людей</h3>'
+    + '<input id="fr-search" class="finput" placeholder="Имя или ник" value="' + esc(frQuery) + '" oninput="frSearch(this.value)">'
+    + '<div class="list" style="margin-top:12px">'
+    + (others.length ? others.slice(0, 40).map(p => {
+        const st = friendState(p.id);
+        let acts;
+        if (st === 'friends') acts = '<button class="btn-ghost btn-sm" onclick="removeFriendship(\'' + friendRecord(p.id).id + '\')">Убрать</button>';
+        else if (st === 'outgoing') acts = '<button class="btn-ghost btn-sm" disabled>Заявка отправлена</button>';
+        else if (st === 'incoming') acts = '<button class="btn-primary btn-sm" onclick="acceptFriend(\'' + friendRecord(p.id).id + '\')">Принять</button>';
+        else acts = '<button class="btn-primary btn-sm" onclick="sendFriend(\'' + p.id + '\')">Добавить</button>';
+        return friendRowHtml(p.id, acts);
+      }).join('') : '<div class="hint">Никого не нашли.</div>')
+    + '</div></div>'
+    + '<div class="settings-sec"><h3>Входящие заявки</h3>'
+    + (incoming.length ? '<div class="list">' + incoming.map(f => friendRowHtml(f.requester_id,
+        '<button class="btn-primary btn-sm" onclick="acceptFriend(\'' + f.id + '\')">Принять</button>'
+        + '<button class="btn-ghost btn-sm" onclick="removeFriendship(\'' + f.id + '\')">Отклонить</button>')).join('') + '</div>'
+      : '<div class="hint">Новых заявок нет.</div>')
+    + '</div>'
+    + (outgoing.length ? '<div class="settings-sec"><h3>Исходящие</h3><div class="list">' + outgoing.map(f => friendRowHtml(f.addressee_id,
+        '<button class="btn-ghost btn-sm" onclick="removeFriendship(\'' + f.id + '\')">Отменить</button>')).join('') + '</div></div>' : '')
+    + '<div class="settings-sec"><h3>Мои друзья</h3>'
+    + (friends.length ? '<div class="list">' + friends.map(f => friendRowHtml(f.requester_id === me ? f.addressee_id : f.requester_id,
+        '<button class="btn-ghost btn-sm" onclick="removeFriendship(\'' + f.id + '\')">Убрать</button>')).join('') + '</div>'
+      : '<div class="hint">Пока никого — найди людей выше и добавь.</div>')
+    + '</div>'
+    + '</div></div>';
+}
+
+function frSearch(v) {
+  frQuery = v;
+  render();
+  const el = document.getElementById('fr-search');
+  if (el) { el.focus(); el.setSelectionRange(v.length, v.length); }
+}
+
 
 // ---------- закладки читателя ----------
 const MARK_LABELS = { planned: 'В планах', reading: 'Читаю', read: 'Прочитано', dropped: 'Брошено' };
@@ -634,6 +745,7 @@ function render() {
     case 'profile': app.innerHTML = renderProfile(); break;
     case 'settings': app.innerHTML = renderSettings(); break;
     case 'marks': app.innerHTML = renderMarks(); break;
+    case 'friends': app.innerHTML = renderFriends(); break;
     case 'admin': app.innerHTML = renderAdmin(); break;
     default: app.innerHTML = renderHome();
   }
@@ -672,6 +784,7 @@ function toggleUserMenu(e) {
     + '<button onclick="closeUserMenu();navigate(\'profile\')">Профиль</button>'
     + '<button onclick="closeUserMenu();navigate(\'admin\')">Мои книги</button>'
     + '<button onclick="closeUserMenu();navigate(\'marks\',{status:\'reading\'})">Закладки</button>'
+    + '<button onclick="closeUserMenu();navigate(\'friends\')">Друзья</button>'
     + '<button onclick="closeUserMenu();navigate(\'settings\')">Настройки</button>'
     + '<button class="danger" onclick="closeUserMenu();signOut()">Выйти</button>';
   document.body.appendChild(m);
