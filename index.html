@@ -309,6 +309,46 @@ html[data-theme="light"] .hero p{color:#e9e9ee}
   *,*::before,*::after{animation-duration:.001ms!important;transition-duration:.001ms!important}
 }
 
+/* ---------- сюжетное дерево ---------- */
+.otoolbar{display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin-bottom:14px}
+.otoolbar .grow{flex:1}
+.otree{display:flex;flex-direction:column;gap:3px}
+.okids{display:flex;flex-direction:column;gap:3px}
+.obeat{position:relative}
+.obeat-row{display:flex;align-items:center;gap:8px;padding:8px 10px 8px calc(10px + var(--d,0)*22px);border-radius:10px;border:1px solid transparent;transition:background .15s,border-color .15s}
+.obeat-row:hover{background:var(--panel);border-color:var(--line)}
+.obeat-note{color:var(--dim);font-size:12px;padding:0 10px 8px calc(26px + var(--d,0)*22px);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.otwist{width:18px;height:18px;flex-shrink:0;border:none;background:none;color:var(--dim);cursor:pointer;font-size:10px;padding:0}
+.otwist:hover{color:var(--ink)}
+.otitle{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:14px;cursor:pointer}
+.otitle:hover{color:var(--accent-hover)}
+.otitle.done{color:var(--muted);text-decoration:line-through;text-decoration-color:var(--dim)}
+.obeat.off .otitle{color:var(--dim);text-decoration:line-through}
+.ochip{flex-shrink:0;height:22px;display:inline-flex;align-items:center;padding:0 9px;border-radius:999px;font-size:10.5px;letter-spacing:.02em;border:1px solid var(--line);background:var(--panel2);color:var(--muted);cursor:pointer;white-space:nowrap}
+.ochip:hover{border-color:#34373d;color:var(--ink)}
+.ochip-надо{border-color:#4a3a18;color:#d3a45e}
+.ochip-пишу{border-color:#1d3a4a;color:#7bb3d1}
+.ochip-готово{border-color:#21402c;color:#7fbf95}
+.ochip-отброшено{color:var(--dim)}
+.okind{flex-shrink:0;font-size:10.5px;color:var(--dim);border:1px dotted #34373d;border-radius:6px;padding:1px 6px;cursor:pointer;white-space:nowrap}
+.okind:hover{color:var(--ink)}
+.obeat-acts{display:flex;gap:2px;flex-shrink:0;opacity:0;transition:opacity .12s}
+.obeat-row:hover .obeat-acts{opacity:1}
+.obtn{width:26px;height:26px;border-radius:7px;border:none;background:var(--panel2);color:var(--muted);cursor:pointer;font-size:12px;display:grid;place-items:center;padding:0}
+.obtn:hover{color:var(--ink);background:#26282c}
+.obtn.acc{color:#ff9c92;background:rgba(207,58,47,.14)}
+.obtn.acc:hover{background:rgba(207,58,47,.24)}
+.olink{flex-shrink:0;height:22px;display:inline-flex;align-items:center;padding:0 9px;border-radius:999px;background:rgba(207,58,47,.12);border:1px solid rgba(207,58,47,.32);color:#ff9c92;font-size:11px;cursor:pointer}
+.olink:hover{background:rgba(207,58,47,.22)}
+.obeat-row.drop-before{box-shadow:inset 0 2px 0 var(--accent)}
+.obeat-row.drop-after{box-shadow:inset 0 -2px 0 var(--accent)}
+.obeat-row.drop-inside{border-color:var(--accent);background:var(--panel)}
+.onote{padding:4px 10px 10px calc(26px + var(--d,0)*22px)}
+.onote textarea{width:100%;min-height:64px;resize:vertical;padding:9px 11px;border-radius:10px;border:1px solid var(--line);background:var(--bg);color:var(--ink);font-size:13px;line-height:1.55}
+.onote textarea:focus{outline:none;border-color:var(--accent)}
+.onote-foot{display:flex;gap:8px;margin-top:6px}
+@media(max-width:760px){ .obeat-row{padding-left:10px} .obeat-note,.onote{padding-left:14px} }
+
 </style>
 </head>
 <body>
@@ -360,7 +400,7 @@ const reduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
 
 let session = null;
 let profile = null;
-let data = { books: [], chapters: [] };
+let data = { books: [], chapters: [], outlines: {} };
 let loading = true;
 
 // ---------- утилиты ----------
@@ -400,10 +440,11 @@ const mediaOf = c => Array.isArray(c && c.media) ? c.media : [];
 // ---------- загрузка данных ----------
 async function loadData() {
   loading = true;
-  const [b, c, m] = await Promise.all([
+  const [b, c, m, o] = await Promise.all([
     sb.from('books').select('*').order('created_at', { ascending: false }),
     sb.from('chapters').select('*').order('num', { ascending: true }),
-    sb.from('media').select('*').order('created_at', { ascending: true })
+    sb.from('media').select('*').order('created_at', { ascending: true }),
+    sb.from('book_outline').select('*')
   ]);
   if (b.error) toast('Не удалось загрузить книги: ' + b.error.message, 'err');
   const books = (b.data || []).map(x => ({
@@ -420,7 +461,9 @@ async function loadData() {
     const arr = byChapter[row.chapter_id];
     if (arr) arr.push({ id: row.id, type: row.kind, url: row.url, title: row.title, caption: row.caption, pos: row.pos || 0, dur: row.dur || 0 });
   });
-  data = { books, chapters };
+  const outlines = {};
+  (o.data || []).forEach(row => { outlines[row.book_id] = Array.isArray(row.data) ? row.data : []; });
+  data = { books, chapters, outlines };
   loading = false;
 }
 
@@ -688,13 +731,10 @@ function renderProfile() {
     + '</div></div>'
     + '<div class="field" style="margin-top:16px"><label>Ник</label>'
     + '<input id="p-name" value="' + esc(name) + '" placeholder="Как тебя показывать"></div>'
-    + '<div class="field"><label>Аватар — ссылка</label>'
-    + '<input id="p-avatar-url" value="' + esc(avUrl) + '" placeholder="https://…/avatar.jpg"></div>'
 
     + '<div style="display:flex;gap:8px;flex-wrap:wrap">'
     + '<button class="btn-primary" onclick="saveProfile()">Сохранить</button>'
     + '<button class="btn-ghost" onclick="navigate(\'admin\')">Мои книги</button>'
-    + '<button class="btn-ghost" onclick="signOut()">Выйти</button>'
     + '</div></div></div>';
 }
 
@@ -703,27 +743,18 @@ async function uploadAvatar(input) {
   if (!f) return;
   const url = await uploadFile(f);
   if (!url) return;
-  const inp = document.getElementById('p-avatar-url');
-  if (inp) inp.value = url;
-  const img = document.getElementById('p-av-img');
-  if (img) {
-    const fresh = document.createElement('img');
-    fresh.className = 'avatar avatar-lg';
-    fresh.id = 'p-av-img';
-    fresh.alt = '';
-    fresh.src = url;
-    img.replaceWith(fresh);
-  }
-  toast('Аватар загружен — нажми «Сохранить»');
+  const res = await sb.from('profiles').update({ avatar_url: url }).eq('id', myId());
+  if (res.error) { toast(res.error.message, 'err'); return; }
+  await loadProfile();
+  render();
+  toast('Аватар обновлён');
 }
 
 async function saveProfile() {
   const nameEl = document.getElementById('p-name');
-  const avEl = document.getElementById('p-avatar-url');
   const name = nameEl ? nameEl.value.trim() : '';
-  const avatar = avEl ? avEl.value.trim() : '';
   if (!name) { toast('Введи ник', 'err'); return; }
-  const res = await sb.from('profiles').update({ display_name: name, avatar_url: avatar || null }).eq('id', myId());
+  const res = await sb.from('profiles').update({ display_name: name }).eq('id', myId());
   if (res.error) { toast(res.error.message, 'err'); return; }
   await loadProfile();
   render();
@@ -753,6 +784,11 @@ async function signOut() {
 
 // ---------- редактор ----------
 let editBookId = null, editChapterId = null, tempMedia = [], tab = 'books';
+let outlineBookId = null, outlineNoteFor = null, outlineDragId = null;
+const outlineCollapsed = new Set();
+const OUTLINE_STATUSES = ['идея', 'надо', 'пишу', 'готово', 'отброшено'];
+const OUTLINE_KINDS = ['сюжет', 'сцена', 'герой', 'мир', 'реплика', 'вопрос'];
+const ouid = () => 'o' + Date.now().toString(36) + Math.random().toString(36).slice(2, 6);
 
 function renderAdmin() {
   if (!authed()) return renderLogin();
@@ -765,12 +801,13 @@ function renderAdmin() {
     + '<div class="tabs">'
     + '<button class="tab ' + (tab === 'books' ? 'active' : '') + '" onclick="setTab(\'books\')">Книги</button>'
     + '<button class="tab ' + (tab === 'chapters' ? 'active' : '') + '" onclick="setTab(\'chapters\')">Главы</button>'
+    + '<button class="tab ' + (tab === 'outline' ? 'active' : '') + '" onclick="setTab(\'outline\')">Сюжет</button>'
     + '</div>'
-    + (tab === 'books' ? renderAdminBooks(mine) : renderAdminChapters(mine))
+    + (tab === 'books' ? renderAdminBooks(mine) : tab === 'chapters' ? renderAdminChapters(mine) : renderAdminOutline(mine))
     + '</div></section></div>';
 }
 
-function setTab(t) { tab = t; editBookId = null; editChapterId = null; tempMedia = []; render(); }
+function setTab(t) { tab = t; editBookId = null; editChapterId = null; tempMedia = []; outlineNoteFor = null; render(); }
 
 function renderAdminBooks(mine) {
   const b = editBookId ? getBook(editBookId) : null;
@@ -964,6 +1001,217 @@ async function deleteChapter(id) {
   const r = await sb.from('chapters').delete().eq('id', id);
   if (r.error) { toast(r.error.message, 'err'); return; }
   await loadData(); render(); toast('Удалена');
+}
+
+// ---------- сюжетное дерево ----------
+function outlineOf(bookId) { return data.outlines[bookId] || (data.outlines[bookId] = []); }
+
+function outlineFindNode(list, id) {
+  for (const n of list || []) {
+    if (n.id === id) return n;
+    const r = outlineFindNode(n.children, id);
+    if (r) return r;
+  }
+  return null;
+}
+function outlineFindParent(list, id) {
+  for (const n of list || []) {
+    if ((n.children || []).some(c => c.id === id)) return n;
+    const r = outlineFindParent(n.children, id);
+    if (r) return r;
+  }
+  return null;
+}
+function outlineRemoveNode(list, id) {
+  for (let i = 0; i < list.length; i++) {
+    if (list[i].id === id) return list.splice(i, 1)[0];
+    const r = outlineRemoveNode(list[i].children || [], id);
+    if (r) return r;
+  }
+  return null;
+}
+function outlineContains(node, id) {
+  if (!node) return false;
+  if (node.id === id) return true;
+  return (node.children || []).some(c => outlineContains(c, id));
+}
+function outlineCount(n) { let k = (n.children || []).length; (n.children || []).forEach(c => { k += outlineCount(c); }); return k; }
+
+async function outlineSave() {
+  if (!authed()) { toast('Нужно войти', 'err'); return; }
+  const res = await sb.from('book_outline').upsert({
+    book_id: outlineBookId, data: outlineOf(outlineBookId), updated_at: new Date().toISOString()
+  });
+  if (res.error) toast('Не сохранилось: ' + res.error.message, 'err');
+}
+
+function renderAdminOutline(mine) {
+  if (!outlineBookId || !mine.some(b => b.id === outlineBookId)) outlineBookId = mine[0] ? mine[0].id : '';
+  if (!outlineBookId) return '<div class="form-card"><h3>Сюжет</h3><div class="empty"><p>Сначала добавь книгу — сюжет привязан к ней.</p></div></div>';
+  const book = getBook(outlineBookId);
+  const tree = outlineOf(book.id);
+  return '<div class="form-card">'
+    + '<div class="otoolbar">'
+    + (mine.length > 1
+      ? '<select class="finput" style="width:auto;height:34px;padding:0 12px;border-radius:999px" onchange="outlineBookId=this.value;render()">'
+        + mine.map(b => '<option value="' + b.id + '" ' + (b.id === outlineBookId ? 'selected' : '') + '>' + esc(b.title) + '</option>').join('') + '</select>'
+      : '<span class="pill">' + esc(book.title) + '</span>')
+    + '<button class="btn-ghost btn-sm" onclick="outlineAddRoot()">＋ мысль</button>'
+    + '<span class="grow"></span>'
+    + '<button class="btn-ghost btn-sm" onclick="outlineSave()">Сохранить</button>'
+    + '</div>'
+    + (tree.length
+      ? '<div class="otree">' + tree.map(n => outlineNodeHTML(n, 0)).join('') + '</div>'
+      : '<div class="empty"><p>Пусто. Добавь первую мысль — завязку, сцену, поворот.</p></div>')
+    + '<p class="fnote" style="margin-top:12px">Тяни строки для порядка и вложенности. Клик по статусу/типу — цикл. «→гл» превращает мысль в главу.</p>'
+    + '</div>';
+}
+
+function outlineNodeHTML(n, d) {
+  const kids = n.children || [];
+  const open = !outlineCollapsed.has(n.id);
+  const st = n.status || 'идея';
+  const title = '<span class="otitle ' + (st === 'готово' ? 'done' : '') + '" title="Переименовать" onclick="outlineRename(\'' + n.id + '\')">' + esc(n.title || 'Без названия') + '</span>';
+  return '<div class="obeat ' + (st === 'отброшено' ? 'off' : '') + '" data-id="' + n.id + '" draggable="true" ondragstart="outlineDragStart(event,\'' + n.id + '\')" ondragend="outlineDragEnd()">'
+    + '<div class="obeat-row" style="--d:' + d + '" ondragover="outlineDragOver(event,\'' + n.id + '\')" ondrop="outlineDrop(event,\'' + n.id + '\')">'
+    + '<button class="otwist" onclick="outlineToggle(\'' + n.id + '\')">' + (kids.length ? (open ? '▾' : '▸') : '·') + '</button>'
+    + '<span class="ochip' + (st !== 'идея' ? ' ochip-' + st : '') + '" onclick="outlineCycleStatus(\'' + n.id + '\')">' + esc(st) + '</span>'
+    + title
+    + '<span class="okind" title="Тип" onclick="outlineCycleKind(\'' + n.id + '\')">' + esc(n.kind || 'тип') + '</span>'
+    + (n.chapter_id ? '<span class="olink" onclick="outlineOpenChapter(\'' + n.chapter_id + '\')">гл.</span>' : '')
+    + '<span class="obeat-acts">'
+    + '<button class="obtn" title="Вложенная мысль" onclick="outlineAddChild(\'' + n.id + '\')">＋</button>'
+    + '<button class="obtn" title="Соседняя мысль" onclick="outlineAddSib(\'' + n.id + '\')">↩</button>'
+    + '<button class="obtn" title="Заметка" onclick="outlineToggleNote(\'' + n.id + '\')">📝</button>'
+    + '<button class="obtn acc" title="Сделать главой" onclick="outlineToChapter(\'' + n.id + '\')">→гл</button>'
+    + '<button class="obtn" title="Удалить" onclick="outlineDelete(\'' + n.id + '\')">✕</button>'
+    + '</span>'
+    + '</div>'
+    + (n.note && outlineNoteFor !== n.id ? '<div class="obeat-note" style="--d:' + d + '">' + esc(n.note.slice(0, 160)) + '</div>' : '')
+    + (outlineNoteFor === n.id ? '<div class="onote" style="--d:' + d + '"><textarea oninput="outlineSetNote(\'' + n.id + '\',this.value)">' + esc(n.note || '') + '</textarea><div class="onote-foot"><button class="btn-primary btn-sm" onclick="outlineNoteDone()">Готово</button><button class="btn-ghost btn-sm" onclick="outlineNoteCancel()">Отмена</button></div></div>' : '')
+    + (kids.length && open ? '<div class="okids">' + kids.map(k => outlineNodeHTML(k, d + 1)).join('') + '</div>' : '')
+    + '</div>';
+}
+
+async function outlineAdd(parentId, afterId) {
+  const tree = outlineOf(outlineBookId);
+  const n = { id: ouid(), title: 'Новая мысль', note: '', status: 'идея', kind: '', chapter_id: null, children: [] };
+  if (afterId) {
+    const parent = outlineFindParent(tree, afterId);
+    const arr = parent ? parent.children : tree;
+    const i = arr.findIndex(x => x.id === afterId);
+    arr.splice(i + 1, 0, n);
+  } else if (parentId) {
+    const p = outlineFindNode(tree, parentId);
+    if (p) (p.children = p.children || []).push(n); else tree.push(n);
+  } else tree.push(n);
+  await outlineSave();
+  render();
+  outlineRename(n.id);
+}
+function outlineAddRoot() { outlineAdd(null, null); }
+function outlineAddChild(id) { outlineAdd(id, null); }
+function outlineAddSib(id) { outlineAdd(null, id); }
+
+async function outlineRename(id) {
+  const n = outlineFindNode(outlineOf(outlineBookId), id);
+  if (!n) return;
+  const v = prompt('Название мысли', n.title || '');
+  if (v === null) return;
+  const t = (v || '').trim();
+  if (!t) return;
+  n.title = t;
+  await outlineSave();
+  render();
+}
+
+async function outlineCycleStatus(id) {
+  const n = outlineFindNode(outlineOf(outlineBookId), id);
+  if (!n) return;
+  const i = OUTLINE_STATUSES.indexOf(n.status || 'идея');
+  n.status = OUTLINE_STATUSES[(i + 1) % OUTLINE_STATUSES.length];
+  await outlineSave(); render();
+}
+async function outlineCycleKind(id) {
+  const n = outlineFindNode(outlineOf(outlineBookId), id);
+  if (!n) return;
+  const i = OUTLINE_KINDS.indexOf(n.kind || '');
+  n.kind = i === -1 ? OUTLINE_KINDS[0] : OUTLINE_KINDS[(i + 1) % OUTLINE_KINDS.length];
+  await outlineSave(); render();
+}
+
+function outlineToggle(id) { if (outlineCollapsed.has(id)) outlineCollapsed.delete(id); else outlineCollapsed.add(id); render(); }
+
+function outlineToggleNote(id) { outlineNoteFor = outlineNoteFor === id ? null : id; render(); }
+function outlineSetNote(id, value) { const n = outlineFindNode(outlineOf(outlineBookId), id); if (n) n.note = value; }
+async function outlineNoteDone() { outlineNoteFor = null; await outlineSave(); render(); }
+function outlineNoteCancel() { outlineNoteFor = null; render(); }
+
+async function outlineDelete(id) {
+  const n = outlineFindNode(outlineOf(outlineBookId), id);
+  if (!n) return;
+  const kids = outlineCount(n);
+  if (!confirm('Удалить мысль «' + (n.title || '') + '»' + (kids ? ' вместе с ' + kids + ' вложенными' : '') + '?')) return;
+  outlineRemoveNode(outlineOf(outlineBookId), id);
+  await outlineSave(); render();
+}
+
+async function outlineToChapter(id) {
+  const n = outlineFindNode(outlineOf(outlineBookId), id);
+  if (!n) return;
+  if (n.chapter_id) { outlineOpenChapter(n.chapter_id); return; }
+  const nums = chaptersOf(outlineBookId).map(c => c.num);
+  const next = (nums.length ? Math.max.apply(null, nums) : 0) + 1;
+  const r = await sb.from('chapters').insert({ book_id: outlineBookId, num: next, title: n.title || ('Глава ' + next), content: n.note || '' }).select().single();
+  if (r.error) { toast(r.error.message, 'err'); return; }
+  n.chapter_id = r.data.id;
+  n.status = 'пишу';
+  await outlineSave();
+  await loadData(); render();
+  toast('Глава создана из мысли');
+}
+function outlineOpenChapter(chapterId) { navigate('chapter', { chapterId }); }
+
+function outlineDragStart(e, id) { outlineDragId = id; e.dataTransfer.effectAllowed = 'move'; try { e.dataTransfer.setData('text/plain', id); } catch (err) {} }
+function outlineDragEnd() {
+  outlineDragId = null;
+  $$('.obeat-row').forEach(r => r.classList.remove('drop-before', 'drop-after', 'drop-inside'));
+}
+function outlineDragOver(e, id) {
+  e.preventDefault();
+  const row = e.target && e.target.closest ? e.target.closest('.obeat-row') : null;
+  if (!row) return;
+  const r = row.getBoundingClientRect();
+  const ratio = (e.clientY - r.top) / r.height;
+  const xRatio = (e.clientX - r.left) / r.width;
+  $$('.obeat-row').forEach(x => x.classList.remove('drop-before', 'drop-after', 'drop-inside'));
+  if (xRatio > 0.6) row.classList.add('drop-inside');
+  else if (ratio < 0.5) row.classList.add('drop-before');
+  else row.classList.add('drop-after');
+}
+async function outlineDrop(e, id) {
+  e.preventDefault();
+  const row = e.target && e.target.closest ? e.target.closest('.obeat-row') : null;
+  if (!row) return;
+  const mode = row.classList.contains('drop-inside') ? 'inside' : row.classList.contains('drop-before') ? 'before' : 'after';
+  const dragId = outlineDragId;
+  outlineDragEnd();
+  if (!dragId || dragId === id) return;
+  const tree = outlineOf(outlineBookId);
+  const src = outlineFindNode(tree, dragId);
+  if (!src) return;
+  if (outlineContains(src, id)) return;
+  const node = outlineRemoveNode(tree, dragId);
+  if (mode === 'inside') {
+    const t = outlineFindNode(tree, id);
+    if (t) (t.children = t.children || []).push(node); else tree.push(node);
+  } else {
+    const parent = outlineFindParent(tree, id);
+    const arr = parent ? parent.children : tree;
+    const i = arr.findIndex(x => x.id === id);
+    arr.splice(mode === 'before' ? i : i + 1, 0, node);
+  }
+  await outlineSave(); render();
 }
 
 // ---------- аудио ----------
