@@ -335,6 +335,7 @@ html[data-theme="light"] .hero p{color:#e9e9ee}
 
 /* ---------- конструктор страницы ---------- */
 .pblock{position:relative;border:1px solid var(--line);background:var(--panel);border-radius:12px;padding:14px;margin-bottom:10px}
+.pblock.pdrop{border-color:var(--accent);background:rgba(207,58,47,.07)}
 .pblock-head{display:flex;align-items:center;gap:8px;margin-bottom:9px}
 .pblock-type{font-size:10.5px;text-transform:uppercase;letter-spacing:.07em;color:var(--dim)}
 .pblock-acts{margin-left:auto;display:flex;gap:4px}
@@ -1540,6 +1541,66 @@ function renderPageBlocks(pd) {
   }).join('');
 }
 
+function pageUploadRow(blockId, field, accept, label, multiple) {
+  return '<div style="display:flex;gap:8px;align-items:center;margin-top:8px;flex-wrap:wrap">'
+    + '<label class="btn-ghost btn-sm" style="cursor:pointer">' + label
+    + '<input type="file" accept="' + accept + '"' + (multiple ? ' multiple' : '')
+    + ' style="display:none" onchange="pageUpload(this,\'' + blockId + '\',\'' + field + '\')"></label>'
+    + '<span class="fnote">или перетащи файл прямо в блок</span>'
+    + '</div>';
+}
+
+async function pageUploadFiles(files, blockId, field) {
+  const b = pageFind(blockId);
+  if (!b || !files || !files.length) return;
+  toast('Загружаю файл…');
+  const urls = [];
+  for (let i = 0; i < files.length; i++) {
+    const u = await uploadFile(files[i]);
+    if (u) urls.push(u);
+  }
+  if (!urls.length) return;
+  if (field === 'urls') b.urls = (b.urls || []).concat(urls);
+  else b.url = urls[0];
+  if (b.type === 'media') {
+    const t = (files[0].type || '').toLowerCase();
+    b.kind = t.indexOf('video') === 0 ? 'video' : 'audio';
+  }
+  pageSave();
+  render();
+  toast(urls.length > 1 ? 'Загружено файлов: ' + urls.length : 'Файл загружен');
+}
+
+function pageUpload(input, blockId, field) {
+  const files = Array.prototype.slice.call(input.files || []);
+  input.value = '';
+  pageUploadFiles(files, blockId, field);
+}
+
+function pageDragOver(e) {
+  if (e.dataTransfer && e.dataTransfer.types && Array.prototype.indexOf.call(e.dataTransfer.types, 'Files') === -1) return;
+  e.preventDefault();
+  if (e.currentTarget) e.currentTarget.classList.add('pdrop');
+}
+
+function pageDragLeave(e) {
+  if (e.currentTarget) e.currentTarget.classList.remove('pdrop');
+}
+
+function pageDrop(e) {
+  e.preventDefault();
+  const el = e.currentTarget;
+  if (el) el.classList.remove('pdrop');
+  const id = el && el.getAttribute('data-block');
+  if (!id) return;
+  const files = Array.prototype.slice.call((e.dataTransfer && e.dataTransfer.files) || []);
+  if (!files.length) return;
+  const b = pageFind(id);
+  if (!b) return;
+  const field = b.type === 'gallery' ? 'urls' : 'url';
+  pageUploadFiles(files, id, field);
+}
+
 function pageBlockCard(b) {
   const inp = (field, ph, val) =>
     '<input value="' + esc(val || '') + '" placeholder="' + esc(ph) + '" oninput="pageField(\'' + b.id + '\',\'' + field + '\',this.value)">';
@@ -1555,22 +1616,27 @@ function pageBlockCard(b) {
   } else if (b.type === 'text') {
     fields = area('text', 'Текст. Каждая строка — новый абзац', b.text);
   } else if (b.type === 'image') {
-    fields = '<div class="two">' + inp('url', 'Ссылка на картинку', b.url) + inp('caption', 'Подпись', b.caption) + '</div>';
+    fields = '<div class="two">' + inp('url', 'Ссылка на картинку', b.url) + inp('caption', 'Подпись', b.caption) + '</div>'
+      + pageUploadRow(b.id, 'url', 'image/*', '📁 загрузить картинку');
   } else if (b.type === 'gallery') {
-    fields = area('urls', 'Ссылки на фото — по одной в строке', (b.urls || []).join('\n')) + inp('caption', 'Подпись (необязательно)', b.caption);
+    fields = area('urls', 'Ссылки на фото — по одной в строке', (b.urls || []).join('\n'))
+      + inp('caption', 'Подпись (необязательно)', b.caption)
+      + pageUploadRow(b.id, 'urls', 'image/*', '📁 загрузить фото', true);
   } else if (b.type === 'media') {
     fields = '<div class="two">' + inp('url', 'Ссылка на файл (mp3 / mp4)', b.url)
       + '<select onchange="pageField(\'' + b.id + '\',\'kind\',this.value)">'
       + '<option value="audio" ' + (b.kind !== 'video' ? 'selected' : '') + '>Музыка</option>'
       + '<option value="video" ' + (b.kind === 'video' ? 'selected' : '') + '>Видео</option></select></div>'
-      + inp('caption', 'Подпись', b.caption);
+      + inp('caption', 'Подпись', b.caption)
+      + pageUploadRow(b.id, 'url', 'audio/*,video/*', '📁 загрузить файл');
   } else if (b.type === 'button') {
     fields = '<div class="two">' + inp('text', 'Надпись', b.text) + inp('url', 'Куда ведёт', b.url) + '</div>';
   } else if (b.type === 'quote') {
     fields = area('text', 'Цитата', b.text);
   }
 
-  return '<div class="pblock" oncontextmenu="pageCtx(event,\'' + b.id + '\')">'
+  return '<div class="pblock" data-block="' + b.id + '" oncontextmenu="pageCtx(event,\'' + b.id + '\')"'
+    + ' ondragover="pageDragOver(event)" ondragleave="pageDragLeave(event)" ondrop="pageDrop(event)">'
     + '<div class="pblock-head"><span class="pblock-type">' + esc(PAGE_TYPES[b.type] || b.type) + '</span>'
     + '<span class="pblock-acts">'
     + '<button class="btn-ghost btn-sm" title="Выше" onclick="pageMove(\'' + b.id + '\',-1)">↑</button>'
