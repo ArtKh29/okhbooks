@@ -213,6 +213,13 @@ html[data-theme="light"] .cover h3{color:#fff}
 html[data-theme="light"] .reader-content{color:#2a2a30}
 html[data-theme="light"] .hero p{color:#e9e9ee}
 .themebtn{font-size:15px;padding:0 12px}
+/* --- админский аватар: золотая рамка с короной --- */
+.av-admin{position:relative;display:inline-flex;align-items:center;justify-content:center;padding:2px;border-radius:50%;background:conic-gradient(from 210deg,#7a4f0e,#ffe9a8 18%,#d4a13a 38%,#ffd97a 55%,#a8761c 72%,#ffe9a8 88%,#7a4f0e);box-shadow:0 0 0 1px rgba(255,214,120,.28),0 0 10px rgba(212,161,58,.28);flex-shrink:0}
+.av-admin > .avatar{width:26px;height:26px;border:2px solid #101013}
+.av-admin::after{content:'👑';position:absolute;top:-8px;right:-7px;font-size:11px;line-height:1;filter:drop-shadow(0 1px 2px rgba(0,0,0,.75));transform:rotate(12deg);pointer-events:none}
+.av-admin-lg{padding:3px}
+.av-admin-lg > .avatar{width:52px;height:52px;border-width:3px}
+.av-admin-lg::after{font-size:17px;top:-11px;right:-9px}
 /* --- аккаунт и редактор --- */
 .authbar{display:flex;align-items:center;gap:8px;margin-left:auto}
 .userchip{display:inline-flex;align-items:center;gap:8px;height:36px;padding:0 12px 0 4px;border-radius:999px;background:var(--panel);border:1px solid var(--line);cursor:pointer;font-size:13px;transition:background .2s,border-color .2s}
@@ -565,8 +572,10 @@ function friendName(id) {
 function friendAvatarHtml(id) {
   const p = profileOf(id);
   const name = friendName(id);
-  if (p && p.avatar_url) return '<img class="avatar" src="' + esc(p.avatar_url) + '" alt="">';
-  return '<span class="avatar avatar-empty">' + esc(name.slice(0, 1).toUpperCase()) + '</span>';
+  const inner = (p && p.avatar_url)
+    ? '<img class="avatar" src="' + esc(p.avatar_url) + '" alt="">'
+    : '<span class="avatar avatar-empty">' + esc(name.slice(0, 1).toUpperCase()) + '</span>';
+  return (p && p.is_admin === true) ? '<span class="av-admin">' + inner + '</span>' : inner;
 }
 
 async function sendFriend(uid) {
@@ -763,9 +772,10 @@ function renderAuthBar() {
     return;
   }
   const name = (profile && profile.display_name) || (session.user.email || '').split('@')[0];
-  const av = profile && profile.avatar_url
+  const avInner = profile && profile.avatar_url
     ? '<img class="avatar" src="' + esc(profile.avatar_url) + '" alt="">'
     : '<span class="avatar avatar-empty">' + esc(name.slice(0, 1).toUpperCase()) + '</span>';
+  const av = isAdmin() ? '<span class="av-admin">' + avInner + '</span>' : avInner;
   const adminPill = '<span class="pill" onclick="navigate(\'admin\')" id="nav-admin">Мои книги</span>';
   box.innerHTML = adminPill
     + '<span class="userchip" onclick="toggleUserMenu(event)">' + av + '<span>' + esc(name) + '</span></span>';
@@ -1273,9 +1283,10 @@ function renderProfile() {
   if (!authed()) return renderLogin();
   const name = (profile && profile.display_name) || (session.user.email || '').split('@')[0];
   const avUrl = (profile && profile.avatar_url) || '';
-  const av = avUrl
+  const avInner = avUrl
     ? '<img class="avatar avatar-lg" id="p-av-img" src="' + esc(avUrl) + '" alt="">'
     : '<span class="avatar avatar-lg avatar-empty" id="p-av-img">' + esc(name.slice(0, 1).toUpperCase()) + '</span>';
+  const av = isAdmin() ? '<span class="av-admin av-admin-lg">' + avInner + '</span>' : avInner;
   const mine = data.books.filter(b => b.ownerId === myId());
   return '<div class="wrap"><div class="reader" style="max-width:520px">'
     + '<h1 style="margin-top:34px">Профиль</h1>'
@@ -1336,9 +1347,10 @@ function renderSettings() {
   if (!authed()) return renderLogin();
   const name = (profile && profile.display_name) || (session.user.email || '').split('@')[0];
   const avUrl = (profile && profile.avatar_url) || '';
-  const av = avUrl
+  const avInner = avUrl
     ? '<img class="avatar avatar-lg" id="p-av-img" src="' + esc(avUrl) + '" alt="">'
     : '<span class="avatar avatar-lg avatar-empty" id="p-av-img">' + esc(name.slice(0, 1).toUpperCase()) + '</span>';
+  const av = isAdmin() ? '<span class="av-admin av-admin-lg">' + avInner + '</span>' : avInner;
   return '<div class="wrap"><div class="admin" style="padding-top:26px">'
     + '<div class="breadcrumbs"><a onclick="navigate(\'profile\')">Профиль</a><span>/</span><span>Настройки</span></div>'
     + '<h2 style="margin:8px 0 18px;font-size:22px">Настройки</h2>'
