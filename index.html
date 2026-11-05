@@ -797,7 +797,8 @@ function closeUserMenu() { const m = document.getElementById('usermenu'); if (m)
 document.addEventListener('click', closeUserMenu);
 
 function homePageOwner() {
-  if (authed() && data.pages && data.pages[myId()]) return myId();
+  const adminU = (data.profiles || []).find(p => p.is_admin === true);
+  if (adminU && data.pages && data.pages[adminU.id]) return adminU.id;
   const owners = [];
   (data.books || []).forEach(b => { if (b.ownerId && owners.indexOf(b.ownerId) === -1) owners.push(b.ownerId); });
   for (let i = 0; i < owners.length; i++) if (data.pages && data.pages[owners[i]]) return owners[i];
@@ -1358,10 +1359,12 @@ function renderSettings() {
     + '</div>'
     + '<div class="hint">Смена пароля действует сразу. «Выйти со всех устройств» завершит все сессии, включая эту.</div>'
     + '</div>'
-    + '<div class="settings-sec"><h3>Сайт</h3>'
-    + '<div class="hint" style="margin:0 0 12px">Главная страница собирается из блоков. Добавь блок, заполни поля; ПКМ по блоку — меню.</div>'
-    + renderAdminPage()
-    + '</div>'
+    + (isAdmin()
+      ? '<div class="settings-sec"><h3>Сайт</h3>'
+        + '<div class="hint" style="margin:0 0 12px">Главная страница собирается из блоков. Добавь блок, заполни поля; ПКМ по блоку — меню.</div>'
+        + renderAdminPage()
+        + '</div>'
+      : '')
     + '</div></div>';
 }
 
