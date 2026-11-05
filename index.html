@@ -1403,6 +1403,39 @@ async function signOutAll() {
 
 // ---------- редактор ----------
 let editBookId = null, editChapterId = null, tempMedia = [], tab = 'books';
+let bookDraft = null, chapterDraft = null, draftFor = null;
+
+function bookDraftOf(b) {
+  return { title: (b && b.title) || '', author: (b && b.author) || '', genre: (b && b.genre) || '',
+    status: (b && b.status) || 'draft', stage: (b && b.stage) || 'writing',
+    desc: (b && b.desc) || '', cover_url: (b && b.cover_url) || '' };
+}
+function bookField(k, v) { if (!bookDraft) bookDraft = bookDraftOf(null); bookDraft[k] = v; }
+function startBookEdit(id) {
+  const b = id ? getBook(id) : null;
+  editBookId = id || null;
+  bookDraft = bookDraftOf(b);
+  draftFor = 'book:' + (id || 'new');
+  render();
+}
+
+function chapterDraftOf(c) {
+  return { bookId: (c && c.bookId) || '', num: (c && c.num) || 1,
+    title: (c && c.title) || '', content: (c && c.content) || '' };
+}
+function chapterField(k, v) { if (!chapterDraft) chapterDraft = chapterDraftOf(null); chapterDraft[k] = v; }
+function startChapterEdit(id) {
+  const c = id ? getChapter(id) : null;
+  editChapterId = id || null;
+  chapterDraft = chapterDraftOf(c);
+  if (!chapterDraft.bookId) {
+    const own = data.books.filter(x => x.ownerId === myId());
+    chapterDraft.bookId = own.length ? own[0].id : '';
+  }
+  tempMedia = c ? mediaOf(c).map(m => Object.assign({}, m)) : [];
+  draftFor = 'chapter:' + (id || 'new');
+  render();
+}
 let outlineBookId = null, outlineNoteFor = null, outlineDragId = null;
 const outlineCollapsed = new Set();
 const OUTLINE_STATUSES = ['идея', 'надо', 'пишу', 'готово', 'отброшено'];
@@ -1428,27 +1461,27 @@ function renderAdmin() {
     + '</div></section></div>';
 }
 
-function setTab(t) { tab = t; editBookId = null; editChapterId = null; tempMedia = []; outlineNoteFor = null; render(); }
+function setTab(t) { tab = t; outlineNoteFor = null; render(); }
 
 function renderAdminBooks(mine) {
   const b = editBookId ? getBook(editBookId) : null;
-  const cur = b || { title: '', author: '', genre: '', desc: '', cover_url: '', status: 'draft' };
+  const cur = bookDraft || bookDraftOf(b);
   return '<div class="form-card">'
     + '<h3>' + (b ? 'Редактировать книгу' : 'Новая книга') + '</h3>'
     + '<div class="row2">'
-    + '<div class="field"><label>Название</label><input id="b-title" value="' + esc(cur.title) + '" placeholder="Название книги"></div>'
-    + '<div class="field"><label>Автор</label><input id="b-author" value="' + esc(cur.author || '') + '" placeholder="Имя автора"></div>'
+    + '<div class="field"><label>Название</label><input id="b-title" value="' + esc(cur.title) + '" placeholder="Название книги" oninput="bookField(\'title\',this.value)"></div>'
+    + '<div class="field"><label>Автор</label><input id="b-author" value="' + esc(cur.author || '') + '" placeholder="Имя автора" oninput="bookField(\'author\',this.value)"></div>'
     + '</div>'
     + '<div class="row2">'
-    + '<div class="field"><label>Жанр</label><input id="b-genre" value="' + esc(cur.genre || '') + '" placeholder="Фэнтези, Романтика…"></div>'
-    + '<div class="field"><label>Статус</label><select id="b-status">'
+    + '<div class="field"><label>Жанр</label><input id="b-genre" value="' + esc(cur.genre || '') + '" placeholder="Фэнтези, Романтика…" oninput="bookField(\'genre\',this.value)"></div>'
+    + '<div class="field"><label>Статус</label><select id="b-status" onchange="bookField(\'status\',this.value)">'
     + '<option value="draft" ' + (cur.status === 'draft' ? 'selected' : '') + '>черновик</option>'
     + '<option value="published" ' + (cur.status === 'published' ? 'selected' : '') + '>опубликована</option>'
     + '</select></div>'
     + '</div>'
-    + '<div class="field"><label>Описание</label><textarea id="b-desc" placeholder="О чём книга">' + esc(cur.desc || '') + '</textarea></div>'
+    + '<div class="field"><label>Описание</label><textarea id="b-desc" placeholder="О чём книга" oninput="bookField(\'desc\',this.value)">' + esc(cur.desc || '') + '</textarea></div>'
     + '<div class="row2">'
-    + '<div class="field"><label>Состояние</label><select id="b-stage">'
+    + '<div class="field"><label>Состояние</label><select id="b-stage" onchange="bookField(\'stage\',this.value)">'
     + '<option value="writing" ' + (cur.stage !== 'finished' ? 'selected' : '') + '>пишется</option>'
     + '<option value="finished" ' + (cur.stage === 'finished' ? 'selected' : '') + '>закончена</option>'
     + '</select></div>'
@@ -1456,21 +1489,21 @@ function renderAdminBooks(mine) {
     + '</div>'
     + '<div class="field"><label>Обложка</label>'
     + '<div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap">'
-    + '<input id="b-cover-url" value="' + esc(cur.cover_url || '') + '" placeholder="https://…/cover.jpg" style="flex:1;min-width:200px">'
+    + '<input id="b-cover-url" value="' + esc(cur.cover_url || '') + '" placeholder="https://…/cover.jpg" style="flex:1;min-width:200px" oninput="bookField(\'cover_url\',this.value)">'
     + '<label class="btn-ghost" style="cursor:pointer">Загрузить<input type="file" id="b-cover-file" accept="image/*" style="display:none" onchange="uploadCover(this)"></label>'
     + '</div>'
     + '<div class="fnote" style="margin-top:6px">Ссылка или файл — файл зальётся в хранилище и подставится сам.</div>'
     + '</div>'
     + '<div style="display:flex;gap:8px">'
     + '<button class="btn-primary" onclick="saveBook()">' + (b ? 'Сохранить' : 'Добавить книгу') + '</button>'
-    + (b ? '<button class="btn-ghost" onclick="editBookId=null;render()">Отмена</button>' : '')
+    + (b ? '<button class="btn-ghost" onclick="startBookEdit(null)">Отмена</button>' : '')
     + '</div></div>'
     + '<div class="list">' + (mine.length ? mine.map(x =>
       '<div class="item"><div><div class="t">' + esc(x.title) + '</div>'
       + '<div class="s">' + esc(x.genre || 'без жанра') + ' · ' + chaptersOf(x.id).length + ' гл. · ' + (x.status === 'published' ? 'опубликована' : 'черновик') + '</div></div>'
       + '<div class="acts">'
       + '<button class="btn-ghost btn-sm" onclick="navigate(\'book\',{bookId:\'' + x.id + '\'})">Открыть</button>'
-      + '<button class="btn-ghost btn-sm" onclick="editBookId=\'' + x.id + '\';render()">Правка</button>'
+      + '<button class="btn-ghost btn-sm" onclick="startBookEdit(\'' + x.id + '\')">Правка</button>'
       + '<button class="btn-danger btn-sm" onclick="deleteBook(\'' + x.id + '\')">Удалить</button>'
       + '</div></div>').join('') : '<div class="empty"><p>Книг пока нет</p></div>')
     + '</div>';
@@ -1525,18 +1558,22 @@ async function deleteBook(id) {
 function renderAdminChapters(mine) {
   const myBooks = mine;
   const ch = editChapterId ? getChapter(editChapterId) : null;
-  const cur = ch || { bookId: myBooks[0] ? myBooks[0].id : '', num: 1, title: '', content: '', media: [] };
-  tempMedia = mediaOf(cur).map(m => Object.assign({}, m));
+  const cur = chapterDraft || chapterDraftOf(ch);
+  if (!chapterDraft && myBooks.length && !cur.bookId) cur.bookId = myBooks[0].id;
+  if (draftFor !== 'chapter:' + (editChapterId || 'new')) {
+    tempMedia = ch ? mediaOf(ch).map(m => Object.assign({}, m)) : [];
+    draftFor = 'chapter:' + (editChapterId || 'new');
+  }
   return '<div class="form-card">'
     + '<h3>' + (ch ? 'Редактировать главу' : 'Новая глава') + '</h3>'
     + '<div class="row2">'
-    + '<div class="field"><label>Книга</label><select id="c-book">' + myBooks.map(b =>
+    + '<div class="field"><label>Книга</label><select id="c-book" onchange="chapterField(\'bookId\',this.value)">' + myBooks.map(b =>
       '<option value="' + b.id + '" ' + (cur.bookId === b.id ? 'selected' : '') + '>' + esc(b.title) + '</option>').join('') + '</select></div>'
-    + '<div class="field"><label>Номер главы</label><input id="c-num" type="number" min="1" value="' + (cur.num || 1) + '"></div>'
+    + '<div class="field"><label>Номер главы</label><input id="c-num" type="number" min="1" value="' + (cur.num || 1) + '" oninput="chapterField(\'num\',this.value)"></div>'
     + '</div>'
-    + '<div class="field"><label>Название главы</label><input id="c-title" value="' + esc(cur.title || '') + '" placeholder="Название главы"></div>'
+    + '<div class="field"><label>Название главы</label><input id="c-title" value="' + esc(cur.title || '') + '" placeholder="Название главы" oninput="chapterField(\'title\',this.value)"></div>'
     + '<div class="field"><label>Текст (абзац = новая строка)</label>'
-    + '<textarea id="c-content" style="min-height:170px" placeholder="Пиши текст. Файл вставится туда, где стоит курсор.">' + esc(cur.content || '') + '</textarea>'
+    + '<textarea id="c-content" style="min-height:170px" placeholder="Пиши текст. Файл вставится туда, где стоит курсор." oninput="chapterField(\'content\',this.value)">' + esc(cur.content || '') + '</textarea>'
     + '<div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin-top:8px">'
     + '<label class="btn-ghost btn-sm" style="cursor:pointer">🎧 ＋ файл в текст'
     + '<input type="file" id="inline-media-file" accept="audio/*,image/*,video/*" style="display:none" onchange="insertMediaInline(this)"></label>'
@@ -1556,7 +1593,7 @@ function renderAdminChapters(mine) {
     + '</div></div></details>'
     + '<div style="display:flex;gap:8px">'
     + '<button class="btn-primary" onclick="saveChapter()">' + (ch ? 'Сохранить' : 'Добавить главу') + '</button>'
-    + (ch ? '<button class="btn-ghost" onclick="editChapterId=null;render()">Отмена</button>' : '')
+    + (ch ? '<button class="btn-ghost" onclick="startChapterEdit(null)">Отмена</button>' : '')
     + '</div></div>'
     + '<div class="list">' + (data.chapters.filter(c => mine.some(b => b.id === c.bookId)).length
       ? data.chapters.filter(c => mine.some(b => b.id === c.bookId)).sort((a, b) => a.num - b.num).map(x =>
@@ -1564,7 +1601,7 @@ function renderAdminChapters(mine) {
         + '<div class="s">' + esc((getBook(x.bookId) || {}).title || '') + ' · ' + mediaOf(x).length + ' медиа</div></div>'
         + '<div class="acts">'
         + '<button class="btn-ghost btn-sm" onclick="navigate(\'chapter\',{chapterId:\'' + x.id + '\'})">Открыть</button>'
-        + '<button class="btn-ghost btn-sm" onclick="editChapterId=\'' + x.id + '\';render()">Правка</button>'
+        + '<button class="btn-ghost btn-sm" onclick="startChapterEdit(\'' + x.id + '\')">Правка</button>'
         + '<button class="btn-danger btn-sm" onclick="deleteChapter(\'' + x.id + '\')">Удалить</button>'
         + '</div></div>').join('')
       : '<div class="empty"><p>Глав пока нет</p></div>')
