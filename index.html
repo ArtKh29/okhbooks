@@ -766,7 +766,7 @@ function renderAuthBar() {
   const av = profile && profile.avatar_url
     ? '<img class="avatar" src="' + esc(profile.avatar_url) + '" alt="">'
     : '<span class="avatar avatar-empty">' + esc(name.slice(0, 1).toUpperCase()) + '</span>';
-  const adminPill = isAdmin() ? '<span class="pill" onclick="navigate(\'admin\')" id="nav-admin">Мои книги</span>' : '';
+  const adminPill = '<span class="pill" onclick="navigate(\'admin\')" id="nav-admin">Мои книги</span>';
   box.innerHTML = adminPill
     + '<span class="userchip" onclick="toggleUserMenu(event)">' + av + '<span>' + esc(name) + '</span></span>';
 }
@@ -785,7 +785,7 @@ function toggleUserMenu(e) {
   m.style.top = (r.bottom + 8) + 'px';
   m.innerHTML = '<div class="um-head"><b>' + esc(name) + '</b><small>' + esc(email) + '</small></div>'
     + '<button onclick="closeUserMenu();navigate(\'profile\')">Профиль</button>'
-    + (isAdmin() ? '<button onclick="closeUserMenu();navigate(\'admin\')">Мои книги</button>' : '')
+    + '<button onclick="closeUserMenu();navigate(\'admin\')">Мои книги</button>'
     + '<button onclick="closeUserMenu();navigate(\'marks\',{status:\'reading\'})">Закладки</button>'
     + '<button onclick="closeUserMenu();navigate(\'friends\')">Друзья</button>'
     + '<button onclick="closeUserMenu();navigate(\'settings\')">Настройки</button>'
@@ -842,7 +842,7 @@ function renderHome() {
 function renderBooks(books) {
   if (!books.length) {
     return '<div class="empty"><h3>Пока пусто</h3><p>'
-      + ((authed() && isAdmin()) ? 'Добавь первую книгу в «Мои книги».' : 'Автор ещё наполняет библиотеку.')
+      + (authed() ? 'Добавь первую книгу в «Мои книги».' : 'Автор ещё наполняет библиотеку.')
       + '</p></div>';
   }
   return '<div class="grid">' + books.map(bookCard).join('') + '</div>';
@@ -1399,15 +1399,7 @@ const ouid = () => 'o' + Date.now().toString(36) + Math.random().toString(36).sl
 
 function renderAdmin() {
   if (!authed()) return renderLogin();
-  if (!isAdmin()) {
-    return '<div class="wrap"><div class="reader" style="max-width:520px">'
-      + '<h1 style="margin-top:34px">Только чтение</h1>'
-      + '<div class="sub">Добавлять и править книги может только автор сайта. Тебе доступно всё опубликованное.</div>'
-      + '<div style="display:flex;gap:8px;margin-top:18px;flex-wrap:wrap">'
-      + '<button class="btn-primary" onclick="navigate(\'home\')">К библиотеке</button>'
-      + '<button class="btn-ghost" onclick="navigate(\'profile\')">Профиль</button>'
-      + '</div></div></div>';
-  }
+
   const mine = data.books.filter(b => b.ownerId === myId());
   return '<div class="wrap"><section style="padding-top:30px"><div class="admin">'
     + '<div class="admin-head">'
