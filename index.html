@@ -453,6 +453,17 @@ html[data-theme="light"] .hero p{color:#e9e9ee}
 const SUPA_URL = 'https://qaxtkvqtskxpwmhfodah.supabase.co';
 const SUPA_KEY = 'sb_publishable_4Y8C8jX7cjXs7ejlAwNdIQ_s1CWPf-H';
 const SITE = 'OkhBooks';
+// ВАЖНО: при каждом деплое менять APP_VERSION и файл version.txt одинаково.
+const APP_VERSION = 'v2026-11-05a';
+
+async function checkVersion() {
+  try {
+    const r = await fetch('version.txt?t=' + Date.now(), { cache: 'no-store' });
+    if (!r.ok) return;
+    const v = (await r.text()).trim();
+    if (v && v !== APP_VERSION) location.reload();
+  } catch (e) {}
+}
 
 const sb = window.supabase.createClient(SUPA_URL, SUPA_KEY);
 
@@ -2259,6 +2270,7 @@ function toggleTheme() {
 }
 
 async function boot(fromLogin) {
+  checkVersion();
   applyTheme(savedTheme());
   const { data: s } = await sb.auth.getSession();
   session = s.session || null;
