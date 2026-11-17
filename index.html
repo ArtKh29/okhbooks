@@ -4,12 +4,12 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="theme-color" content="#0d0d10">
-<meta name="description" content="OkhBooks — книги с музыкой, фото и видео. Один файл, читай и слушай.">
-<meta property="og:title" content="OkhBooks — книги с музыкой, фото и видео">
+<meta name="description" content="LECTORIA — твой личный мир книг. Один файл, читай и слушай.">
+<meta property="og:title" content="LECTORIA — твой личный мир книг">
 <meta property="og:description" content="Книги, которые можно читать, слушать и смотреть.">
 <meta property="og:type" content="website">
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Cdefs%3E%3ClinearGradient id='g' x1='0' y1='0' x2='1' y2='1'%3E%3Cstop offset='0' stop-color='%23e9e9ec'/%3E%3Cstop offset='1' stop-color='%23cf3a2f'/%3E%3C/linearGradient%3E%3C/defs%3E%3Crect width='64' height='64' rx='16' fill='url(%23g)'/%3E%3Cpath d='M16 44V18a4 4 0 0 1 4-4h28v26a6 6 0 0 1-6 6H18a2 2 0 0 0 2 2h28v6H22a6 6 0 0 1-6-6z' fill='%23fdfbf6'/%3E%3C/svg%3E">
-<title>OkhBooks — книги с музыкой, фото и видео</title>
+<title>LECTORIA — твой личный мир книг</title>
 <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
 <link href="https://cdn.jsdelivr.net/fontsource/fonts/manrope@latest/cyrillic-400-normal.css" rel="stylesheet">
 <link href="https://cdn.jsdelivr.net/fontsource/fonts/manrope@latest/cyrillic-600-normal.css" rel="stylesheet">
@@ -31,8 +31,9 @@
 *,*::before,*::after{box-sizing:border-box}
 :root{
   color-scheme:dark;
-  --bg:#131416;--panel:#18191b;--panel2:#1c1d20;--line:#26282c;
-  --ink:#fafafa;--muted:#9aa1ad;--dim:#6b7280;--accent:#cf3a2f;--accent-hover:#e04b3e;
+  --bg:#17171b;--panel:#201f25;--panel2:#26242b;--line:#302d31;
+  --ink:#ece7df;--muted:#b3a9a0;--dim:#8d857c;--accent:#a33b43;
+  --ok:#3f9e6a;--warn:#c9a227;--card:#16171a;--ring:rgba(163,59,67,.35);--accent-hover:#b84a52;
   --r:10px;--ease:cubic-bezier(.2,.7,.2,1);
   --f-ui:'Exo 2',system-ui,'Segoe UI',sans-serif;
   --f-read:'Merriweather',Georgia,serif;
@@ -65,14 +66,17 @@ button,input,textarea,select{font-family:inherit;font-size:inherit;color:inherit
 .wrap{max-width:1240px;margin:0 auto;padding:0 20px}
 
 /* заголовок раздела */
-.hero{position:relative;margin:18px 0 6px;border-radius:16px;overflow:hidden;border:1px solid var(--line);background:#15161a;display:grid;grid-template-columns:1.02fr .98fr;min-height:320px}
+.hero{position:relative;margin:18px 0 6px;border-radius:16px;overflow:hidden;border:1px solid var(--line);background:#17171b;display:grid;grid-template-columns:1.02fr .98fr;min-height:250px}
 .hero-inner{position:relative;z-index:2;padding:34px 34px;display:flex;flex-direction:column;justify-content:center;max-width:none}
 .hero-art{position:relative;background-image:url('makima.jpg');background-image:image-set(url('makima.jpg') 1x,url('makima-2x.jpg') 2x);background-position:center 24%;background-size:cover;background-repeat:no-repeat;animation:kb 32s ease-in-out infinite alternate;will-change:transform}
-.hero-art::after{content:'';position:absolute;inset:0;background:linear-gradient(90deg,#15161a 0%,rgba(21,22,26,.6) 22%,rgba(21,22,26,0) 62%),linear-gradient(0deg,rgba(21,22,26,.5) 0%,rgba(21,22,26,0) 40%)}
+/* hero остаётся тёмным в обеих темах — текст внутри держим светлым */
+html[data-theme="light"] .hero h1{color:#ece7df}
+html[data-theme="light"] .hero p{color:#c9ccd1}
+.hero-art::after{content:'';position:absolute;inset:0;background:linear-gradient(90deg,#17171b 0%,rgba(23,23,27,.6) 22%,rgba(23,23,27,0) 62%),linear-gradient(0deg,rgba(23,23,27,.5) 0%,rgba(23,23,27,0) 40%)}
 @keyframes kb{from{transform:scale(1.02)}to{transform:scale(1.1)}}
 .hero h1{font-size:clamp(1.9rem,4vw,2.8rem);font-weight:700;letter-spacing:-.025em;margin:0 0 8px;line-height:1.12}
 .hero p{color:#c9ccd1;font-size:15px;margin:0;max-width:46ch}
-.hero-tag{display:inline-flex;align-items:center;height:26px;padding:0 11px;border-radius:999px;background:rgba(207,58,47,.16);border:1px solid rgba(207,58,47,.42);color:#ff9c92;font-size:11.5px;letter-spacing:.06em;text-transform:uppercase;margin-bottom:14px}
+.hero-tag{display:inline-flex;align-items:center;height:26px;padding:0 11px;border-radius:999px;background:rgba(163,59,67,.16);border:1px solid rgba(163,59,67,.42);color:#ff9c92;font-size:11.5px;letter-spacing:.06em;text-transform:uppercase;margin-bottom:14px}
 
 .section-head{display:flex;align-items:baseline;justify-content:space-between;gap:14px;padding:22px 0 14px}
 .section-head h2{font-size:19px;font-weight:600;margin:0}
@@ -81,12 +85,44 @@ button,input,textarea,select{font-family:inherit;font-size:inherit;color:inherit
 /* сетка обложек */
 .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(152px,1fr));gap:20px 16px}
 .card{cursor:pointer;display:flex;flex-direction:column;gap:9px;min-width:0}
-.cover{position:relative;aspect-ratio:2/3;background:var(--cover,#1c1d20);background-size:cover;background-position:center;overflow:hidden;border-radius:var(--r)}
+.cover{position:relative;aspect-ratio:2/3;background:var(--cover,#26242b);background-size:cover;background-position:center;overflow:hidden;border-radius:var(--r)}
 .cover img.covimg{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
 .cover::after{content:'';position:absolute;inset:0;background:linear-gradient(transparent 55%,rgba(0,0,0,.72));z-index:1}
 .cover h3{position:absolute;left:10px;right:10px;bottom:9px;z-index:2;font-size:13px;font-weight:600;line-height:1.3;margin:0;color:#fff;display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden}
 .card:hover .cover{box-shadow:0 10px 26px -12px rgba(0,0,0,.9);transform:translateY(-2px)}
 .cover{transition:transform .2s var(--ease),box-shadow .2s var(--ease)}
+/* фильтр по жанрам над сеткой */
+.genre-bar{display:flex;flex-wrap:wrap;gap:8px;padding:0 0 16px}
+.gchip{cursor:pointer;border:1px solid var(--line);background:var(--panel);color:var(--muted);border-radius:999px;padding:8px 14px;min-height:38px;font:500 13.5px/1 var(--f-ui);transition:border-color .2s var(--ease),color .2s var(--ease),background .2s var(--ease)}
+.gchip:hover{border-color:#3d3d46;color:var(--ink)}
+.gchip:focus-visible{outline:2px solid #FFB454;outline-offset:2px}
+.gchip.on{background:var(--accent);border-color:var(--accent);color:#fff}
+html[data-theme="light"] .gchip:hover{border-color:#c3c3ce}
+html[data-theme="light"] .gchip.on{color:#fff}
+/* переключатель темы в шапке */
+.theme-btn{width:36px;height:36px;flex:0 0 auto;border-radius:10px;border:1px solid var(--line);background:var(--panel);color:var(--ink);cursor:pointer;display:grid;place-items:center;font-size:15px;line-height:1;transition:border-color .2s var(--ease),transform .2s var(--ease)}
+.theme-btn:hover{border-color:#3d3d46;transform:translateY(-1px)}
+.theme-btn:focus-visible{outline:2px solid #FFB454;outline-offset:2px}
+html[data-theme="light"] .theme-btn:hover{border-color:#c3c3ce}
+/* «Плейлист»: обложка без обложки — генеративный альбомный арт из хеша id */
+.cover-wave{position:absolute;left:10px;right:10px;bottom:30px;z-index:2;display:flex;align-items:flex-end;gap:2px;height:15px;opacity:.7}
+.cover-wave i{flex:1;background:#FFB454;border-radius:1px;min-height:2px}
+.cover-dur{position:absolute;right:8px;top:8px;z-index:2;font:600 10.5px/1 var(--f-ui);letter-spacing:.04em;padding:4px 6px;border-radius:5px;background:rgba(10,12,14,.66);color:#f0e7d8}
+/* читалка — тёплая сепия, витрина остаётся угольной */
+.reader.reader-paper{background:#F0E7D8;color:#2B2620;border-radius:16px;padding:32px 30px 40px;box-shadow:0 24px 70px -30px rgba(0,0,0,.75)}
+/* демо-сцена */
+.demo-bar{margin:18px 0 26px;display:flex;align-items:center;gap:12px;flex-wrap:wrap}
+.demo-play{cursor:pointer;border:0;border-radius:999px;padding:11px 18px;min-height:44px;background:#1B2128;color:#F0E7D8;font:600 14px/1 var(--f-ui);display:inline-flex;align-items:center;gap:8px;transition:transform .2s var(--ease),background .2s var(--ease)}
+.demo-play:hover{transform:translateY(-1px);background:#232b34}
+.demo-play:focus-visible{outline:2px solid #FFB454;outline-offset:3px}
+.demo-play.on{background:#8a4b2a}
+.demo-hint{font-size:12.5px;color:#8a7663}
+.demo-foot{margin-top:26px;padding-top:18px;border-top:1px solid #dccdb4;font-size:13.5px;color:#6b5b49}
+.reader-paper .reader-content{color:#2B2620}
+.reader-paper h1{color:#1b1710}
+.reader-paper .sub{color:#7d6c58}
+.reader-paper .back{color:#8a4b2a}
+.reader-paper .cue{background:#e8dcc8;border-color:#d8c9ae;color:#3a3128}
 .ctitle{font-size:14px;font-weight:600;line-height:1.3;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
 .card:hover .ctitle{color:var(--accent-hover)}
 .cmeta{display:flex;gap:8px;font-size:12px;color:var(--dim);min-width:0}
@@ -102,7 +138,7 @@ button,input,textarea,select{font-family:inherit;font-size:inherit;color:inherit
 .breadcrumbs a{color:var(--muted);cursor:pointer}
 .breadcrumbs a:hover{color:var(--ink)}
 .book-head{display:flex;gap:26px;padding:6px 0 26px;border-bottom:1px solid var(--line);flex-wrap:wrap}
-.book-cover{width:196px;aspect-ratio:2/3;flex-shrink:0;border-radius:var(--r);overflow:hidden;position:relative;background:var(--cover,#1c1d20);background-size:cover;background-position:center}
+.book-cover{width:196px;aspect-ratio:2/3;flex-shrink:0;border-radius:var(--r);overflow:hidden;position:relative;background:var(--cover,#26242b);background-size:cover;background-position:center}
 .book-cover img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
 .book-info{flex:1;min-width:260px}
 .book-info h1{font-size:clamp(1.5rem,3vw,2rem);font-weight:700;letter-spacing:-.02em;margin:0 0 10px}
@@ -146,18 +182,18 @@ button,input,textarea,select{font-family:inherit;font-size:inherit;color:inherit
 .play.disabled{background:var(--panel2);color:var(--dim);cursor:not-allowed}
 .a-info{flex:1;min-width:0}
 .a-title{font-size:14px;font-weight:600;margin-bottom:8px}
-.a-bar{height:4px;border-radius:2px;background:#2b2e33;cursor:pointer;overflow:hidden}
+.a-bar{height:4px;border-radius:2px;background:#34313a;cursor:pointer;overflow:hidden}
 .a-fill{height:100%;width:0;background:var(--accent);transition:width .1s linear}
 .a-time{display:flex;justify-content:space-between;font-size:11.5px;color:var(--dim);margin-top:5px}
 .a-hint{font-size:11.5px;color:var(--dim);margin-top:5px}
 
-.cue{display:flex;align-items:center;gap:12px;margin:18px 0;padding:11px 13px;border-radius:var(--r);background:rgba(207,58,47,.09);border:1px solid rgba(207,58,47,.3)}
+.cue{display:flex;align-items:center;gap:12px;margin:18px 0;padding:11px 13px;border-radius:var(--r);background:rgba(163,59,67,.09);border:1px solid rgba(163,59,67,.3)}
 .cue-play{width:32px;height:32px;border-radius:50%;background:var(--accent);display:grid;place-items:center;color:#fff;cursor:pointer;flex-shrink:0;border:none;font-size:12px;transition:background .2s}
 .cue-play:hover{background:var(--accent-hover)}
 .cue-play.disabled{background:var(--panel2);color:var(--dim);cursor:not-allowed}
 .cue-info{flex:1;min-width:0}
 .cue-title{font-size:13px;font-weight:600;margin-bottom:6px}
-.cue-bar{height:3px;border-radius:2px;background:#2b2e33;overflow:hidden;cursor:pointer}
+.cue-bar{height:3px;border-radius:2px;background:#34313a;overflow:hidden;cursor:pointer}
 .cue-fill{height:100%;width:0;background:var(--accent);transition:width .1s linear}
 .cue-time{font-size:11px;color:var(--dim);margin-top:4px}
 
@@ -192,7 +228,7 @@ footer{margin-top:50px;border-top:1px solid var(--line)}
 .toast-box{position:fixed;left:50%;bottom:24px;transform:translateX(-50%);z-index:200;display:flex;flex-direction:column;gap:8px;align-items:center;pointer-events:none}
 .toast{padding:10px 16px;border-radius:999px;font-size:13px;background:var(--panel2);border:1px solid var(--line);animation:toastIn .25s ease,toastOut .25s ease 2.6s forwards}
 .toast.ok{border-color:rgba(143,211,168,.4)}
-.toast.err{border-color:rgba(207,58,47,.55)}
+.toast.err{border-color:rgba(163,59,67,.55)}
 @keyframes toastIn{from{opacity:0;transform:translateY(8px)}}
 @keyframes toastOut{to{opacity:0}}
 
@@ -213,9 +249,72 @@ html[data-theme="light"] .cover h3{color:#fff}
 html[data-theme="light"] .reader-content{color:#2a2a30}
 html[data-theme="light"] .hero p{color:#e9e9ee}
 .themebtn{font-size:15px;padding:0 12px}
+/* --- главная: приветствие, продолжаем, недавние, статистика --- */
+.greet{display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap;margin:18px 0 4px;padding:16px 18px;background:var(--card);border:1px solid var(--line);border-radius:14px}
+.greet h1{margin:0;font-size:19px;font-weight:650;letter-spacing:-.01em}
+.greet .sub{color:var(--dim);font-size:13px;margin-top:3px}
+.greet-stats{display:flex;gap:10px;flex-wrap:wrap}
+.gstat{min-width:88px;padding:9px 13px;border-radius:10px;background:var(--panel);border:1px solid var(--line);text-align:center}
+.gstat b{display:block;font-size:19px;line-height:1.2}
+.gstat span{font-size:11px;color:var(--dim);text-transform:uppercase;letter-spacing:.05em}
+.row-head{display:flex;align-items:baseline;justify-content:space-between;gap:12px;margin:26px 0 12px}
+.row-head h2{margin:0;font-size:17px;font-weight:650}
+.row-head a{font-size:12.5px;color:var(--muted);cursor:pointer}
+.row-head a:hover{color:var(--ink)}
+.hrow{display:flex;gap:14px;overflow-x:auto;padding:2px 2px 10px;scroll-snap-type:x mandatory;scrollbar-width:thin}
+.hrow::-webkit-scrollbar{height:6px}
+.hrow::-webkit-scrollbar-thumb{background:var(--line);border-radius:3px}
+.hcard{flex:0 0 132px;scroll-snap-align:start;cursor:pointer}
+.hcard .cover{aspect-ratio:2/3}
+.hcard .t{font-size:13px;font-weight:600;margin-top:8px;line-height:1.3;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.hcard .a{font-size:11.5px;color:var(--dim);margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.hcard .go{display:inline-flex;align-items:center;gap:5px;margin-top:7px;font-size:11.5px;color:var(--accent)}
+.pstat-row{display:flex;gap:8px;flex-wrap:wrap;margin:14px 0 0}
+.chipfilter{display:inline-flex;align-items:center;gap:6px;height:32px;padding:0 13px;border-radius:999px;background:var(--panel);border:1px solid var(--line);color:var(--muted);font-size:12.5px;cursor:pointer;transition:background .15s,color .15s,border-color .15s}
+.chipfilter:hover{color:var(--ink);border-color:#34373d}
+.chipfilter.on{background:var(--accent);border-color:var(--accent);color:#fff}
+.libtools{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin:14px 0 16px}
+.libtools .lsel{height:34px;padding:0 12px;border-radius:9px;background:var(--panel);border:1px solid var(--line);color:var(--ink);font-size:13px}
+/* --- читалка --- */
+.rprog{position:fixed;left:0;top:0;height:2px;width:0;background:var(--accent);z-index:60;transition:width .1s linear}
+.rtools{position:sticky;top:64px;z-index:20;display:flex;align-items:center;justify-content:flex-end;gap:8px;padding:6px 0}
+.rtools button{height:32px;min-width:32px;padding:0 11px;border-radius:8px;background:var(--panel);border:1px solid var(--line);color:var(--muted);font-size:13px;cursor:pointer}
+.rtools button:hover,.rtools button.on{color:var(--ink);border-color:#3a3d43}
+.rpanel{position:absolute;right:0;top:44px;width:268px;background:var(--card);border:1px solid var(--line);border-radius:12px;padding:14px;box-shadow:0 18px 40px rgba(0,0,0,.45);display:none;z-index:30}
+.rpanel.open{display:block}
+.rpanel .rf{margin-bottom:12px}
+.rpanel .rf:last-child{margin-bottom:0}
+.rpanel label{display:block;font-size:11px;color:var(--dim);text-transform:uppercase;letter-spacing:.06em;margin-bottom:5px}
+.rpanel .seg{display:flex;gap:4px}
+.rpanel .seg button{flex:1;height:30px;border-radius:7px;background:var(--panel);border:1px solid var(--line);color:var(--muted);font-size:12px;cursor:pointer}
+.rpanel .seg button.on{background:var(--accent);border-color:var(--accent);color:#fff}
+.reader{position:relative}
+.reader-content{max-width:var(--rw,720px);margin-left:auto;margin-right:auto}
+.rfoot{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-top:26px;font-size:12px;color:var(--dim)}
+/* защита от горизонтальной прокрутки */
+html,body{max-width:100%;overflow-x:clip}
+img,video{max-width:100%}
+.reader-content{width:100%}
+@media(max-width:760px){
+  .greet{padding:14px}
+  .greet-stats{width:100%}
+  .gstat{flex:1;min-width:0}
+  .hrow{gap:10px}
+  .hcard{flex:0 0 112px}
+  .libtools .lsel{flex:1;min-width:0}
+  .rtools{top:56px}
+  .rpanel{width:min(268px,calc(100vw - 32px))}
+}
+@media(max-width:560px){
+  #nav-admin{display:none}
+  .hsearch{max-width:none}
+  .hdr-in{gap:6px;padding:0 10px}
+  .userchip{padding:0 8px 0 3px}
+  .userchip > span:last-child{display:none}
+}
 /* --- админский аватар: золотая рамка с короной --- */
 .av-admin{position:relative;display:inline-flex;align-items:center;justify-content:center;padding:2px;border-radius:50%;background:conic-gradient(from 210deg,#7a4f0e,#ffe9a8 18%,#d4a13a 38%,#ffd97a 55%,#a8761c 72%,#ffe9a8 88%,#7a4f0e);box-shadow:0 0 0 1px rgba(255,214,120,.28),0 0 10px rgba(212,161,58,.28);flex-shrink:0}
-.av-admin > .avatar{width:26px;height:26px;border:2px solid #101013}
+.av-admin > .avatar{width:26px;height:26px;border:2px solid #17171b}
 .av-admin::after{content:'👑';position:absolute;top:-8px;right:-7px;font-size:11px;line-height:1;filter:drop-shadow(0 1px 2px rgba(0,0,0,.75));transform:rotate(12deg);pointer-events:none}
 .av-admin-lg{padding:3px}
 .av-admin-lg > .avatar{width:52px;height:52px;border-width:3px}
@@ -239,8 +338,8 @@ html[data-theme="light"] .hero p{color:#e9e9ee}
 .btn-primary:hover{background:var(--accent-hover)}
 .btn-ghost{background:var(--panel);border-color:var(--line);color:var(--ink)}
 .btn-ghost:hover{background:var(--panel2)}
-.btn-danger{background:rgba(207,58,47,.14);border-color:rgba(207,58,47,.35);color:#ff9c92}
-.btn-danger:hover{background:rgba(207,58,47,.24)}
+.btn-danger{background:rgba(163,59,67,.14);border-color:rgba(163,59,67,.35);color:#ff9c92}
+.btn-danger:hover{background:rgba(163,59,67,.24)}
 .btn-sm{height:32px;padding:0 12px;font-size:12.5px;border-radius:8px}
 .admin{max-width:860px;margin:0 auto}
 .admin-head{display:flex;justify-content:space-between;align-items:flex-start;gap:14px;margin-bottom:18px;flex-wrap:wrap}
@@ -264,7 +363,7 @@ html[data-theme="light"] .hero p{color:#e9e9ee}
 .mrow{display:flex;align-items:center;gap:8px;padding:8px 10px;border-radius:8px;background:var(--bg);border:1px solid var(--line);font-size:12px}
 .mtype{flex-shrink:0;padding:2px 7px;border-radius:5px;background:var(--panel2);color:var(--muted);text-transform:uppercase;font-size:10.5px;letter-spacing:.04em}
 .murl{flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:var(--muted)}
-.mdel{width:24px;height:24px;border-radius:6px;display:grid;place-items:center;background:rgba(207,58,47,.14);color:#ff9c92;cursor:pointer;flex-shrink:0}
+.mdel{width:24px;height:24px;border-radius:6px;display:grid;place-items:center;background:rgba(163,59,67,.14);color:#ff9c92;cursor:pointer;flex-shrink:0}
 .madd{display:grid;grid-template-columns:90px 1.4fr 1fr 92px 86px auto auto;gap:8px;align-items:end;padding:10px;border-radius:10px;background:var(--bg);border:1px dashed var(--line)}
 .mini label{display:block;font-size:11px;color:var(--dim);margin-bottom:4px}
 .mini input,.mini select{width:100%;height:34px;padding:0 9px;border-radius:8px;border:1px solid var(--line);background:var(--panel);color:var(--ink);font-size:12.5px}
@@ -292,7 +391,7 @@ html[data-theme="light"] .hero p{color:#e9e9ee}
 @media(max-width:760px){
   .hero{grid-template-columns:1fr;min-height:0}
   .hero-art{height:300px;order:-1;background-image:url('makima-mobile.jpg');background-position:center 16%;background-size:cover}
-  .hero-art::after{background:linear-gradient(0deg,#15161a 0%,rgba(21,22,26,.42) 42%,rgba(21,22,26,0) 88%)}
+  .hero-art::after{background:linear-gradient(0deg,#17171b 0%,rgba(23,23,27,.42) 42%,rgba(23,23,27,0) 88%)}
   .hero-inner{padding:20px 18px 22px}
   .hero h1{font-size:1.7rem;line-height:1.15}
   .hero p{font-size:14px}
@@ -348,7 +447,7 @@ html[data-theme="light"] .hero p{color:#e9e9ee}
 
 /* ---------- конструктор страницы ---------- */
 .pblock{position:relative;border:1px solid var(--line);background:var(--panel);border-radius:12px;padding:14px;margin-bottom:10px}
-.pblock.pdrop{border-color:var(--accent);background:rgba(207,58,47,.07)}
+.pblock.pdrop{border-color:var(--accent);background:rgba(163,59,67,.07)}
 .pblock-head{display:flex;align-items:center;gap:8px;margin-bottom:9px}
 .pblock-type{font-size:10.5px;text-transform:uppercase;letter-spacing:.07em;color:var(--dim)}
 .pblock-acts{margin-left:auto;display:flex;gap:4px}
@@ -398,11 +497,11 @@ html[data-theme="light"] .hero p{color:#e9e9ee}
 .obeat-acts{display:flex;gap:2px;flex-shrink:0;opacity:0;transition:opacity .12s}
 .obeat-row:hover .obeat-acts{opacity:1}
 .obtn{width:26px;height:26px;border-radius:7px;border:none;background:var(--panel2);color:var(--muted);cursor:pointer;font-size:12px;display:grid;place-items:center;padding:0}
-.obtn:hover{color:var(--ink);background:#26282c}
-.obtn.acc{color:#ff9c92;background:rgba(207,58,47,.14)}
-.obtn.acc:hover{background:rgba(207,58,47,.24)}
-.olink{flex-shrink:0;height:22px;display:inline-flex;align-items:center;padding:0 9px;border-radius:999px;background:rgba(207,58,47,.12);border:1px solid rgba(207,58,47,.32);color:#ff9c92;font-size:11px;cursor:pointer}
-.olink:hover{background:rgba(207,58,47,.22)}
+.obtn:hover{color:var(--ink);background:#302d31}
+.obtn.acc{color:#ff9c92;background:rgba(163,59,67,.14)}
+.obtn.acc:hover{background:rgba(163,59,67,.24)}
+.olink{flex-shrink:0;height:22px;display:inline-flex;align-items:center;padding:0 9px;border-radius:999px;background:rgba(163,59,67,.12);border:1px solid rgba(163,59,67,.32);color:#ff9c92;font-size:11px;cursor:pointer}
+.olink:hover{background:rgba(163,59,67,.22)}
 .obeat-row.drop-before{box-shadow:inset 0 2px 0 var(--accent)}
 .obeat-row.drop-after{box-shadow:inset 0 -2px 0 var(--accent)}
 .obeat-row.drop-inside{border-color:var(--accent);background:var(--panel)}
@@ -424,14 +523,15 @@ html[data-theme="light"] .hero p{color:#e9e9ee}
 <header class="hdr">
   <div class="hdr-in">
     <div class="logo" onclick="navigate('home')">
-      <span class="logo-mark">OK</span>
-      <span class="full">OkhBooks</span>
+      <span class="logo-mark">L</span>
+      <span class="full">LECTORIA</span>
     </div>
     <div class="hsearch">
       <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
       <input id="search" type="search" placeholder="Поиск книг" autocomplete="off" oninput="filterBooks()">
     </div>
     <div id="authbar" class="authbar"></div>
+    <button class="theme-btn" id="themeBtn" onclick="toggleTheme()" aria-label="Сменить тему" title="Сменить тему">☀</button>
   </div>
 </header>
 
@@ -448,20 +548,28 @@ html[data-theme="light"] .hero p{color:#e9e9ee}
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
 <script>
 // ============================================================
-// OkhBooks — приложение на Supabase
+// LECTORIA — приложение на Supabase
 // ============================================================
 const SUPA_URL = 'https://qaxtkvqtskxpwmhfodah.supabase.co';
 const SUPA_KEY = 'sb_publishable_4Y8C8jX7cjXs7ejlAwNdIQ_s1CWPf-H';
-const SITE = 'OkhBooks';
+const SITE = 'LECTORIA';
 // ВАЖНО: при каждом деплое менять APP_VERSION и файл version.txt одинаково.
-const APP_VERSION = 'v2026-11-05a';
+const APP_VERSION = 'v2026-11-17-lectoria';
 
 async function checkVersion() {
   try {
+    // не перезагружаем, пока пользователь что-то набирает
+    const el = document.activeElement;
+    if (el && /^(INPUT|TEXTAREA|SELECT)$/.test(el.tagName)) return;
     const r = await fetch('version.txt?t=' + Date.now(), { cache: 'no-store' });
     if (!r.ok) return;
     const v = (await r.text()).trim();
-    if (v && v !== APP_VERSION) location.reload();
+    if (!v || v === APP_VERSION) return;
+    // одна перезагрузка на версию: рассинхрон version.txt и APP_VERSION больше не даёт петлю
+    const key = 'okh_reloaded_' + v;
+    if (sessionStorage.getItem(key)) return;
+    sessionStorage.setItem(key, '1');
+    location.reload();
   } catch (e) {}
 }
 
@@ -481,6 +589,25 @@ function esc(v) {
   if (v === null || v === undefined) return '';
   return String(v).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
     .replace(/"/g, '&quot;').replace(/'/g, '&#39;');
+}
+
+// разрешаем только безопасные схемы ссылок: javascript:/data: и прочее — отбрасываем
+function safeUrl(u) {
+  const s = String(u || '').trim();
+  if (!s) return '';
+  if (/^(https?:|mailto:)/i.test(s)) return s;
+  if (/^[#/?.]/.test(s)) return s;
+  if (/^[a-z][a-z0-9+.-]*:/i.test(s)) return '';
+  return s;
+}
+
+// фон страницы уходит в атрибут style: режем всё, чем можно выйти за пределы свойства
+function safeCssBg(v) {
+  const s = String(v || '').trim();
+  if (!s) return '';
+  if (/[;<>{}]/.test(s)) return '';
+  if (/expression|position|z-index|inset/i.test(s)) return '';
+  return s;
 }
 function toast(msg, kind) {
   const box = $('#toasts');
@@ -503,8 +630,15 @@ const authed = () => !!(session && session.user);
 const isAdmin = () => !!(profile && profile.is_admin === true);
 const myId = () => (session && session.user ? session.user.id : null);
 
-const COVERS = ['#a8322a', '#1d1d1b', '#7d2a20', '#2b2b28', '#5a1f18', '#141412'];
-const coverOf = b => b.cover_url || COVERS[(b.cover || 0) % COVERS.length];
+const COVERS = ['#5a2730', '#1d1d1b', '#3b2a2e', '#2b2b28', '#5a1f18', '#141412'];
+// у books в БД нет колонки cover — вариант подложки считаем от id, иначе все обложки одинаковые
+function coverIndex(b) {
+  const s = String((b && b.id) || '');
+  let h = 0;
+  for (let i = 0; i < s.length; i++) h = (h * 31 + s.charCodeAt(i)) % 1000003;
+  return h % COVERS.length;
+}
+const coverOf = b => b.cover_url || COVERS[coverIndex(b)];
 
 const getBook = id => data.books.find(b => b.id === id);
 const getChapter = id => data.chapters.find(c => c.id === id);
@@ -678,28 +812,64 @@ async function setMark(bookId, status) {
   if (!data.marks) data.marks = {};
   if (!data.marks[myId()]) data.marks[myId()] = {};
   const cur = data.marks[myId()][bookId];
+  const prev = cur || null;
   if (cur === status) {
     delete data.marks[myId()][bookId];
     const r = await sb.from('book_marks').delete().eq('user_id', myId()).eq('book_id', bookId);
-    if (r.error) { toast(r.error.message, 'err'); return; }
+    if (r.error) {
+      // откат: иначе в памяти останется закладка, которой на сервере нет
+      data.marks[myId()][bookId] = prev;
+      toast(r.error.message, 'err');
+      render();
+      return;
+    }
   } else {
     data.marks[myId()][bookId] = status;
     const r = await sb.from('book_marks').upsert({
       user_id: myId(), book_id: bookId, status, updated_at: new Date().toISOString()
     });
-    if (r.error) { toast(r.error.message, 'err'); return; }
+    if (r.error) {
+      // откат к прежнему состоянию (или к «нет закладки»)
+      if (prev) data.marks[myId()][bookId] = prev;
+      else delete data.marks[myId()][bookId];
+      toast(r.error.message, 'err');
+      render();
+      return;
+    }
   }
   render();
 }
 
+// альбомный арт из id: у книг нет обложек, и это не заглушка, а узнаваемый стиль
+function coverArt(b) {
+  const s = String((b && b.id) || (b && b.title) || '');
+  let h = 0;
+  for (let i = 0; i < s.length; i++) h = (h * 31 + s.charCodeAt(i)) % 1000003;
+  const hue = h % 360;
+  const hue2 = (hue + 38) % 360;
+  const a = 'hsl(' + hue + ' 46% 16%)';
+  const c = 'hsl(' + hue2 + ' 58% 38%)';
+  return 'radial-gradient(120% 90% at 18% 8%, ' + c + ' 0%, ' + a + ' 58%, #0d0f12 100%)';
+}
+
 function bookCard(b) {
   const ch = chaptersOf(b.id);
+  const mediaCount = ch.reduce((n, c) => n + ((c.media || []).length), 0);
+  // волна: делений столько же, сколько медиа в книге (но не больше 14)
+  let wave = '';
+  for (let i = 0; i < Math.min(mediaCount, 14); i++) {
+    const hgt = 25 + ((i * 37 + mediaCount * 11) % 75);
+    wave += '<i style="height:' + hgt + '%"></i>';
+  }
+  const dur = mediaCount ? Math.round(mediaCount * 1.5) + ' мин' : '';
   return '<article class="card" onclick="navigate(\'book\',{bookId:\'' + b.id + '\'})">'
-    + '<div class="cover" style="--cover:' + esc(coverOf(b)) + '">'
+    + '<div class="cover" style="--cover:' + esc(coverOf(b)) + ';background:' + coverArt(b) + '">'
     + (b.cover_url ? '<img class="covimg" src="' + esc(b.cover_url) + '" alt="" loading="lazy">' : '')
+    + (dur ? '<span class="cover-dur">' + dur + '</span>' : '')
+    + (wave ? '<div class="cover-wave">' + wave + '</div>' : '')
     + '<h3>' + esc(b.title) + '</h3></div>'
     + '<div class="ctitle">' + esc(b.title) + '</div>'
-    + '<div class="cmeta"><span>' + esc(b.genre || 'Без жанра') + '</span><span>' + ch.length + ' гл.</span></div>'
+    + '<div class="cmeta"><span>' + esc(b.genre || 'Без жанра') + '</span><span>' + ch.length + ' гл.' + (mediaCount ? ' · ' + mediaCount + ' медиа' : '') + '</span></div>'
     + '</article>';
 }
 
@@ -738,6 +908,9 @@ async function loadProfile() {
 // ---------- роутер ----------
 let route = { page: 'home' };
 function navigate(page, params = {}) {
+  // уходя со страницы демо, гасим её звук
+  if (route.page === 'demo' && page !== 'demo') demoStop();
+  if (route.page === 'chapter' && page !== 'chapter') dropReaderScroll();
   route = { page, ...params };
   render();
   scrollTo({ top: 0, behavior: 'smooth' });
@@ -763,6 +936,7 @@ function render() {
     case 'home': app.innerHTML = renderHome(); break;
     case 'book': app.innerHTML = renderBook(); break;
     case 'chapter': app.innerHTML = renderChapter(); break;
+    case 'demo': app.innerHTML = renderDemo(); break;
     case 'login': app.innerHTML = renderLogin(); break;
     case 'profile': app.innerHTML = renderProfile(); break;
     case 'settings': app.innerHTML = renderSettings(); break;
@@ -771,7 +945,7 @@ function render() {
     case 'admin': app.innerHTML = renderAdmin(); break;
     default: app.innerHTML = renderHome();
   }
-  if (route.page === 'chapter') initAudio();
+  if (route.page === 'chapter') { initAudio(); initReader(); }
   renderAuthBar();
 }
 
@@ -836,8 +1010,73 @@ function pageBlockHasContent(b) {
   return !!(b.url || '').trim() || !!(b.caption || '').trim();
 }
 
+let searchQuery = '';
+let genreFilter = '';
+let statusFilter = '';
+let sortBy = 'new';
+
+function myMark(bookId) {
+  if (!authed()) return null;
+  const m = data.marks && data.marks[myId()];
+  return m ? (m[bookId] || null) : null;
+}
+const MARK_RANK = { reading: 0, planned: 1, read: 2 };
+// одно место, где решается, какие книги видны: поиск + жанр + только опубликованные
+function visibleBooks() {
+  const q = searchQuery.trim().toLowerCase();
+  const list = data.books.filter(b => b.status === 'published')
+    .filter(b => !genreFilter || (String(b.genre || '').trim() || 'Без жанра') === genreFilter)
+    .filter(b => !statusFilter || myMark(b.id) === statusFilter)
+    .filter(b => !q || [b.title, b.author, b.genre, b.desc].some(v => String(v || '').toLowerCase().includes(q)));
+  const t = x => String(x || '').toLowerCase();
+  list.sort((x, y) => {
+    if (sortBy === 'title') return t(x.title).localeCompare(t(y.title), 'ru');
+    if (sortBy === 'author') return (t(x.author) || 'яяя').localeCompare(t(y.author) || 'яяя', 'ru') || t(x.title).localeCompare(t(y.title), 'ru');
+    if (sortBy === 'progress') {
+      const rx = MARK_RANK[myMark(x.id)]; const ry = MARK_RANK[myMark(y.id)];
+      return (rx === undefined ? 9 : rx) - (ry === undefined ? 9 : ry) || new Date(y.createdAt || 0) - new Date(x.createdAt || 0);
+    }
+    return new Date(y.createdAt || 0) - new Date(x.createdAt || 0);
+  });
+  return list;
+}
+
+function setStatus(s) { statusFilter = s; render(); }
+function setSort(v) { sortBy = v; render(); }
+
+// жанры считаем по опубликованным книгам; если жанр один — фильтр не нужен
+function genreBar() {
+  const pub = data.books.filter(b => b.status === 'published');
+  const names = [];
+  pub.forEach(b => {
+    const g = String(b.genre || '').trim() || 'Без жанра';
+    if (names.indexOf(g) === -1) names.push(g);
+  });
+  if (names.length < 2) return '';
+  names.sort((a, b) => a.localeCompare(b, 'ru'));
+  const chip = (g, label) => '<button class="gchip' + (genreFilter === g ? ' on' : '') + '" onclick="setGenre(\'' + esc(g).replace(/\\/g, '\\\\').replace(/'/g, "\\'") + '\')">' + esc(label) + '</button>';
+  return '<div class="genre-bar">' + chip('', 'Все жанры') + names.map(g => chip(g, g)).join('') + '</div>';
+}
+
+function setGenre(g) {
+  genreFilter = g;
+  render();
+}
+
+function filterBooks() {
+  const el = document.getElementById('search');
+  searchQuery = el ? el.value : '';
+  if (route.page !== 'home') { navigate('home'); return; }
+  const grid = document.getElementById('booksGrid');
+  if (!grid) return;
+  const books = visibleBooks();
+  grid.innerHTML = renderBooks(books);
+  const cnt = document.querySelector('.section-head .count');
+  if (cnt) cnt.textContent = books.length ? books.length + ' книг' : 'ничего не найдено';
+}
+
 function renderHome() {
-  const books = data.books.filter(b => b.status === 'published');
+  const books = visibleBooks();
   const owner = homePageOwner();
   const page = owner && data.pages ? data.pages[owner] : null;
   const pd = page && page.data ? page.data : null;
@@ -846,25 +1085,103 @@ function renderHome() {
 
   const hero = '<section class="hero"><div class="hero-art"></div>'
     + '<div class="hero-inner">'
-    + '<div class="hero-tag">Библиотека</div>'
-    + '<h1>Книги, в которых есть музыка</h1>'
+    + '<div class="hero-tag">Твой личный мир книг</div>'
+    + '<h1>Место, где истории обретают жизнь</h1>'
     + '<p>Текст, музыка, снимки и видео внутри глав. Читай, слушай и смотри.</p>'
     + '</div></section>';
 
   return '<div class="wrap">'
+    + homeGreeting()
     + (custom
-      ? '<div class="pb-page" style="' + (bg ? 'background:' + esc(bg) + ';border-radius:16px;padding:24px 22px;margin-top:16px' : '') + '">' + renderPageBlocks(pd) + '</div>'
+      ? '<div class="pb-page" style="' + (bg ? 'background:' + esc(safeCssBg(bg)) + ';border-radius:16px;padding:24px 22px;margin-top:16px' : '') + '">' + renderPageBlocks(pd) + '</div>'
       : hero)
-    + '<div class="section-head"><h2>Новые книги</h2><span class="count">' + books.length + ' книг</span></div>'
+    + homeContinue()
+    + homeRecent()
+    + '<div class="section-head" style="margin-top:26px"><h2>Все книги</h2>' + (books.length ? '<span class="count">' + books.length + '</span>' : '<span class="count">пока пусто</span>') + '</div>'
+    + libTools()
+    + genreBar()
     + '<div id="booksGrid">' + renderBooks(books) + '</div>'
     + '</div>';
 }
 
+// ---------- демо-сцена: звук без единого файла ----------
+const DEMO = {
+  title: 'Сцена у моря',
+  paras: [
+    'Соль осела на плечах, как пыль на старых пластинках. Он стоял у самой кромки и слушал, как вода разбирает берег по кусочкам — медленно, без злобы, будто что-то отматывая назад.',
+    'За спиной гудел посёлок: чей-то приёмник, чья-то собака, стекло под ногой. Всё это было далеко. Ближе был только ровный, огромный шум, в котором не оставалось места ни одной мысли.',
+    'Он закрыл глаза и позволил себе не думать ещё минуту. Море не спорило. Оно просто было — и этого хватало.'
+  ]
+};
+
+let demoCtx = null;
+function demoStop() {
+  if (demoCtx) { try { demoCtx.close(); } catch (e) {} demoCtx = null; }
+  const b = document.getElementById('demoPlay');
+  if (b) { b.textContent = '▶ Слушать сцену'; b.classList.remove('on'); }
+}
+function demoToggle() {
+  if (demoCtx) { demoStop(); return; }
+  const AC = window.AudioContext || window.webkitAudioContext;
+  if (!AC) { toast('Браузер не поддерживает WebAudio', 'err'); return; }
+  try {
+    const ctx = new AC();
+    demoCtx = ctx;
+    // шум с коричневым уклоном = прибой; медленная модуляция громкости = волны
+    const secs = 4;
+    const buf = ctx.createBuffer(1, ctx.sampleRate * secs, ctx.sampleRate);
+    const ch = buf.getChannelData(0);
+    let last = 0;
+    for (let i = 0; i < ch.length; i++) {
+      const w = Math.random() * 2 - 1;
+      last = (last + 0.02 * w) / 1.02;
+      ch[i] = last * 3.2;
+    }
+    const src = ctx.createBufferSource();
+    src.buffer = buf; src.loop = true;
+    const lp = ctx.createBiquadFilter();
+    lp.type = 'lowpass'; lp.frequency.value = 720; lp.Q.value = 0.7;
+    const gain = ctx.createGain();
+    gain.gain.value = 0.14;
+    const lfo = ctx.createOscillator();
+    lfo.frequency.value = 0.09;
+    const lfoAmt = ctx.createGain();
+    lfoAmt.gain.value = 0.08;
+    lfo.connect(lfoAmt); lfoAmt.connect(gain.gain);
+    src.connect(lp); lp.connect(gain); gain.connect(ctx.destination);
+    src.start(); lfo.start();
+    const b = document.getElementById('demoPlay');
+    if (b) { b.textContent = '❚❚ Остановить'; b.classList.add('on'); }
+  } catch (e) {
+    demoStop();
+    toast('Звук не запустился: ' + (e.message || e), 'err');
+  }
+}
+
+function renderDemo() {
+  return '<div class="wrap"><div class="rprog" id="rprog"></div><div class="reader" id="readerEl">'
+    + '<a class="back" onclick="navigate(\'home\')">← На главную</a>'
+    + '<div class="sub">Демо-сцена · так звучит глава</div>'
+    + '<h1>' + esc(DEMO.title) + '</h1>'
+    + '<div class="demo-bar">'
+    + '<button class="demo-play" id="demoPlay" onclick="demoToggle()">▶ Слушать сцену</button>'
+    + '<span class="demo-hint">Звук собирается в браузере — ни одного аудиофайла</span>'
+    + '</div>'
+    + DEMO.paras.map(p => '<p>' + esc(p) + '</p>').join('')
+    + '<div class="demo-foot">Хочешь так же? Войди и опубликуй свою книгу — текст, треки, фото и видео.</div>'
+    + '</div></div>';
+}
+
 function renderBooks(books) {
   if (!books.length) {
-    return '<div class="empty"><h3>Пока пусто</h3><p>'
-      + (authed() ? 'Добавь первую книгу в «Мои книги».' : 'Автор ещё наполняет библиотеку.')
-      + '</p></div>';
+    // пустая витрина не должна выглядеть как сломанный сайт
+    return '<div class="empty"><h3>Витрина собирается</h3><p>'
+      + (authed()
+        ? 'Первая книга появится здесь сразу после публикации. Загрузи текст, трек и фото — и глава зазвучит.'
+        : 'Автор ещё раскладывает треки по главам. Пока послушай демо-сцену — она работает без базы.')
+      + '</p><p style="margin-top:14px"><button class="btn-primary" onclick="navigate(\'demo\')">Послушать демо-сцену</button> '
+      + '<button class="btn-ghost" onclick="navigate(\'' + (authed() ? 'admin' : 'login') + '\')">'
+      + (authed() ? 'Опубликовать книгу' : 'Войти') + '</button></p></div>';
   }
   return '<div class="grid">' + books.map(bookCard).join('') + '</div>';
 }
@@ -970,8 +1287,11 @@ function renderChapter() {
     return out;
   }).join('');
 
-  return '<div class="wrap"><div class="reader">'
+  return '<div class="wrap"><div class="rprog" id="rprog"></div><div class="reader" id="readerEl">'
     + '<a class="back" onclick="navigate(\'book\',{bookId:\'' + chapter.bookId + '\'})">← К книге</a>'
+    + '<div class="rtools"><span id="rposLabel" style="font-size:12px;color:var(--dim);margin-right:auto">0%</span>'
+    + '<button title="Настройки чтения" onclick="toggleReaderPanel(event)">Аа</button>'
+    + '<div class="rpanel" id="readerPanel"></div></div>'
     + '<h1>' + esc(chapter.title) + '</h1>'
     + '<div class="sub">' + (book ? esc(book.title) : '') + ' · глава ' + chapter.num + '</div>'
     + (topAudios.length ? '<div class="media-block"><div class="media-label">музыка</div>'
@@ -1335,7 +1655,13 @@ async function saveProfile() {
   const nameEl = document.getElementById('p-name');
   const name = nameEl ? nameEl.value.trim() : '';
   if (!name) { toast('Введи ник', 'err'); return; }
-  const res = await sb.from('profiles').update({ display_name: name }).eq('id', myId());
+  // upsert, а не update: если строки в profiles ещё нет, update молча меняет 0 строк
+  // и пользователь видит «сохранено» при пустом результате
+  const res = await sb.from('profiles').upsert({
+    id: myId(),
+    display_name: name,
+    avatar_url: (profile && profile.avatar_url) || null
+  }, { onConflict: 'id' });
   if (res.error) { toast(res.error.message, 'err'); return; }
   await loadProfile();
   render();
@@ -1524,7 +1850,13 @@ async function uploadCover(input) {
   const f = input.files && input.files[0];
   if (!f) return;
   const url = await uploadFile(f);
-  if (url) { $('#b-cover-url').value = url; toast('Обложка загружена'); }
+  if (url) {
+    // пишем и в драфт: иначе ближайший render() откатит поле к старому значению
+    bookField('cover_url', url);
+    const el = $('#b-cover-url');
+    if (el) el.value = url;
+    toast('Обложка загружена');
+  }
 }
 
 async function uploadFile(file) {
@@ -1661,20 +1993,38 @@ async function saveChapter() {
   if (chapterId) {
     const r = await sb.from('chapters').update(payload).eq('id', chapterId);
     if (r.error) { toast(r.error.message, 'err'); return; }
-    await sb.from('media').delete().eq('chapter_id', chapterId);
   } else {
     const r = await sb.from('chapters').insert(payload).select().single();
     if (r.error) { toast(r.error.message, 'err'); return; }
     chapterId = r.data.id;
   }
-  if (tempMedia.length) {
-    const rows = tempMedia.map(m => ({
+  // сначала пишем новые медиа и только потом удаляем выброшенные:
+  // прежний порядок (delete → insert) терял все медиа главы при падении insert
+  const rowOf = (m, withId) => {
+    const row = {
       chapter_id: chapterId, kind: m.type, url: m.url || null, title: m.title || null,
       caption: m.caption || null, pos: m.pos || 0, dur: m.dur || 0
-    }));
-    const r2 = await sb.from('media').insert(rows);
-    if (r2.error) { toast(r2.error.message, 'err'); return; }
+    };
+    if (withId) row.id = m.id;
+    return row;
+  };
+  const keep = tempMedia.filter(m => m.id);
+  const fresh = tempMedia.filter(m => !m.id);
+  if (fresh.length) {
+    const rIns = await sb.from('media').insert(fresh.map(m => rowOf(m, false))).select();
+    if (rIns.error) { toast('Глава сохранена, но новые медиа не добавились: ' + rIns.error.message, 'err'); return; }
+    (rIns.data || []).forEach((row, i) => { if (fresh[i]) fresh[i].id = row.id; });
   }
+  if (keep.length) {
+    const rUp = await sb.from('media').upsert(keep.map(m => rowOf(m, true)));
+    if (rUp.error) { toast('Глава сохранена, но медиа не обновились: ' + rUp.error.message, 'err'); return; }
+  }
+  const keepIds = keep.map(m => m.id);
+  const delQ = sb.from('media').delete().eq('chapter_id', chapterId);
+  const rDel = keepIds.length
+    ? await delQ.not('id', 'in', '(' + keepIds.join(',') + ')')
+    : await delQ;
+  if (rDel.error) toast('Старые медиа не удалились: ' + rDel.error.message, 'err');
   editChapterId = null; tempMedia = [];
   await loadData(); render();
   toast('Глава сохранена');
@@ -1815,7 +2165,7 @@ function renderPageBlocks(pd) {
             + (b.caption ? '<div class="cap">' + esc(b.caption) + '</div>' : '') + '</div>'
           : miniAudioHtml(b.url || '');
       case 'button':
-        return '<a class="pb-btn" href="' + esc(b.url || '#') + '" target="_blank" rel="noopener">' + esc(b.text || 'Ссылка') + '</a>';
+        return '<a class="pb-btn" href="' + esc(safeUrl(b.url) || '#') + '" target="_blank" rel="noopener">' + esc(b.text || 'Ссылка') + '</a>';
       case 'quote':
         return '<blockquote>' + esc(b.text || '') + '</blockquote>';
       case 'divider':
@@ -1941,7 +2291,7 @@ function renderAdminPage() {
     + '<button class="btn-ghost btn-sm" onclick="pageSave()">Сохранить</button>'
     + '</div>'
     + '<div class="field"><label>Фон страницы (цвет или ссылка на картинку)</label>'
-    + '<input value="' + esc(pd.background || '') + '" placeholder="#131416 или https://…/bg.jpg" oninput="pageField(\'__bg\',\'background\',this.value)"></div>'
+    + '<input value="' + esc(pd.background || '') + '" placeholder="#17171b или https://…/bg.jpg" oninput="pageField(\'__bg\',\'background\',this.value)"></div>'
     + '<div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-bottom:14px">'
     + '<select id="page-new-type" class="finput" style="width:auto;height:36px;padding:0 12px;border-radius:999px">'
     + Object.keys(PAGE_TYPES).map(t => '<option value="' + t + '">' + PAGE_TYPES[t] + '</option>').join('')
@@ -2257,11 +2607,166 @@ function initScroll() {
   onScroll();
 }
 
+// ---------- главная: приветствие, «продолжить», недавние ----------
+function pubBooks() { return data.books.filter(b => b.status === 'published'); }
+
+function pluralRu(n, one, few, many) {
+  const a = Math.abs(n) % 100, b = a % 10;
+  if (a > 10 && a < 20) return many;
+  if (b > 1 && b < 5) return few;
+  if (b === 1) return one;
+  return many;
+}
+
+function homeGreeting() {
+  if (!authed()) return '';
+  const me = (data.marks && data.marks[myId()]) || {};
+  const vals = Object.keys(me).map(k => me[k]);
+  const reading = vals.filter(v => v === 'reading').length;
+  const read = vals.filter(v => v === 'read').length;
+  const name = (profile && profile.display_name) || (session.user.email || '').split('@')[0];
+  const h = new Date().getHours();
+  const hi = h < 5 ? 'Доброй ночи' : h < 12 ? 'Доброе утро' : h < 18 ? 'Добрый день' : 'Добрый вечер';
+  const sub = reading
+    ? 'Сейчас в работе ' + reading + ' ' + pluralRu(reading, 'книга', 'книги', 'книг') + '. Продолжим?'
+    : 'Ещё ничего не начато — выбери книгу в каталоге.';
+  return '<section class="greet"><div><h1>' + esc(hi) + ', ' + esc(name) + '</h1>'
+    + '<div class="sub">' + esc(sub) + '</div></div>'
+    + '<div class="greet-stats">'
+    + '<div class="gstat"><b>' + pubBooks().length + '</b><span>в каталоге</span></div>'
+    + '<div class="gstat"><b>' + reading + '</b><span>читаю</span></div>'
+    + '<div class="gstat"><b>' + read + '</b><span>прочитано</span></div>'
+    + '</div></section>';
+}
+
+function homeCard(b, withGo) {
+  return '<div class="hcard" onclick="navigate(\'book\',{bookId:\'' + b.id + '\'})">'
+    + '<div class="cover" style="--cover:' + esc(coverOf(b)) + '">'
+    + (b.cover_url ? '<img class="covimg" src="' + esc(b.cover_url) + '" alt="" loading="lazy">' : '<h3>' + esc(b.title) + '</h3>')
+    + '</div>'
+    + '<div class="t">' + esc(b.title) + '</div>'
+    + '<div class="a">' + esc(b.author || 'без автора') + '</div>'
+    + (withGo ? '<div class="go">Читать →</div>' : '')
+    + '</div>';
+}
+
+function homeContinue() {
+  if (!authed()) return '';
+  const list = pubBooks().filter(b => myMark(b.id) === 'reading');
+  if (!list.length) return '';
+  return '<div class="row-head"><h2>Продолжить чтение</h2>'
+    + '<a onclick="navigate(\'marks\',{status:\'reading\'})">все ' + list.length + ' →</a></div>'
+    + '<div class="hrow">' + list.map(b => homeCard(b, true)).join('') + '</div>';
+}
+
+function homeRecent() {
+  const list = pubBooks().slice().sort((a, b) => new Date(b.createdAt || 0) - new Date(a.createdAt || 0)).slice(0, 10);
+  if (!list.length) return '';
+  return '<div class="row-head"><h2>Недавно добавленные</h2></div>'
+    + '<div class="hrow">' + list.map(b => homeCard(b, false)).join('') + '</div>';
+}
+
+function libTools() {
+  const chips = [['', 'Все'], ['reading', 'Читаю'], ['read', 'Прочитано'], ['planned', 'Отложено']];
+  const opts = [['new', 'Сначала новые'], ['title', 'По названию'], ['author', 'По автору'], ['progress', 'По прогрессу']];
+  return '<div class="libtools">'
+    + (authed() ? chips.map(c => '<button class="chipfilter' + (statusFilter === c[0] ? ' on' : '') + '" onclick="setStatus(\'' + c[0] + '\')">' + c[1] + '</button>').join('') : '')
+    + '<span style="flex:1"></span>'
+    + '<select class="lsel" onchange="setSort(this.value)">'
+    + opts.map(o => '<option value="' + o[0] + '"' + (sortBy === o[0] ? ' selected' : '') + '>' + o[1] + '</option>').join('')
+    + '</select></div>';
+}
+
+// ---------- читалка: шрифт, интервал, ширина, тема, позиция ----------
+const READ_DEF = { fs: 17, lh: 1.85, w: 720, serif: true, paper: false };
+function readPrefs() {
+  try { return Object.assign({}, READ_DEF, JSON.parse(localStorage.getItem('okh_read_prefs') || '{}')); }
+  catch (e) { return Object.assign({}, READ_DEF); }
+}
+function saveReadPrefs(p) { try { localStorage.setItem('okh_read_prefs', JSON.stringify(p)); } catch (e) {} }
+function applyReadPrefs() {
+  const p = readPrefs();
+  const el = document.getElementById('readerEl');
+  if (!el) return;
+  el.style.setProperty('--rw', p.w + 'px');
+  el.classList.toggle('reader-paper', !!p.paper);
+  const c = el.querySelector('.reader-content');
+  if (c) {
+    c.style.fontSize = p.fs + 'px';
+    c.style.lineHeight = String(p.lh);
+    c.style.fontFamily = p.serif ? 'var(--f-read)' : 'system-ui,-apple-system,"Segoe UI",Roboto,sans-serif';
+  }
+}
+function setRead(k, v) {
+  const p = readPrefs(); p[k] = v; saveReadPrefs(p); applyReadPrefs();
+  const panel = document.getElementById('readerPanel');
+  if (panel) panel.innerHTML = readerPanelHtml();
+}
+function readerPanelHtml() {
+  const p = readPrefs();
+  const seg = (key, opts) => '<div class="seg">' + opts.map(o =>
+    '<button class="' + (String(p[key]) === String(o[0]) ? 'on' : '') + '" onclick="setRead(\'' + key + '\',' + (typeof o[0] === 'string' ? '\'' + o[0] + '\'' : o[0]) + ')">' + o[1] + '</button>').join('') + '</div>';
+  return '<div class="rf"><label>Кегль</label>' + seg('fs', [[15, '15'], [17, '17'], [19, '19'], [21, '21']]) + '</div>'
+    + '<div class="rf"><label>Межстрочный</label>' + seg('lh', [[1.6, 'плотно'], [1.85, 'обычно'], [2.1, 'свободно']]) + '</div>'
+    + '<div class="rf"><label>Ширина строки</label>' + seg('w', [[620, 'узко'], [720, 'средне'], [860, 'широко']]) + '</div>'
+    + '<div class="rf"><label>Шрифт</label>' + seg('serif', [[true, 'с засечками'], [false, 'без']]) + '</div>'
+    + '<div class="rf"><label>Фон</label>' + seg('paper', [[false, 'тёмный'], [true, 'бумага']]) + '</div>';
+}
+function toggleReaderPanel(e) {
+  if (e) e.stopPropagation();
+  const p = document.getElementById('readerPanel');
+  if (!p) return;
+  p.classList.toggle('open');
+  if (p.classList.contains('open')) p.innerHTML = readerPanelHtml();
+}
+document.addEventListener('click', function (e) {
+  const p = document.getElementById('readerPanel');
+  if (p && p.classList.contains('open') && !p.contains(e.target) && !e.target.closest('.rtools')) p.classList.remove('open');
+});
+
+let readerScrollHandler = null;
+function initReader() {
+  applyReadPrefs();
+  const chId = route.chapterId;
+  if (!chId) return;
+  const key = 'okh_pos_' + chId;
+  try {
+    const saved = parseFloat(localStorage.getItem(key) || '0');
+    if (saved > 2) setTimeout(function () {
+      const max = document.documentElement.scrollHeight - innerHeight;
+      if (max > 0) scrollTo({ top: max * saved / 100 });
+    }, 80);
+  } catch (e) {}
+  const bar = document.getElementById('rprog');
+  let timer = null;
+  readerScrollHandler = function () {
+    const d = document.documentElement;
+    const max = d.scrollHeight - innerHeight;
+    const pct = max > 0 ? Math.min(100, Math.max(0, scrollY / max * 100)) : 0;
+    if (bar) bar.style.width = pct + '%';
+    const lab = document.getElementById('rposLabel');
+    if (lab) lab.textContent = Math.round(pct) + '%';
+    clearTimeout(timer);
+    timer = setTimeout(function () { try { localStorage.setItem(key, String(pct)); } catch (e) {} }, 220);
+  };
+  addEventListener('scroll', readerScrollHandler, { passive: true });
+  readerScrollHandler();
+}
+function dropReaderScroll() {
+  if (readerScrollHandler) { removeEventListener('scroll', readerScrollHandler); readerScrollHandler = null; }
+}
 // ---------- старт ----------
 function savedTheme() { try { return localStorage.getItem('okh_theme') || 'dark'; } catch (e) { return 'dark'; } }
 function applyTheme(t) {
   document.documentElement.setAttribute('data-theme', t);
   try { localStorage.setItem('okh_theme', t); } catch (e) {}
+  const b = document.getElementById('themeBtn');
+  if (b) {
+    // показываем то, на что переключит: в тёмной — солнце, в светлой — луна
+    b.textContent = t === 'light' ? '☾' : '☀';
+    b.setAttribute('aria-label', t === 'light' ? 'Включить тёмную тему' : 'Включить светлую тему');
+    b.setAttribute('aria-pressed', t === 'light' ? 'true' : 'false');
+  }
 }
 function toggleTheme() {
   const cur = document.documentElement.getAttribute('data-theme') === 'light' ? 'dark' : 'light';
@@ -2292,7 +2797,8 @@ sb.auth.onAuthStateChange(async (event) => {
 });
 
 addEventListener('keydown', e => { if (e.key === 'Escape') closePhoto(); });
-addEventListener('scroll', initScroll, { passive: true });
+// initScroll сам вешает обработчик скролла — вешать его ещё и здесь означало плодить листенер на каждый скролл
+initScroll();
 
 boot();
 
