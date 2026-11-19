@@ -1,1 +1,1 @@
-v2026-11-17-lectoria
+v2026-11-19-lectoria-secfix-1
